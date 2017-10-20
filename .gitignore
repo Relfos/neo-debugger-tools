@@ -1,0 +1,6 @@
+NEO-Compiler/bin/
+NEO-Debugger/bin/
+NEO-Debugger/obj/
+packages/
+NEO-VM/obj/
+NEO-Compiler/obj/
