@@ -2,11 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Neo.Debugger
+namespace Neo.Tools.AVM
 {
     public class DisassembleEntry
     {
@@ -15,6 +12,31 @@ namespace Neo.Debugger
         public OpCode opcode;
         public byte[] data;
         public string comment;
+    }
+
+    public class AVMDisassemble
+    {
+        public IEnumerable<DisassembleEntry> lines { get; private set; }
+
+        public AVMDisassemble(IEnumerable<DisassembleEntry> lines)
+        {
+            this.lines = lines;
+        }
+
+        public int ResolveLine(int ofs) {
+            int i = 0;
+            foreach (var line in lines)
+            {
+                if (line.offset == ofs)
+                {
+                    return i + 1;
+                }
+
+                i++;
+            }
+
+            throw new Exception("Offset cannot be mapped");
+        }
     }
 
     public static class NeoDisassembler
@@ -183,13 +205,11 @@ namespace Neo.Debugger
             return value;
         }
 
-        public static IEnumerable<DisassembleEntry> Disassemble(byte[] script)
+        public static AVMDisassemble Disassemble(byte[] script)
         {
             InitHints();
 
-            var output = new List<DisassembleEntry>();
-
-            
+            var output = new List<DisassembleEntry>();            
 
             using (var stream = new MemoryStream(script))
             {
@@ -405,7 +425,7 @@ namespace Neo.Debugger
                 }
             }
 
-            return output.ToArray();
+            return new AVMDisassemble(output);
         }
     }
 }

@@ -4,3 +4,5 @@ NEO-Debugger/obj/
 packages/
 NEO-VM/obj/
 NEO-Compiler/obj/
+.vs/
+NEO-AVMLib/obj/

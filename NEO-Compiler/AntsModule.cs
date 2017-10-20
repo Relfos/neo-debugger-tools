@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Neo.Tools.AVM;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,15 +7,6 @@ namespace Neo.Compiler
 {
     public class AntsModule
     {
-        public class DebugMapEntry
-        {
-            public string url;
-            public int line;
-
-            public int startOfs;
-            public int endOfs;
-        }
-
         public AntsModule(ILogger logger)
         {
             this.logger = logger;
@@ -31,7 +23,7 @@ namespace Neo.Compiler
 
             foreach (var c in this.total_Codes.Values)
             {
-                if (c.debugcode != null && c.debugline>0)
+                if (c.debugcode != null && c.debugline > 0 && c.debugline < 2000)
                 {
                     currentDebugEntry = new DebugMapEntry();
                     currentDebugEntry.startOfs = debugMap.Count > 0 ?  bytes.Count : 0;
@@ -60,7 +52,7 @@ namespace Neo.Compiler
                 mapLines.Add(entry.startOfs + "," + entry.endOfs + "," + entry.line + "," + entry.url);
             }
 
-            var mapName = fileName.Replace(".dll", ".map");
+            var mapName = fileName.Replace(".dll", ".neomap");
             System.IO.File.WriteAllLines(mapName, mapLines);
 
             return bytes.ToArray();

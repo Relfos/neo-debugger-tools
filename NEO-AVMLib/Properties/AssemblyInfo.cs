@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NEO-VM")]
+[assembly: AssemblyTitle("NEO-AVMLib")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("NEO-VM")]
+[assembly: AssemblyProduct("NEO-AVMLib")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6e380d57-508d-4e99-9ab6-ac264d8e44d0")]
+[assembly: Guid("0ee11865-5308-4b46-ab78-94fadb6e3462")]
 
 // Version information for an assembly consists of the following four values:
 //

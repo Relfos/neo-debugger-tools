@@ -8,15 +8,6 @@ using System;
 
 namespace Neo.Debugger
 {
-    public struct DebugMapEntry
-    {
-        public string url;
-        public int line;
-
-        public int startOfs;
-        public int endOfs;
-    }
-
     public class NeoDebugger
     {
         private ExecutionEngine engine;
@@ -67,29 +58,6 @@ namespace Neo.Debugger
         {
             Finished = !engine.ExecuteSingleStep();
             return Finished ? 0 : engine.CurrentContext.InstructionPointer;
-        }
-
-        public static List<DebugMapEntry> LoadMapFile(string path)
-        {
-            if (!File.Exists(path))
-            {
-                throw new FileNotFoundException();
-            }
-                    
-            var lines = File.ReadAllLines(path);
-            var result = new List<DebugMapEntry>();
-            foreach (var line in lines)
-            {
-                var temp = line.Split(new char[] { ',' }, 4);
-
-                var entry = new DebugMapEntry();
-                int.TryParse(temp[0], out entry.startOfs);
-                int.TryParse(temp[1], out entry.endOfs);
-                int.TryParse(temp[2], out entry.line);
-                entry.url = temp[3];
-                result.Add(entry);
-            }
-            return result;
         }
 
         public object GetResult()

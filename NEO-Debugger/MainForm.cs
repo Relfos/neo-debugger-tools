@@ -7,6 +7,7 @@ using ScintillaNET;
 using Neo.Debugger.Utils;
 using System.Text;
 using System.Collections.Generic;
+using Neo.Tools.AVM;
 
 namespace Neo.Debugger
 {
@@ -17,9 +18,9 @@ namespace Neo.Debugger
 
 		private Scintilla TextArea;
         private NeoDebugger debugger;
-        private DisassembleEntry[] asm_lines;
+        private AVMDisassemble avm_asm;
         private int currentLine = -1;
-        private List<DebugMapEntry> map = null;
+        private NeoMapFile map = null;
 
 
         private void MainForm_Load(object sender, EventArgs e) {
@@ -292,11 +293,12 @@ namespace Neo.Debugger
 
                 var bytes = File.ReadAllBytes(path);
 
-                var mapFileName = path.Replace(".avm", ".map");
+                var mapFileName = path.Replace(".avm", ".neomap");
 
                 if (File.Exists(mapFileName))
                 {
-                    map = NeoDebugger.LoadMapFile(mapFileName);
+                    map = new NeoMapFile();
+                    map.LoadFromFile(mapFileName);
                 }
                 else
                 {
@@ -307,13 +309,13 @@ namespace Neo.Debugger
 
                 debugger.Step();
 
-                this.asm_lines = NeoDisassembler.Disassemble(bytes).ToArray();
+                this.avm_asm = NeoDisassembler.Disassemble(bytes);
 
                 string content;
 
                 if (map != null)
                 {
-                    var srcFile = map[0].url;
+                    var srcFile = map.Entries.FirstOrDefault().url;
                     FileName.Text = srcFile;
                     content = File.ReadAllText(srcFile);
                 }
@@ -322,7 +324,7 @@ namespace Neo.Debugger
 
                     var sb = new StringBuilder();
                     sb.AppendLine(OutputLine("Offset", "Opcode", "Comment"));
-                    foreach (var entry in asm_lines)
+                    foreach (var entry in avm_asm.lines)
                     {
                         string ofsStr = entry.offset.ToString();
                         string opStr = entry.name;
@@ -658,29 +660,29 @@ namespace Neo.Debugger
 
             if (map != null)
             {
-                foreach (var entry in map)
+                try
                 {
-                    if (ofs >= entry.startOfs && ofs<=entry.endOfs)
-                    {
-                        return entry.line - 1;
-                    }
+                    var line = map.ResolveLine(ofs);
+                    return line - 1;
                 }
-
-                return -1;
+                catch
+                {
+                    return -1;
+                }
             }
-            
-
-            int targetLine = -1;
-            for (int i = 0; i < asm_lines.Length; i++)
+            else
             {
-                if (asm_lines[i].offset == ofs)
+                try
                 {
-                    targetLine = i + 1;
-                    break;
+                    var line = avm_asm.ResolveLine(ofs);
+                    return line - 1;
                 }
-            }
+                catch
+                {
+                    return -1;
+                }
 
-            return targetLine;
+            }
         }
 
         private void RemoveCurrentHighlight()
