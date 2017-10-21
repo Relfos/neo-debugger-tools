@@ -2,12 +2,19 @@
 Suite of development tools for NEO smart contracts.
 Includes a cli disassembler and a GUI debugger. An helper library that helps loading .AVM files and create and load .neomap files is also included, and can be used to create other dev tools.
 
-# Limitations
+## Features
+- Supports any NEO .AVM, regardless of the language / compiler used
+- Source viewer with syntax highlight powered by ScintillaNET
+- Run, step and set breakpoints in order to debug smart contracts
+- Toggle between source code and assembly code
+
+## Limitations
 - Debugging ASM and C# only for now (see section below how to add new languages)
 - Windows only for now, using .NET Framework
 - Smart contract source is limited to a single file for now
 - Not possible yet to inspect variable values
 - Most NEO syscalls/APIs not supported yet (work in progress)
+
 
 # How to use
 
@@ -27,3 +34,11 @@ Currently the only way to generate a .neomap file is to compile the smart contra
 NEO smart contracts can be coded in many different languages, and in theory, this compiler already supports any language as long as a .neomap file exists in the same directory as the .avm file.
 However since only NeoN was modified to emit those map files during compilation, to add other languages it would be necessary to modify other compilers to emit a .neomap.
 The .neomap file format is simple, for each line you need to list a starting offset, ending offset, the source line and the corresponding source file, all values separated by a comma.
+
+## Roadmap
+- Customize smart contract arguments
+- Stack viewer
+- Storage emulation
+- Transactions emulation
+- Persistency of smart contract storage to disk
+- Debugger map generation for Java / Python / others
