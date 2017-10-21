@@ -686,6 +686,8 @@ namespace Neo.Debugger
                 TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
             }*/
 
+            currentLine = -1;
+
             shouldReset = false;
 
             debugger.Reset();
@@ -769,13 +771,14 @@ namespace Neo.Debugger
             var target = TextArea.Lines[line];
             target.Goto();
             target.EnsureVisible();
+
             TextArea.FirstVisibleLine = line;
         }
 
 
-        private int UpdateState()
+        private void UpdateState()
         {
-            int targetLine = ResolveLine(debugState.offset);
+            currentLine = ResolveLine(debugState.offset);
 
             switch (debugState.state)
             {
@@ -792,19 +795,17 @@ namespace Neo.Debugger
                     {
                         shouldReset = true;
                         MessageBox.Show("Execution failed with an exception");
-                        JumpToLine(targetLine);
+                        JumpToLine(currentLine);
                         break;
                     }
 
                 case DebuggerState.State.Break:
                     {
                         MessageBox.Show("Execution hit an breakpoint");
-                        JumpToLine(targetLine);
+                        JumpToLine(currentLine);
                         break;
                     }
             }
-
-            return targetLine;
         }
 
         private void ToggleDebuggerSource()
@@ -831,9 +832,10 @@ namespace Neo.Debugger
                 }
             }
 
-            if (currentLine>0 && debugState.state != DebuggerState.State.Reset)
+            if (currentLine > 0 && (debugState.state != DebuggerState.State.Running || debugState.state == DebuggerState.State.Break))
             {
-                
+                currentLine = ResolveLine(debugState.offset);
+                TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
             }
         }
 
@@ -855,13 +857,14 @@ namespace Neo.Debugger
                 this.ResetDebugger();
             }
 
-            int targetLine;
+            int oldLine = currentLine;
 
+            RemoveCurrentHighlight();
             do
             {
                 debugState = debugger.Step();
 
-                targetLine = UpdateState();
+                UpdateState();
 
                 if (shouldReset)
                 {
@@ -869,16 +872,38 @@ namespace Neo.Debugger
                 }
 
 
-            } while (targetLine <= 0 || targetLine == currentLine);
+            } while (currentLine <= 0 || oldLine == currentLine);
 
-            if (targetLine != -1 && targetLine != currentLine)
+            var targetLine = TextArea.Lines[currentLine];
+            targetLine.EnsureVisible();
+
+            targetLine.MarkerAdd(STEP_BG);
+
+            var firstVisible = TextArea.FirstVisibleLine;
+
+            var lastVisible = firstVisible + TextArea.LinesOnScreen;
+
+            if (lastVisible > TextArea.Lines.Count)
             {
-
-                RemoveCurrentHighlight();
-                currentLine = targetLine;
-                TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
+                lastVisible = TextArea.Lines.Count;
             }
 
+            if (oldLine < 0)
+            {
+                targetLine.Goto();
+            }
+            else
+            if (currentLine == oldLine + 1)
+            {
+                if (currentLine >= lastVisible)
+                {
+                    TextArea.LineScroll(1, 0);
+                }
+            }
+            else
+            {
+                targetLine.Goto();
+            }
         }
 
         #endregion
