@@ -357,7 +357,7 @@ namespace Neo.Debugger
                 sb.AppendLine(OutputLine("Offset", "Opcode", "Comment"));
                 foreach (var entry in avm_asm.lines)
                 {
-                    string ofsStr = entry.offset.ToString();
+                    string ofsStr = entry.startOfs.ToString();
                     string opStr = entry.name;
                     string hintStr = entry.comment;
 
@@ -706,7 +706,7 @@ namespace Neo.Debugger
                     case DebugMode.Assembly:
                         {
                             var line = avm_asm.ResolveLine(ofs);
-                            return line + 1;
+                            return line + 2;
                         }
 
                     default:
@@ -816,6 +816,17 @@ namespace Neo.Debugger
             TextArea.ReadOnly = false;
             TextArea.Text = debugContent[debugMode];
             TextArea.ReadOnly = true;
+
+            foreach (var ofs in debugger.Breakpoints)
+            {
+                var line = ResolveLine(ofs);
+
+                if (line >= 0)
+                {
+                    TextArea.Lines[line].MarkerAdd(BREAKPOINT_BG);
+                    TextArea.Lines[line].MarkerAdd(BREAKPOINT_MARKER);
+                }
+            }
         }
 
         private void RunDebugger()

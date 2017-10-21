@@ -7,7 +7,8 @@ namespace Neo.Tools.AVM
 {
     public class DisassembleEntry
     {
-        public int offset;
+        public int startOfs;
+        public int endOfs;
         public string name;
         public OpCode opcode;
         public byte[] data;
@@ -28,7 +29,7 @@ namespace Neo.Tools.AVM
             int i = 0;
             foreach (var line in lines)
             {
-                if (line.offset == ofs)
+                if (ofs >= line.startOfs && ofs <= line.endOfs)
                 {
                     return i;
                 }
@@ -46,7 +47,7 @@ namespace Neo.Tools.AVM
                 throw new Exception("Line cannot be mapped");
             }
 
-            return _lines[line].offset;
+            return _lines[line].startOfs;
         }
     }
 
@@ -233,7 +234,7 @@ namespace Neo.Tools.AVM
                         var entry = new DisassembleEntry();
                         output.Add(entry);
 
-                        entry.offset = (int)reader.BaseStream.Position;
+                        entry.startOfs = (int)reader.BaseStream.Position;
                         entry.opcode = opcode;
                         entry.name = opcode.ToString();
 
@@ -432,6 +433,8 @@ namespace Neo.Tools.AVM
                                     break;
                                 }
                         }
+
+                        entry.endOfs = (int)reader.BaseStream.Position;
                     }
                 }
             }
