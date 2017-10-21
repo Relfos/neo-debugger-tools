@@ -16,11 +16,21 @@ namespace Neo.Debugger
 			InitializeComponent();
 		}
 
+        public enum DebugMode
+        {
+            Assembly,
+            Source
+        }
+
 		private Scintilla TextArea;
         private NeoDebugger debugger;
         private AVMDisassemble avm_asm;
         private int currentLine = -1;
         private NeoMapFile map = null;
+        private bool shouldReset;
+        private DebugMode debugMode;
+        private DebuggerState debugState;
+        private Dictionary<DebugMode, string> debugContent = new Dictionary<DebugMode, string>();
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -58,7 +68,6 @@ namespace Neo.Debugger
 
 			// INIT HOTKEYS
 			InitHotkeys();
-
 		}
 
 		private void InitColors() {
@@ -90,9 +99,11 @@ namespace Neo.Debugger
 
             TextArea.ClearCmdKey(Keys.F5);
             TextArea.ClearCmdKey(Keys.F10);
+            TextArea.ClearCmdKey(Keys.F12);
 
             HotKeyManager.AddHotKey(this, RunDebugger, Keys.F5);
             HotKeyManager.AddHotKey(this, StepDebugger, Keys.F10);
+            HotKeyManager.AddHotKey(this, ToggleDebuggerSource, Keys.F12);
         }
 
         private void InitSyntaxColoring() {
@@ -323,57 +334,56 @@ namespace Neo.Debugger
                 {
                     map = new NeoMapFile();
                     map.LoadFromFile(mapFileName);
+                    debugMode = DebugMode.Source;
                 }
                 else
                 {
                     map = null;
+                    debugMode = DebugMode.Assembly;
                 }
 
                 this.debugger = new NeoDebugger(bytes);
                 this.avm_asm = NeoDisassembler.Disassemble(bytes);
 
-                string content;
 
                 if (map != null)
                 {
                     var srcFile = map.Entries.FirstOrDefault().url;
                     FileName.Text = srcFile;
-                    content = File.ReadAllText(srcFile);
+                    debugContent[DebugMode.Source] = File.ReadAllText(srcFile);
                 }
-                else
+
+                var sb = new StringBuilder();
+                sb.AppendLine(OutputLine("Offset", "Opcode", "Comment"));
+                foreach (var entry in avm_asm.lines)
                 {
+                    string ofsStr = entry.offset.ToString();
+                    string opStr = entry.name;
+                    string hintStr = entry.comment;
 
-                    var sb = new StringBuilder();
-                    sb.AppendLine(OutputLine("Offset", "Opcode", "Comment"));
-                    foreach (var entry in avm_asm.lines)
+                    if (!string.IsNullOrEmpty(hintStr))
                     {
-                        string ofsStr = entry.offset.ToString();
-                        string opStr = entry.name;
-                        string hintStr = entry.comment;
-
-                        if (!string.IsNullOrEmpty(hintStr))
+                        if (hintStr.Contains("$$"))
                         {
-                            if (hintStr.Contains("$$"))
-                            {
-                                hintStr = hintStr.Replace("$$", OutputData(entry.data));
-                            }
-
-                            if (hintStr.Contains("$XX"))
-                            {
-                                hintStr = hintStr.Replace("$XX", OutputHex(entry.data));
-                            }
-
-                            hintStr = "// " + hintStr;
+                            hintStr = hintStr.Replace("$$", OutputData(entry.data));
                         }
 
-                        sb.AppendLine(OutputLine(ofsStr, opStr, hintStr));
+                        if (hintStr.Contains("$XX"))
+                        {
+                            hintStr = hintStr.Replace("$XX", OutputHex(entry.data));
+                        }
 
+                        hintStr = "// " + hintStr;
                     }
-                    content = sb.ToString();
-                    FileName.Text = Path.GetFileName(path);
+
+                    sb.AppendLine(OutputLine(ofsStr, opStr, hintStr));
+
                 }
 
-                TextArea.Text = content;
+                debugContent[DebugMode.Assembly] = sb.ToString();
+                FileName.Text = Path.GetFileName(path);
+
+                TextArea.Text = debugContent[debugMode];
                 TextArea.ReadOnly = true;
 
                 ResetDebugger();
@@ -685,15 +695,24 @@ namespace Neo.Debugger
         {
             try
             {
-                if (map != null)
+                switch (debugMode)
                 {
-                    var line = map.ResolveLine(ofs);
-                    return line - 1;
-                }
-                else
-                {
-                    var line = avm_asm.ResolveLine(ofs);
-                    return line + 1;
+                    case DebugMode.Source:
+                        {
+                            var line = map.ResolveLine(ofs);
+                            return line - 1;
+                        }
+
+                    case DebugMode.Assembly:
+                        {
+                            var line = avm_asm.ResolveLine(ofs);
+                            return line + 1;
+                        }
+
+                    default:
+                        {
+                            return -1;
+                        }
                 }
             }
             catch
@@ -706,15 +725,21 @@ namespace Neo.Debugger
         {
             try
             {
-                if (map != null)
+                switch (debugMode)
                 {
-                    var ofs = map.ResolveOffset(line + 1);
-                    return ofs;
-                }
-                else
-                {
-                    var ofs = avm_asm.ResolveOffset(line);
-                    return ofs;
+                    case DebugMode.Source:
+                        {
+                            var ofs = map.ResolveOffset(line + 1);
+                            return ofs;
+                        }
+
+                    case DebugMode.Assembly:
+                        {
+                            var ofs = avm_asm.ResolveOffset(line);
+                            return ofs;
+                        }
+
+                    default: return -1;
                 }
             }
             catch
@@ -744,13 +769,12 @@ namespace Neo.Debugger
             TextArea.FirstVisibleLine = line;
         }
 
-        private bool shouldReset;
 
-        private int UpdateState(DebuggerState result)
+        private int UpdateState()
         {
-            int targetLine = ResolveLine(result.offset);
+            int targetLine = ResolveLine(debugState.offset);
 
-            switch (result.state)
+            switch (debugState.state)
             {
                 case DebuggerState.State.Finished:
                     {
@@ -780,6 +804,20 @@ namespace Neo.Debugger
             return targetLine;
         }
 
+        private void ToggleDebuggerSource()
+        {
+            if (map == null)
+            {
+                MessageBox.Show("Map file not available for this .avm");
+                return;
+            }
+
+            debugMode = debugMode == DebugMode.Assembly ? DebugMode.Source : DebugMode.Assembly;
+            TextArea.ReadOnly = false;
+            TextArea.Text = debugContent[debugMode];
+            TextArea.ReadOnly = true;
+        }
+
         private void RunDebugger()
         {
             if (shouldReset)
@@ -787,8 +825,8 @@ namespace Neo.Debugger
                 this.ResetDebugger();
             }
 
-            var result = debugger.Run();
-            UpdateState(result);
+            debugState = debugger.Run();
+            UpdateState();
         }
 
         private void StepDebugger()
@@ -802,9 +840,9 @@ namespace Neo.Debugger
 
             do
             {
-                var result = debugger.Step();
+                debugState = debugger.Step();
 
-                targetLine = UpdateState(result);
+                targetLine = UpdateState();
 
                 if (shouldReset)
                 {

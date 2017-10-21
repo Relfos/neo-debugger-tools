@@ -34,7 +34,8 @@ namespace Neo.Debugger
         private byte[] contractBytes;
         private InteropService interop;
 
-        private HashSet<int> breakpoints = new HashSet<int>();
+        private HashSet<int> _breakpoints = new HashSet<int>();
+        public IEnumerable<int> Breakpoints { get { return _breakpoints; } }
 
         public NeoDebugger(byte[] contractBytes)
         {
@@ -78,7 +79,7 @@ namespace Neo.Debugger
                 engine.LoadScript(sb.ToArray());
             }
 
-            foreach (var pos in breakpoints)
+            foreach (var pos in _breakpoints)
             {
                 engine.AddBreakPoint((uint)pos);
             }
@@ -92,11 +93,11 @@ namespace Neo.Debugger
         {
             if (enabled)
             {
-                breakpoints.Add(ofs);
+                _breakpoints.Add(ofs);
             }
             else
             {
-                breakpoints.Remove(ofs);
+                _breakpoints.Remove(ofs);
             }
 
             try

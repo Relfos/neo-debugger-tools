@@ -5,6 +5,7 @@ Includes a cli disassembler and a GUI debugger. An helper library that helps loa
 # Limitations
 - Debugging ASM and C# only for now (see section below how to add new languages)
 - Windows only for now, using .NET Framework
+- Smart contract source is limited to a single file for now
 - Not possible yet to inspect variable values
 - Most NEO syscalls/APIs not supported yet (work in progress)
 
@@ -13,6 +14,13 @@ Includes a cli disassembler and a GUI debugger. An helper library that helps loa
 Open the .avm file in the NEO-dbg GUI application.
 This will show either assembly code for the .avm or C# if a debug map file was found.
 Currently the only way to generate a .neomap file is to compile the smart contracts with the modified NeoN compiler include in this repository.
+
+## Shortcuts
+| Key        | Action | Comments  |
+| ------------- |:-------------:| -----:|
+| F5 | Executes the smart contract ||
+| F10 | Steps through the smart contract ||
+| F12 | Toggle between assembly and source  code | Only works when a .neomap file is available |
 
 # Support for other languages
 
