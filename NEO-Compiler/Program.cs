@@ -32,7 +32,9 @@ namespace Neo.Compiler
 
             // fix necessary when debugging the compiler via VS
             var path = Path.GetDirectoryName(filename);
-            Directory.SetCurrentDirectory(path);
+            if (!string.IsNullOrEmpty(path)) {
+                Directory.SetCurrentDirectory(path);
+            }            
 
             ILModule mod = new ILModule();
             System.IO.Stream fs = null;
