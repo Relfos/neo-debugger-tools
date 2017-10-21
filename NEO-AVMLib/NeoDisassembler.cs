@@ -16,11 +16,12 @@ namespace Neo.Tools.AVM
 
     public class AVMDisassemble
     {
-        public IEnumerable<DisassembleEntry> lines { get; private set; }
+        private List<DisassembleEntry> _lines;
+        public IEnumerable<DisassembleEntry> lines { get { return _lines; } }
 
-        public AVMDisassemble(IEnumerable<DisassembleEntry> lines)
+        public AVMDisassemble(List<DisassembleEntry> lines)
         {
-            this.lines = lines;
+            this._lines = lines;
         }
 
         public int ResolveLine(int ofs) {
@@ -29,13 +30,23 @@ namespace Neo.Tools.AVM
             {
                 if (line.offset == ofs)
                 {
-                    return i + 1;
+                    return i;
                 }
 
                 i++;
             }
 
             throw new Exception("Offset cannot be mapped");
+        }
+
+        public int ResolveOffset(int line)
+        {
+            if (line<0 || line >= _lines.Count)
+            {
+                throw new Exception("Line cannot be mapped");
+            }
+
+            return _lines[line].offset;
         }
     }
 

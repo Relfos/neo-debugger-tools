@@ -22,9 +22,8 @@ namespace Neo.Debugger
         private int currentLine = -1;
         private NeoMapFile map = null;
 
-
-        private void MainForm_Load(object sender, EventArgs e) {
-
+        private void MainForm_Load(object sender, EventArgs e)
+        {
 			// CREATE CONTROL
 			TextArea = new ScintillaNET.Scintilla();
 			TextPanel.Controls.Add(TextArea);
@@ -89,8 +88,10 @@ namespace Neo.Debugger
 			TextArea.ClearCmdKey(Keys.Control | Keys.L);
 			TextArea.ClearCmdKey(Keys.Control | Keys.U);
 
+            TextArea.ClearCmdKey(Keys.F5);
             TextArea.ClearCmdKey(Keys.F10);
 
+            HotKeyManager.AddHotKey(this, RunDebugger, Keys.F5);
             HotKeyManager.AddHotKey(this, StepDebugger, Keys.F10);
         }
 
@@ -155,8 +156,9 @@ namespace Neo.Debugger
 		/// change this to whatever margin you want the bookmarks/breakpoints to show in
 		/// </summary>
 		private const int BOOKMARK_MARGIN = 2;
-        private const int BOOKMARK_MARKER = 2;
-        private const int BOOKMARK_BG = 3;
+        private const int BREAKPOINT_MARKER = 2;
+        private const int BREAKPOINT_BG = 3;
+        private const int STEP_BG = 4;
 
         /// <summary>
         /// change this to whatever margin you want the code folding tree (+/-) to show in
@@ -192,19 +194,22 @@ namespace Neo.Debugger
 			margin.Width = 20;
 			margin.Sensitive = true;
 			margin.Type = MarginType.Symbol;
-			margin.Mask = (1 << BOOKMARK_MARKER);
+			margin.Mask = (1 << BREAKPOINT_MARKER);
 			//margin.Cursor = MarginCursor.Arrow;
 
-			var marker = TextArea.Markers[BOOKMARK_MARKER];
+			var marker = TextArea.Markers[BREAKPOINT_MARKER];
 			marker.Symbol = MarkerSymbol.Circle;
 			marker.SetBackColor(IntToColor(0xFF003B));
 			marker.SetForeColor(IntToColor(0x000000));
 			marker.SetAlpha(100);
 
-            // Define a "breakpoint" marker (0) and background color marker (1)
-            marker = TextArea.Markers[BOOKMARK_BG];
+            marker = TextArea.Markers[BREAKPOINT_BG];
             marker.Symbol = MarkerSymbol.Background;
             marker.SetBackColor(Color.Red);
+
+            marker = TextArea.Markers[STEP_BG];
+            marker.Symbol = MarkerSymbol.Background;
+            marker.SetBackColor(Color.Yellow);
         }
 
         private void InitCodeFolding() {
@@ -245,16 +250,35 @@ namespace Neo.Debugger
 		private void TextArea_MarginClick(object sender, MarginClickEventArgs e) {
 			if (e.Margin == BOOKMARK_MARGIN) {
 				// Do we have a marker for this line?
-				const uint mask = (1 << BOOKMARK_MARKER);
+				const uint mask = (1 << BREAKPOINT_MARKER);
+
 				var line = TextArea.Lines[TextArea.LineFromPosition(e.Position)];
-				if ((line.MarkerGet() & mask) > 0) {
+                var ofs = ResolveOffset(line.Index);
+
+                if ((line.MarkerGet() & mask) > 0) {
 					// Remove existing bookmark
-					line.MarkerDelete(BOOKMARK_MARKER);
-				} else {
-					// Add bookmark
-					line.MarkerAdd(BOOKMARK_MARKER);
-				}
-			}
+					line.MarkerDelete(BREAKPOINT_MARKER);
+                    line.MarkerDelete(BREAKPOINT_BG);
+
+                    if (ofs >= 0) // should always be true
+                    {
+                        debugger.SetBreakpointState(ofs, false);
+                    }
+                }
+                else {
+                    
+                    // check if was possible to resolve this line to a valid offset in the script
+                    if (ofs >=0)
+                    {
+                        // Add bookmark
+                        line.MarkerAdd(BREAKPOINT_MARKER);
+                        line.MarkerAdd(BREAKPOINT_BG);
+
+                        // enable a breakpoint in the VM
+                        debugger.SetBreakpointState(ofs, true);
+                    }
+                }
+            }
 		}
 
 		#endregion
@@ -306,9 +330,6 @@ namespace Neo.Debugger
                 }
 
                 this.debugger = new NeoDebugger(bytes);
-
-                debugger.Step();
-
                 this.avm_asm = NeoDisassembler.Disassemble(bytes);
 
                 string content;
@@ -648,40 +669,57 @@ namespace Neo.Debugger
         private void ResetDebugger()
         {
             RemoveCurrentHighlight();
-            currentLine = ResolveLine(0);
+
+            /*currentLine = ResolveLine(0);
             if (currentLine > 0 )
             {
-                TextArea.Lines[currentLine].MarkerAdd(BOOKMARK_BG);
-            }
+                TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
+            }*/
+
+            shouldReset = false;
+
+            debugger.Reset();
         }
 
         private int ResolveLine(int ofs)
         {
-
-            if (map != null)
+            try
             {
-                try
+                if (map != null)
                 {
                     var line = map.ResolveLine(ofs);
                     return line - 1;
                 }
-                catch
-                {
-                    return -1;
-                }
-            }
-            else
-            {
-                try
+                else
                 {
                     var line = avm_asm.ResolveLine(ofs);
-                    return line - 1;
+                    return line + 1;
                 }
-                catch
-                {
-                    return -1;
-                }
+            }
+            catch
+            {
+                return -1;
+            }
+        }
 
+        private int ResolveOffset(int line)
+        {
+            try
+            {
+                if (map != null)
+                {
+                    var ofs = map.ResolveOffset(line + 1);
+                    return ofs;
+                }
+                else
+                {
+                    var ofs = avm_asm.ResolveOffset(line);
+                    return ofs;
+                }
+            }
+            catch
+            {
+                return -1;
             }
         }
 
@@ -689,32 +727,90 @@ namespace Neo.Debugger
         {
             if (currentLine > 0)
             {
-                TextArea.Lines[currentLine].MarkerDelete(BOOKMARK_BG);
+                TextArea.Lines[currentLine].MarkerDelete(STEP_BG);
             }
+        }
+
+        private void JumpToLine(int line)
+        {
+            if (line<0)
+            {
+                return;
+            }
+
+            var target = TextArea.Lines[line];
+            target.Goto();
+            target.EnsureVisible();
+            TextArea.FirstVisibleLine = line;
+        }
+
+        private bool shouldReset;
+
+        private int UpdateState(DebuggerState result)
+        {
+            int targetLine = ResolveLine(result.offset);
+
+            switch (result.state)
+            {
+                case DebuggerState.State.Finished:
+                    {
+                        shouldReset = true;
+                        RemoveCurrentHighlight();
+                        var val = debugger.GetResult().ToString();
+                        MessageBox.Show("Execution finished, result was " + val);
+                        break;
+                    }
+
+                case DebuggerState.State.Exception:
+                    {
+                        shouldReset = true;
+                        MessageBox.Show("Execution failed with an exception");
+                        JumpToLine(targetLine);
+                        break;
+                    }
+
+                case DebuggerState.State.Break:
+                    {
+                        MessageBox.Show("Execution hit an breakpoint");
+                        JumpToLine(targetLine);
+                        break;
+                    }
+            }
+
+            return targetLine;
+        }
+
+        private void RunDebugger()
+        {
+            if (shouldReset)
+            {
+                this.ResetDebugger();
+            }
+
+            var result = debugger.Run();
+            UpdateState(result);
         }
 
         private void StepDebugger()
         {
-            if (debugger.Finished)
+            if (shouldReset)
             {
-                return;
+                this.ResetDebugger();
             }
 
             int targetLine;
 
             do
             {
-                var ofs = debugger.Step();
+                var result = debugger.Step();
 
-                if (debugger.Finished)
+                targetLine = UpdateState(result);
+
+                if (shouldReset)
                 {
-                    RemoveCurrentHighlight();
-                    var result = debugger.GetResult().ToString();
-                    MessageBox.Show("Execution finished, result was "+result);
                     return;
                 }
 
-                targetLine = ResolveLine(ofs);
 
             } while (targetLine <= 0 || targetLine == currentLine);
 
@@ -723,7 +819,7 @@ namespace Neo.Debugger
 
                 RemoveCurrentHighlight();
                 currentLine = targetLine;
-                TextArea.Lines[currentLine].MarkerAdd(BOOKMARK_BG);
+                TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
             }
 
         }

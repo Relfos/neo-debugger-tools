@@ -8,13 +8,38 @@ using System;
 
 namespace Neo.Debugger
 {
+    public struct DebuggerState
+    {
+        public enum State
+        {
+            Running,
+            Finished,
+            Exception,
+            Break
+        }
+
+        public readonly State state;
+        public readonly int offset;
+
+        public DebuggerState(State state, int offset)
+        {
+            this.state = state;
+            this.offset = offset;
+        }
+    }
+
     public class NeoDebugger
     {
         private ExecutionEngine engine;
+        private byte[] contractBytes;
+        private InteropService interop;
+
+        private HashSet<int> breakpoints = new HashSet<int>();
 
         public NeoDebugger(byte[] contractBytes)
         {
-            var interop = new InteropService();
+            this.interop = new InteropService();
+            this.contractBytes = contractBytes;
 
             var assembly = typeof(Neo.Emulator.Helper).Assembly;
             var methods = assembly.GetTypes()
@@ -28,6 +53,22 @@ namespace Neo.Debugger
                 interop.Register(attr.Method, (engine) => { return (bool) method.Invoke(null, new object[] { engine }); });
             }
 
+            this.Reset();
+        }
+
+        public bool Finished { get; private set; }
+        private bool isReset;
+        private int lastOffset = -1;
+
+        public void Reset()
+        {
+            if (isReset)
+            {
+                return;
+            }
+
+            Finished = false;
+
             engine = new ExecutionEngine(null, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
 
@@ -37,27 +78,97 @@ namespace Neo.Debugger
                 engine.LoadScript(sb.ToArray());
             }
 
-            //engine.Execute(); // start execution
+            foreach (var pos in breakpoints)
+            {
+                engine.AddBreakPoint((uint)pos);
+            }
 
+            engine.Reset();
 
-            this.Reset();
+            isReset = true;
         }
 
-        public bool Finished { get; private set; }
-
-        public void Reset()
+        public void SetBreakpointState(int ofs, bool enabled)
         {
-            Finished = false;
-            engine.Reset();
+            if (enabled)
+            {
+                breakpoints.Add(ofs);
+            }
+            else
+            {
+                breakpoints.Remove(ofs);
+            }
+
+            try
+            {
+                if (enabled)
+                {
+                    engine.AddBreakPoint((uint)ofs);
+                }
+                else
+                {
+                    engine.RemoveBreakPoint((uint)ofs);
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         /// <summary>
-        /// returns current script offset
+        /// executes a single instruction in the current script, and returns the last script offset
         /// </summary>
-        public int Step()
+        public DebuggerState Step()
         {
-            Finished = !engine.ExecuteSingleStep();
-            return Finished ? 0 : engine.CurrentContext.InstructionPointer;
+            if (Finished)
+            {
+                return new DebuggerState(DebuggerState.State.Finished, lastOffset);
+            }
+
+            isReset = false;
+            engine.ExecuteSingleStep();
+
+            try
+            {
+                lastOffset = engine.CurrentContext.InstructionPointer;
+            }
+            catch
+            {
+                // failed to get instruction pointer
+            }
+
+            if (engine.State.HasFlag(VMState.FAULT))
+            {
+                return new DebuggerState(DebuggerState.State.Exception, lastOffset);
+            }
+
+            if (engine.State.HasFlag(VMState.BREAK))
+            {
+                return new DebuggerState(DebuggerState.State.Break, lastOffset);
+            }
+
+            if (engine.State.HasFlag(VMState.HALT))
+            {
+                Finished = true;
+                return new DebuggerState(DebuggerState.State.Finished, lastOffset);
+            }
+
+            return new DebuggerState(DebuggerState.State.Running, lastOffset);
+        }
+
+        /// <summary>
+        /// executes the script until it finishes, fails or hits a breakpoint
+        /// </summary>
+        public DebuggerState Run()
+        {
+            DebuggerState lastState;
+            do
+            {
+                lastState = Step();
+            } while (lastState.state == DebuggerState.State.Running);
+
+            return lastState;
         }
 
         public object GetResult()
@@ -65,5 +176,6 @@ namespace Neo.Debugger
             var result = engine.EvaluationStack.Peek();
             return result.GetString();
         }
+
     }
 }

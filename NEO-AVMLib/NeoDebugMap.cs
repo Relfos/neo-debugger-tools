@@ -11,6 +11,11 @@ namespace Neo.Tools.AVM
 
         public int startOfs;
         public int endOfs;
+
+        public override string ToString()
+        {
+            return "Line "+this.line+" at "+url;
+        }
     }
 
     public class NeoMapFile
@@ -41,7 +46,7 @@ namespace Neo.Tools.AVM
         }
 
         /// <summary>
-        /// Calculates the source code line that maps to the script offset.
+        /// Calculates the source code line that maps to the specificed script offset.
         /// </summary>
         public int ResolveLine(int ofs)
         {
@@ -55,6 +60,23 @@ namespace Neo.Tools.AVM
 
             throw new Exception("Offset cannot be mapped");
         }
+
+        /// <summary>
+        /// Calculates the script offset that maps to the specificed source code line 
+        /// </summary>
+        public int ResolveOffset(int line)
+        {
+            foreach (var entry in this.Entries)
+            {
+                if (entry.line == line)
+                {
+                    return entry.startOfs;
+                }
+            }
+
+            throw new Exception("Line cannot be mapped");
+        }
+
     }
 
 }
