@@ -748,12 +748,15 @@ namespace Neo.Debugger
             }
         }
 
-        private void RemoveCurrentHighlight()
+        private bool RemoveCurrentHighlight()
         {
             if (currentLine > 0)
             {
                 TextArea.Lines[currentLine].MarkerDelete(STEP_BG);
+                return true;
             }
+
+            return false;
         }
 
         private void JumpToLine(int line)
@@ -826,6 +829,11 @@ namespace Neo.Debugger
                     TextArea.Lines[line].MarkerAdd(BREAKPOINT_BG);
                     TextArea.Lines[line].MarkerAdd(BREAKPOINT_MARKER);
                 }
+            }
+
+            if (currentLine>0 && debugState.state != DebuggerState.State.Reset)
+            {
+                
             }
         }
 

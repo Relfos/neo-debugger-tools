@@ -12,6 +12,8 @@ namespace Neo.Debugger
     {
         public enum State
         {
+            Invalid,
+            Reset,
             Running,
             Finished,
             Exception,
@@ -37,6 +39,8 @@ namespace Neo.Debugger
         private HashSet<int> _breakpoints = new HashSet<int>();
         public IEnumerable<int> Breakpoints { get { return _breakpoints; } }
 
+        private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
+
         public NeoDebugger(byte[] contractBytes)
         {
             this.interop = new InteropService();
@@ -57,18 +61,14 @@ namespace Neo.Debugger
             this.Reset();
         }
 
-        public bool Finished { get; private set; }
-        private bool isReset;
         private int lastOffset = -1;
 
         public void Reset()
         {
-            if (isReset)
+            if (lastState.state == DebuggerState.State.Reset)
             {
                 return;
             }
-
-            Finished = false;
 
             engine = new ExecutionEngine(null, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
@@ -86,7 +86,7 @@ namespace Neo.Debugger
 
             engine.Reset();
 
-            isReset = true;
+            lastState = new DebuggerState(DebuggerState.State.Reset, 0);
         }
 
         public void SetBreakpointState(int ofs, bool enabled)
@@ -122,12 +122,11 @@ namespace Neo.Debugger
         /// </summary>
         public DebuggerState Step()
         {
-            if (Finished)
+            if (lastState.state == DebuggerState.State.Finished || lastState.state == DebuggerState.State.Invalid)
             {
-                return new DebuggerState(DebuggerState.State.Finished, lastOffset);
+                return lastState;
             }
 
-            isReset = false;
             engine.ExecuteSingleStep();
 
             try
@@ -141,21 +140,24 @@ namespace Neo.Debugger
 
             if (engine.State.HasFlag(VMState.FAULT))
             {
-                return new DebuggerState(DebuggerState.State.Exception, lastOffset);
+                lastState = new DebuggerState(DebuggerState.State.Exception, lastOffset);
+                return lastState;
             }
 
             if (engine.State.HasFlag(VMState.BREAK))
             {
-                return new DebuggerState(DebuggerState.State.Break, lastOffset);
+                lastState = new DebuggerState(DebuggerState.State.Break, lastOffset);
+                return lastState;
             }
 
             if (engine.State.HasFlag(VMState.HALT))
             {
-                Finished = true;
-                return new DebuggerState(DebuggerState.State.Finished, lastOffset);
+                lastState = new DebuggerState(DebuggerState.State.Finished, lastOffset);
+                return lastState;
             }
 
-            return new DebuggerState(DebuggerState.State.Running, lastOffset);
+            lastState = new DebuggerState(DebuggerState.State.Running, lastOffset);
+            return lastState;
         }
 
         /// <summary>
@@ -163,7 +165,6 @@ namespace Neo.Debugger
         /// </summary>
         public DebuggerState Run()
         {
-            DebuggerState lastState;
             do
             {
                 lastState = Step();
