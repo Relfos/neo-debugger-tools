@@ -2,6 +2,9 @@
 Suite of development tools for NEO smart contracts.
 Includes a cli disassembler and a GUI debugger. An helper library that helps loading .AVM files and create and load .neomap files is also included, and can be used to create other dev tools.
 
+![Debugger Screenshot](images/debugger.png)
+
+
 ## Features
 - Supports any NEO .AVM, regardless of the language / compiler used
 - Source viewer with syntax highlight powered by ScintillaNET
@@ -14,8 +17,6 @@ Includes a cli disassembler and a GUI debugger. An helper library that helps loa
 - Smart contract source is limited to a single file for now
 - Not possible yet to inspect variable values
 - Most NEO syscalls/APIs not supported yet (work in progress)
-
-![Debugger Screenshot](images/debugger.png)
 
 # How to use
 
