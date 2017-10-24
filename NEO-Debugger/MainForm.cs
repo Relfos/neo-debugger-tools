@@ -32,6 +32,8 @@ namespace Neo.Debugger
         private DebuggerState debugState;
         private Dictionary<DebugMode, string> debugContent = new Dictionary<DebugMode, string>();
 
+        public static string targetAVMPath;
+
         private void MainForm_Load(object sender, EventArgs e)
         {
 			// CREATE CONTROL
@@ -64,7 +66,7 @@ namespace Neo.Debugger
 
             // DEFAULT FILE
             //LoadDataFromFile("../../MainForm.cs");
-            LoadDataFromFile(@"D:\code\Phantasma\PhantasmaContract\bin\Debug\PhantasmaContract.avm");
+            LoadDataFromFile(targetAVMPath);
 
 			// INIT HOTKEYS
 			InitHotkeys();
@@ -324,6 +326,13 @@ namespace Neo.Debugger
 		}
 
         private void LoadDataFromFile(string path) {
+
+            if (string.IsNullOrEmpty(targetAVMPath))
+            {
+                MessageBox.Show("Could not load AVM file, maybe a path was not specified?");
+                return;
+            }
+
 			if (File.Exists(path)) {
 
                 var bytes = File.ReadAllBytes(path);
