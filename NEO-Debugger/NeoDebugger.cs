@@ -75,6 +75,7 @@ namespace Neo.Debugger
 
             using (ScriptBuilder sb = new ScriptBuilder())
             {
+                sb.EmitPush("");
                 sb.EmitPush("symbol");
                 engine.LoadScript(sb.ToArray());
             }
