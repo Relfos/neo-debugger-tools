@@ -4,6 +4,11 @@ Includes a cli disassembler and a GUI debugger. An helper library that helps loa
 
 ![Debugger Screenshot](images/debugger.png)
 
+## How this works
+1. A modified NEO compiler to compile C# into an .avm file and at same time emit a .neomap file.
+2. A debugger IDE will load the .avm and disassemble it into readable opcodes.
+3. The debugger IDE can also run or step through either the assembly code or the original source (if the .neomap file is present in same directory as the .avm)
+4. The debugger will also emulate the smart contracts API that interacts with the Blockchain (like Storage, Transactions, Blocks)
 
 ## Features
 - Supports any NEO .AVM, regardless of the language / compiler used
@@ -37,10 +42,17 @@ NEO smart contracts can be coded in many different languages, and in theory, thi
 However since only NeoN was modified to emit those map files during compilation, to add other languages it would be necessary to modify other compilers to emit a .neomap.
 The .neomap file format is simple, for each line you need to list a starting offset, ending offset, the source line and the corresponding source file, all values separated by a comma.
 
-## Roadmap
+# Roadmap
 - Customize smart contract arguments
 - Stack viewer
 - Storage emulation
 - Transactions emulation
 - Persistency of smart contract storage to disk
 - Debugger map generation for Java / Python / others
+
+# Credits and License #
+
+Created by Sérgio Flores (<http://lunarlabs.pt/>).
+Credits also go to the NEO team(<http://neo.org>), as a large part  of this work was based on their [NEO compiler](https://github.com/neo-project/neo-compiler) and [NEO VM](https://github.com/neo-project/neo-vm).
+
+This project is released under the MIT license,  see `LICENSE.md` for more details.
