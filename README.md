@@ -1,4 +1,4 @@
-# NEO-dev-tools
+# NEO-debugger-tools
 Suite of development tools for NEO smart contracts.
 Includes a cli disassembler and a GUI debugger. An helper library that helps loading .AVM files and create and load .neomap files is also included, and can be used to create other dev tools.
 
