@@ -337,26 +337,27 @@ namespace Neo.Debugger
 
                 var mapFileName = path.Replace(".avm", ".neomap");
 
+                debugMode = DebugMode.Assembly;
+
                 if (File.Exists(mapFileName))
                 {
                     map = new NeoMapFile();
                     map.LoadFromFile(mapFileName);
-                    debugMode = DebugMode.Source;
                 }
                 else
                 {
                     map = null;
-                    debugMode = DebugMode.Assembly;
                 }
 
                 this.debugger = new NeoDebugger(bytes);
                 this.avm_asm = NeoDisassembler.Disassemble(bytes);
 
 
-                if (map != null)
+                if (map != null && map.Entries.Any())
                 {
                     var srcFile = map.Entries.FirstOrDefault().url;
                     FileName.Text = srcFile;
+                    debugMode = DebugMode.Source;
                     debugContent[DebugMode.Source] = File.ReadAllText(srcFile);
                 }
 
