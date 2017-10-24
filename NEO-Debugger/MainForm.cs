@@ -65,7 +65,6 @@ namespace Neo.Debugger
 			InitDragDropFile();
 
             // DEFAULT FILE
-            //LoadDataFromFile("../../MainForm.cs");
             LoadDataFromFile(targetAVMPath);
 
 			// INIT HOTKEYS
@@ -327,9 +326,8 @@ namespace Neo.Debugger
 
         private void LoadDataFromFile(string path) {
 
-            if (string.IsNullOrEmpty(targetAVMPath))
+            if (string.IsNullOrEmpty(path))
             {
-                MessageBox.Show("Could not load AVM file, maybe a path was not specified?");
                 return;
             }
 
