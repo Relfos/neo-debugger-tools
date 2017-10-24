@@ -53,6 +53,8 @@ The .neomap file format is simple, for each line you need to list a starting off
 # Credits and License #
 
 Created by Sérgio Flores (<http://lunarlabs.pt/>).
+
+
 Credits also go to the NEO team(<http://neo.org>), as a large part  of this work was based on their [NEO compiler](https://github.com/neo-project/neo-compiler) and [NEO VM](https://github.com/neo-project/neo-vm).
 
 This project is released under the MIT license,  see `LICENSE.md` for more details.
