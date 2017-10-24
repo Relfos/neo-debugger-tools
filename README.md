@@ -15,6 +15,7 @@ Includes a cli disassembler and a GUI debugger. An helper library that helps loa
 - Not possible yet to inspect variable values
 - Most NEO syscalls/APIs not supported yet (work in progress)
 
+![Debugger Screenshot](images/debugger.png)
 
 # How to use
 
