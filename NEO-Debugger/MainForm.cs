@@ -409,6 +409,16 @@ namespace Neo.Debugger
 
         public static string OutputData(byte[] data)
         {
+            for (int i=0; i< data.Length; i++)
+            {
+                var c = (char)data[i];
+                var isValidText = char.IsLetterOrDigit(c) || char.IsPunctuation(c) || char.IsWhiteSpace(c);
+                if (!isValidText)
+                {
+                    return OutputHex(data);
+                }
+            }
+             
             return '"' + System.Text.Encoding.ASCII.GetString(data) + '"';
         }
 
