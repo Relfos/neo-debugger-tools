@@ -36,6 +36,16 @@ Currently the only way to generate a .neomap file is to compile the smart contra
 | F10 | Steps through the smart contract ||
 | F12 | Toggle between assembly and source  code | Only works when a .neomap file is available |
 
+## Smart Contract Inputs
+
+A single smart contract can have different results and behaviours depending on the inputs passed to it.
+
+So when debugging a contract it is necessary to be able to specify the inputs. Currently this is done via a contract.json that resides in the same folder as the debugger executable.
+
+This file can be edited to suit your needs, and the different inputs there will appear every time you use the debugger to execute the contract.
+
+![Inputs Screenshot](images/inputs.png)
+
 # Support for other languages
 
 NEO smart contracts can be coded in many different languages, and in theory, this compiler already supports any language as long as a .neomap file exists in the same directory as the .avm file.
