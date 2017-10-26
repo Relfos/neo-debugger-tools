@@ -6,3 +6,5 @@ NEO-VM/obj/
 NEO-Compiler/obj/
 .vs/
 NEO-AVMLib/obj/
+NEO-CLI-Disassembler/bin/
+NEO-CLI-Disassembler/obj/
