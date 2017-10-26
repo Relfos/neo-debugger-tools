@@ -367,7 +367,7 @@ namespace Neo.Debugger
                 TextArea.Text = debugContent[debugMode];
                 TextArea.ReadOnly = true;
 
-                ResetDebugger();
+                shouldReset = true;
             }
 		}
 
@@ -638,8 +638,19 @@ namespace Neo.Debugger
         #endregion
 
         #region DEBUGGER
-        private void ResetDebugger()
+        private RunForm runForm = new RunForm();
+
+        private bool ResetDebugger()
         {
+            runForm.debugger = this.debugger;
+
+            var result = runForm.ShowDialog();
+
+            if (result != DialogResult.OK)
+            {
+                return false;
+            }
+
             RemoveCurrentHighlight();
 
             /*currentLine = ResolveLine(0);
@@ -653,6 +664,8 @@ namespace Neo.Debugger
             shouldReset = false;
 
             debugger.Reset();
+
+            return true;
         }
 
         private int ResolveLine(int ofs)
@@ -805,7 +818,10 @@ namespace Neo.Debugger
         {
             if (shouldReset)
             {
-                this.ResetDebugger();
+                if (!this.ResetDebugger())
+                {
+                    return;
+                }
             }
 
             debugState = debugger.Run();
@@ -816,7 +832,10 @@ namespace Neo.Debugger
         {
             if (shouldReset)
             {
-                this.ResetDebugger();
+                if (!this.ResetDebugger())
+                {
+                    return;
+                }
             }
 
             int oldLine = currentLine;

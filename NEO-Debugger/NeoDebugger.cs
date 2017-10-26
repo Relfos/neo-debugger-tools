@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Neo.Emulator;
 using System;
+using System.Numerics;
 
 namespace Neo.Debugger
 {
@@ -57,11 +58,11 @@ namespace Neo.Debugger
                 var attr = (SyscallAttribute) method.GetCustomAttributes(typeof(SyscallAttribute), false).FirstOrDefault();
                 interop.Register(attr.Method, (engine) => { return (bool) method.Invoke(null, new object[] { engine }); });
             }
-
-            this.Reset();
         }
 
         private int lastOffset = -1;
+
+        public List<object> ContractArgs = new List<object>();
 
         public void Reset()
         {
@@ -75,8 +76,37 @@ namespace Neo.Debugger
 
             using (ScriptBuilder sb = new ScriptBuilder())
             {
-                sb.EmitPush("");
-                sb.EmitPush("symbol");
+                var items = new Stack<object>();
+                foreach (var item in ContractArgs)
+                {
+                    items.Push(item);
+                }
+
+                while (items.Count> 0)
+                {
+                    var item = items.Pop();
+
+                    if (item == null)
+                    {
+                        sb.EmitPush("");
+                    }
+                    else
+                    if (item is string)
+                    {
+                        sb.EmitPush((string)item);
+                    }
+                    else
+                    if (item is int)
+                    {
+                        BigInteger num = (int)item;
+                        sb.EmitPush(num);
+                    }
+                    else
+                    {
+                        throw new Exception("Unsupport contract param: " + item.ToString());
+                    }
+                }
+
                 engine.LoadScript(sb.ToArray());
             }
 
