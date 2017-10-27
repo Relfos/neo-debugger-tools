@@ -1,10 +1,14 @@
-﻿using Neo.VM;
+﻿using Neo.Tools.AVM;
+using Neo.VM;
+using System;
 using System.Diagnostics;
 
 namespace Neo.Emulator.API
 {
     public static class Runtime
     {
+        public static Action<string> OnLogMessage;
+
         [Syscall("Neo.Runtime.GetTrigger")]
         public static bool GetTrigger(ExecutionEngine engine)
         {
@@ -26,15 +30,41 @@ namespace Neo.Emulator.API
         public static bool Notify(ExecutionEngine engine)
         {
             //params object[] state
-            return false;
+            var something = engine.EvaluationStack.Pop();
+            if (something.IsArray)
+            {
+                var items = something.GetArray();
+                foreach (var item in items)
+                {
+                    LogItem(item);
+                }
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         [Syscall("Neo.Runtime.Log")]
         public static bool Log(ExecutionEngine engine)
         {
-            var msg = engine.EvaluationStack.Pop().GetString();
-            Debug.WriteLine(msg);
+            var msg = engine.EvaluationStack.Pop();
+            LogItem(msg);
             return true;
+        }
+
+        private static void LogItem(StackItem item)
+        {
+            var bytes = item.GetByteArray();
+            var msg = FormattingUtils.OutputData(bytes, false);
+
+            Debug.WriteLine(msg);
+
+            if (OnLogMessage != null)
+            {
+                OnLogMessage(msg);
+            }
         }
     }
 }

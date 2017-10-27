@@ -54,7 +54,7 @@ namespace Neo.Tools.AVM
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine(OutputLine("Offset", "Opcode", "Comment"));
+            sb.AppendLine(FormattingUtils.OutputLine("Offset", "Opcode", "Comment"));
             foreach (var entry in this.lines)
             {
                 string ofsStr = entry.startOfs.ToString();
@@ -65,50 +65,22 @@ namespace Neo.Tools.AVM
                 {
                     if (hintStr.Contains("$$"))
                     {
-                        hintStr = hintStr.Replace("$$", OutputData(entry.data));
+                        hintStr = hintStr.Replace("$$", FormattingUtils.OutputData(entry.data, true));
                     }
 
                     if (hintStr.Contains("$XX"))
                     {
-                        hintStr = hintStr.Replace("$XX", OutputHex(entry.data));
+                        hintStr = hintStr.Replace("$XX", FormattingUtils.OutputHex(entry.data));
                     }
 
                     hintStr = "// " + hintStr;
                 }
 
-                sb.AppendLine(OutputLine(ofsStr, opStr, hintStr));
+                sb.AppendLine(FormattingUtils.OutputLine(ofsStr, opStr, hintStr));
             }
 
             return sb.ToString();
         }
-
-        public static string OutputLine(string col1, string col2, string col3)
-        {
-            int colSize = 14;
-            return col1.PadRight(colSize) + col2.PadRight(colSize) + col3;
-        }
-
-        public static string OutputData(byte[] data)
-        {
-            for (int i = 0; i < data.Length; i++)
-            {
-                var c = (char)data[i];
-                var isValidText = char.IsLetterOrDigit(c) || char.IsPunctuation(c) || char.IsWhiteSpace(c);
-                if (!isValidText)
-                {
-                    return OutputHex(data);
-                }
-            }
-
-            return '"' + System.Text.Encoding.ASCII.GetString(data) + '"';
-        }
-
-        public static string OutputHex(byte[] data)
-        {
-            string hex = BitConverter.ToString(data);
-            return hex;
-        }
-
     }
 
     public static class NeoDisassembler

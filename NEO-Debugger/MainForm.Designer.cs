@@ -71,19 +71,20 @@
             this.BtnCloseSearch = new System.Windows.Forms.Button();
             this.TxtSearch = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.logView = new System.Windows.Forms.RichTextBox();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextPanel
             // 
-            this.TextPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TextPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextPanel.Location = new System.Drawing.Point(8, 95);
             this.TextPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.TextPanel.Name = "TextPanel";
-            this.TextPanel.Size = new System.Drawing.Size(744, 519);
+            this.TextPanel.Size = new System.Drawing.Size(749, 377);
             this.TextPanel.TabIndex = 0;
             // 
             // FileName
@@ -438,7 +439,7 @@
             // 
             // TxtSearch
             // 
-            this.TxtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.TxtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TxtSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TxtSearch.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -456,12 +457,22 @@
             this.openFileDialog.FileName = "New File";
             this.openFileDialog.Filter = "All files|*.*";
             // 
+            // logView
+            // 
+            this.logView.Location = new System.Drawing.Point(8, 479);
+            this.logView.Name = "logView";
+            this.logView.ReadOnly = true;
+            this.logView.Size = new System.Drawing.Size(749, 137);
+            this.logView.TabIndex = 11;
+            this.logView.Text = "";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(769, 628);
+            this.Controls.Add(this.logView);
             this.Controls.Add(this.PanelSearch);
             this.Controls.Add(this.FileName);
             this.Controls.Add(this.TextPanel);
@@ -474,6 +485,7 @@
             this.Text = "NEO debugger";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.PanelSearch.ResumeLayout(false);
@@ -528,6 +540,7 @@
         private System.Windows.Forms.ToolStripMenuItem findDialogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem indentGuidesItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.RichTextBox logView;
     }
 }
 

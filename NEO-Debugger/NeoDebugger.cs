@@ -35,6 +35,7 @@ namespace Neo.Debugger
     {
         private ExecutionEngine engine;
         private byte[] contractBytes;
+
         private InteropService interop;
 
         private HashSet<int> _breakpoints = new HashSet<int>();

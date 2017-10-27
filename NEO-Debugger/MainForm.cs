@@ -23,6 +23,8 @@ namespace Neo.Debugger
         }
 
 		private Scintilla TextArea;
+        private bool showLog = true;
+
         private NeoDebugger debugger;
         private AVMDisassemble avm_asm;
         private int currentLine = -1;
@@ -69,9 +71,16 @@ namespace Neo.Debugger
 
 			// INIT HOTKEYS
 			InitHotkeys();
+
+            SetupEmulator();
 		}
 
-		private void InitColors() {
+        private void SetupEmulator()
+        {
+            Emulator.API.Runtime.OnLogMessage = this.SendLogToPanel;
+        }
+
+        private void InitColors() {
 
 			TextArea.SetSelectionBackColor(true, IntToColor(0x114D9C));
 
@@ -351,7 +360,6 @@ namespace Neo.Debugger
 
                 this.debugger = new NeoDebugger(bytes);
                 this.avm_asm = NeoDisassembler.Disassemble(bytes);
-
 
                 if (map != null && map.Entries.Any())
                 {
@@ -887,9 +895,30 @@ namespace Neo.Debugger
             }
         }
 
+
+
         #endregion
 
+        #region LOG PANEL
+        public void SendLogToPanel(string s)
+        {
+            logView.Text += s + "\n";
+        }
 
+        public void ClearLog()
+        {
+            logView.Text = "";
+        }
 
+        #endregion
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (showLog)
+            {
+                logView.Width = this.ClientSize.Width - (logView.Left * 2);
+                logView.Top = this.ClientSize.Height - (logView.Left + logView.Height);
+            }
+        }
     }
 }

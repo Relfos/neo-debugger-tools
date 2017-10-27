@@ -44,6 +44,7 @@
     <Compile Include="NeoDebugMap.cs" />
     <Compile Include="NeoDisassembler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NEO-VM\NEO-VM.csproj">
