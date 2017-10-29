@@ -119,6 +119,11 @@ Note that the "name" field here can be anything, it is just used to display in t
 
 ![Inputs Screenshot](images/inputs.png)
 
+### Storage Emulation
+
+The debugger supports emulation of the Storage API, meaning Storage.Put and Storage.Get work fine when debugging. 
+
+The actual data is stored in a file with extension `.store`, in same folder as the `.avm`. If required to reset the smart contract storage, it's fine to delete this file.
 
 ## Support for Other Languages
 
@@ -128,11 +133,7 @@ The `.neomap` file format is simple; for each line you need to list a starting o
 
 
 ## Roadmap
-- Customize smart contract arguments
-- Stack viewer
-- Storage emulation
 - Transactions emulation
-- Persistency of smart contract storage to disk
 - Debugger map generation for Java / Python / others
 
 
