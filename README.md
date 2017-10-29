@@ -66,9 +66,56 @@ Currently the only way to generate a `.neomap` file is to compile the smart cont
 
 A single smart contract can have different results and behaviours, depending on the inputs passed to it.
 
-So, when debugging a contract, it is necessary to be able to specify the inputs. Currently this is done via a `contract.json` that resides in the same folder as the debugger executable.
+So, when debugging a contract, it is necessary to be able to specify the inputs. Currently this is done via a `.json` file that resides in the same folder as the debugger executable.
 
-This file can be edited to suit your needs, and the different inputs there will appear every time you use the debugger to execute the contract.
+This file should have the same name as the `.avm` file. 
+
+Here's a example contract that takes a string and array of objects as argument.
+
+```c#
+using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Services.Neo;
+using System;
+using System.Numerics;
+
+namespace Example {
+    public class Calculator : SmartContract {
+        public static int Main(string operation, params object[] args) {
+            int arg0 = (int)args[0];
+            int arg1 = (int)args[1];
+
+            if (operation == "add") { return arg0 + arg1; }
+            if (operation == "sub") { return arg0 - arg1; }
+
+            return -1;
+        }
+    }
+}
+```
+
+And here is how to define inputs for it via the `.json` file.
+
+```javascript
+{
+	"contract": {
+		"params": "0710",
+		"inputs": [
+			{
+				"name": "add(5,3)",
+				"params": ["add", [5, 3]]
+			},
+			{
+				"name": "sub(7,2)",
+				"params": ["sub", [7, 2]]
+			},
+		]				
+	}
+}
+```
+
+The different inputs in this file will appear in the debugger when you execute the contract.
+
+Note that the "name" field here can be anything, it is just used to display in the debugger GUI.
 
 ![Inputs Screenshot](images/inputs.png)
 
