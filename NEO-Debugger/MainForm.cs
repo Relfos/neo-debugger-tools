@@ -357,7 +357,6 @@ namespace Neo.Debugger
 
         private void LoadDataFromFile(string path)
         {
-
             if (string.IsNullOrEmpty(path))
             {
                 return;
@@ -365,6 +364,7 @@ namespace Neo.Debugger
 
             if (File.Exists(path))
             {
+                MainForm.targetAVMPath = path;
 
                 var bytes = File.ReadAllBytes(path);
 
@@ -416,7 +416,7 @@ namespace Neo.Debugger
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
+            {                
                 LoadDataFromFile(openFileDialog.FileName);
             }
         }
