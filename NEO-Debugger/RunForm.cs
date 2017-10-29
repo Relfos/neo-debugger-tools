@@ -49,17 +49,42 @@ namespace Neo.Debugger
             foreach (var item in items.Children)
             {
                 // TODO - auto convert value to proper types, currently everything is assumed to be strings!
-                debugger.ContractArgs.Add(item.Value);
+
+                var obj = ConvertArgument(item);
+                debugger.ContractArgs.Add(obj);
+            }
+        }
+
+        private object ConvertArgument(DataNode item)
+        {
+            if (item.HasChildren)
+            {
+                var list = new List<object>();
+                foreach (var child in item.Children)
+                {
+                    list.Add(ConvertArgument(child));
+                }
+                return list;
+            }
+
+            int intVal;
+            if (int.TryParse(item.Value, out intVal))
+            {
+                return intVal;
+            }
+            else
+            {
+                return item.Value;
             }
         }
 
         private static Dictionary<string, DataNode> _paramMap = null;
 
         private void RunForm_Shown(object sender, EventArgs e)
-        {
-            if (_paramMap == null)
+        { 
+            if (_paramMap == null && !string.IsNullOrEmpty(MainForm.targetAVMPath))
             {
-                var fileName = "contract.json";
+                var fileName = MainForm.targetAVMPath.Replace(".avm", ".json");
                 if (File.Exists(fileName))
                 {
                     try

@@ -65,6 +65,50 @@ namespace Neo.Debugger
 
         public List<object> ContractArgs = new List<object>();
 
+        private static void EmitObject(ScriptBuilder sb, object item)
+        {
+            if (item is List<object>)
+            {
+                var list = (List<object>)item;
+                sb.Emit((OpCode)((int)OpCode.PUSHT + list.Count - 1));
+                sb.Emit(OpCode.NEWARRAY);
+
+                for (int index = 0; index < list.Count; index++)
+                {
+                    sb.Emit(OpCode.DUP); // duplicates array reference into top of stack
+                    sb.EmitPush(new BigInteger(index));
+                    EmitObject(sb, list[index]);
+                    sb.Emit(OpCode.SETITEM);
+                }
+            }
+            else
+            if (item == null)
+            {
+                sb.EmitPush("");
+            }
+            else
+            if (item is string)
+            {
+                sb.EmitPush((string)item);
+            }
+            else
+            if (item is int)
+            {
+                BigInteger num = new BigInteger((int)item);
+                sb.EmitPush(num);
+            }
+            else
+            if (item is decimal)
+            {
+                BigInteger num = new BigInteger((decimal)item);
+                sb.EmitPush(num);
+            }
+            else
+            {
+                throw new Exception("Unsupport contract param: " + item.ToString());
+            }
+        }
+
         public void Reset()
         {
             if (lastState.state == DebuggerState.State.Reset)
@@ -86,26 +130,7 @@ namespace Neo.Debugger
                 while (items.Count> 0)
                 {
                     var item = items.Pop();
-
-                    if (item == null)
-                    {
-                        sb.EmitPush("");
-                    }
-                    else
-                    if (item is string)
-                    {
-                        sb.EmitPush((string)item);
-                    }
-                    else
-                    if (item is int)
-                    {
-                        BigInteger num = (int)item;
-                        sb.EmitPush(num);
-                    }
-                    else
-                    {
-                        throw new Exception("Unsupport contract param: " + item.ToString());
-                    }
+                    EmitObject(sb, item);
                 }
 
                 engine.LoadScript(sb.ToArray());
@@ -205,11 +230,15 @@ namespace Neo.Debugger
             return lastState;
         }
 
-        public object GetResult()
+        public StackItem GetResult()
         {
             var result = engine.EvaluationStack.Peek();
-            return result.GetString();
+            return result;
         }
 
+        public IEnumerable<StackItem> GetStack()
+        {
+            return engine.EvaluationStack;
+        }
     }
 }

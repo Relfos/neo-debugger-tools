@@ -72,6 +72,9 @@
             this.TxtSearch = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.logView = new System.Windows.Forms.RichTextBox();
+            this.logLabel = new System.Windows.Forms.Label();
+            this.stackPanel = new System.Windows.Forms.RichTextBox();
+            this.stackLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -459,12 +462,39 @@
             // 
             // logView
             // 
-            this.logView.Location = new System.Drawing.Point(8, 479);
+            this.logView.Location = new System.Drawing.Point(8, 495);
             this.logView.Name = "logView";
             this.logView.ReadOnly = true;
-            this.logView.Size = new System.Drawing.Size(749, 137);
+            this.logView.Size = new System.Drawing.Size(361, 121);
             this.logView.TabIndex = 11;
             this.logView.Text = "";
+            // 
+            // logLabel
+            // 
+            this.logLabel.AutoSize = true;
+            this.logLabel.Location = new System.Drawing.Point(5, 477);
+            this.logLabel.Name = "logLabel";
+            this.logLabel.Size = new System.Drawing.Size(27, 15);
+            this.logLabel.TabIndex = 12;
+            this.logLabel.Text = "Log";
+            // 
+            // stackPanel
+            // 
+            this.stackPanel.Location = new System.Drawing.Point(375, 495);
+            this.stackPanel.Name = "stackPanel";
+            this.stackPanel.ReadOnly = true;
+            this.stackPanel.Size = new System.Drawing.Size(361, 121);
+            this.stackPanel.TabIndex = 13;
+            this.stackPanel.Text = "";
+            // 
+            // stackLabel
+            // 
+            this.stackLabel.AutoSize = true;
+            this.stackLabel.Location = new System.Drawing.Point(372, 476);
+            this.stackLabel.Name = "stackLabel";
+            this.stackLabel.Size = new System.Drawing.Size(35, 15);
+            this.stackLabel.TabIndex = 14;
+            this.stackLabel.Text = "Stack";
             // 
             // MainForm
             // 
@@ -472,6 +502,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(769, 628);
+            this.Controls.Add(this.stackLabel);
+            this.Controls.Add(this.stackPanel);
+            this.Controls.Add(this.logLabel);
             this.Controls.Add(this.logView);
             this.Controls.Add(this.PanelSearch);
             this.Controls.Add(this.FileName);
@@ -541,6 +574,9 @@
         private System.Windows.Forms.ToolStripMenuItem indentGuidesItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.RichTextBox logView;
+        private System.Windows.Forms.Label logLabel;
+        private System.Windows.Forms.RichTextBox stackPanel;
+        private System.Windows.Forms.Label stackLabel;
     }
 }
 

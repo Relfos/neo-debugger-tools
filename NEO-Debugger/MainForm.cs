@@ -8,6 +8,7 @@ using Neo.Debugger.Utils;
 using System.Text;
 using System.Collections.Generic;
 using Neo.Tools.AVM;
+using Neo.VM;
 
 namespace Neo.Debugger
 {
@@ -673,6 +674,9 @@ namespace Neo.Debugger
 
             debugger.Reset();
 
+            logView.Clear();
+            stackPanel.Clear();
+
             return true;
         }
 
@@ -769,8 +773,8 @@ namespace Neo.Debugger
                     {
                         shouldReset = true;
                         RemoveCurrentHighlight();
-                        var val = debugger.GetResult().ToString();
-                        MessageBox.Show("Execution finished, result was " + val);
+                        var val = debugger.GetResult();
+                        MessageBox.Show("Execution finished, result was " + StackItemAsString(val));
                         break;
                     }
 
@@ -863,6 +867,8 @@ namespace Neo.Debugger
 
             } while (currentLine <= 0 || oldLine == currentLine);
 
+            UpdateStackPanel();
+
             var targetLine = TextArea.Lines[currentLine];
             targetLine.EnsureVisible();
 
@@ -899,7 +905,7 @@ namespace Neo.Debugger
 
         #endregion
 
-        #region LOG PANEL
+        #region DEBUG PANELS
         public void SendLogToPanel(string s)
         {
             logView.Text += s + "\n";
@@ -910,14 +916,75 @@ namespace Neo.Debugger
             logView.Text = "";
         }
 
+        private void UpdateStackPanel()
+        {
+            var sb = new StringBuilder();
+
+            var items = debugger.GetStack();
+
+            foreach (var item in items)
+            {
+                string s = StackItemAsString(item);               
+                sb.AppendLine(s);
+            }
+
+            stackPanel.Text = sb.ToString();
+        }
+
+        private static string  StackItemAsString(StackItem item)
+        {
+            if (item.IsArray)
+            {
+                var s = new StringBuilder();
+                var items = item.GetArray();
+
+                s.Append('[');
+                for (int i=0; i<items.Length; i++)
+                {
+                    var element = items[i];
+                    if (i>0)
+                    {
+                        s.Append(',');
+                    }
+                    s.Append(StackItemAsString(element));
+                }
+                s.Append(']');
+                return s.ToString();
+            }
+
+            if (item is Neo.VM.Types.Boolean)
+            {
+                return item.GetBoolean().ToString();
+            }
+
+            if (item is Neo.VM.Types.Integer)
+            {
+                return item.GetBigInteger().ToString();
+            }
+
+            if (item is Neo.VM.Types.InteropInterface)
+            {
+                return "{InteropInterface}";
+            }
+
+            return FormattingUtils.OutputData(item.GetByteArray(), false);
+
+        }
         #endregion
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (showLog)
             {
-                logView.Width = this.ClientSize.Width - (logView.Left * 2);
+                logView.Width = (this.ClientSize.Width / 2) - (logView.Left * 2);
                 logView.Top = this.ClientSize.Height - (logView.Left + logView.Height);
+                logLabel.Top = logView.Top - 18;
+
+                stackPanel.Width = logView.Width;
+                stackPanel.Left = logView.Left + logView.Width + logView.Left;
+                stackPanel.Top = logView.Top;
+                stackLabel.Left = stackPanel.Left;
+                stackLabel.Top = logLabel.Top;
             }
         }
     }
