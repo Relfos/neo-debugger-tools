@@ -13,7 +13,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Storage.Get")]
+        [Syscall("Neo.Storage.Get", 0.1)]
         public static bool Get(ExecutionEngine engine)
         {
             //StorageContext context, byte[] key
@@ -24,7 +24,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Storage.Put")]
+        [Syscall("Neo.Storage.Put", 1)]
         public static bool Put(ExecutionEngine engine)
         {
             //StorageContext context, byte[] key, byte[] value

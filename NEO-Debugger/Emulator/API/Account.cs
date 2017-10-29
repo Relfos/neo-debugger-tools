@@ -19,7 +19,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Account.SetVotes")]
+        [Syscall("Neo.Account.SetVotes", 1)]
         public static bool SetVotes(ExecutionEngine engine)
         {
             //byte[][] 

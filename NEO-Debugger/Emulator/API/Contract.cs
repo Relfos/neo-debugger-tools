@@ -21,7 +21,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Contract.Create")]
+        [Syscall("Neo.Contract.Create", 500)]
         public static bool Create(ExecutionEngine engine)
         {
             //byte[] script, byte[] parameter_list, byte return_type, bool need_storage, string name, string version, string author, string email, string description
@@ -29,7 +29,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Contract.Migrate")]
+        [Syscall("Neo.Contract.Migrate", 500)]
         public static bool Migrate(ExecutionEngine engine)
         {
             //byte[] script, byte[] parameter_list, byte return_type, bool need_storage, string name, string version, string author, string email, string description

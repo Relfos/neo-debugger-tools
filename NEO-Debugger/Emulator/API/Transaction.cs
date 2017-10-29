@@ -45,7 +45,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Transaction.GetReferences")]
+        [Syscall("Neo.Transaction.GetReferences", 0.2)]
         public static bool GetReferences(ExecutionEngine engine)
         {
             //Transaction

@@ -12,7 +12,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetHeader")]
+        [Syscall("Neo.Blockchain.GetHeader", 0.1)]
         public static bool GetHeader(ExecutionEngine engine)
         {
             //byte[] hash
@@ -22,7 +22,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetBlock")]
+        [Syscall("Neo.Blockchain.GetBlock", 0.2)]
         public static bool GetBlock(ExecutionEngine engine)
         {
             //uint height
@@ -32,7 +32,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetTransaction")]
+        [Syscall("Neo.Blockchain.GetTransaction", 0.1)]
         public static bool GetTransaction(ExecutionEngine engine)
         {
             //byte[] hash
@@ -40,7 +40,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetAccount")]
+        [Syscall("Neo.Blockchain.GetAccount", 0.1)]
         public static bool GetAccount(ExecutionEngine engine)
         {
             //byte[] script_hash
@@ -48,14 +48,14 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetValidators")]
+        [Syscall("Neo.Blockchain.GetValidators", 0.2)]
         public static bool GetValidators(ExecutionEngine engine)
         {
             //returns byte[][]
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetAsset")]
+        [Syscall("Neo.Blockchain.GetAsset", 0.1)]
         public static bool GetAsset(ExecutionEngine engine)
         {
             //byte[] asset_id
@@ -63,7 +63,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Blockchain.GetContract")]
+        [Syscall("Neo.Blockchain.GetContract", 0.1)]
         public static bool GetContract(ExecutionEngine engine)
         {
             //byte[] script_hash

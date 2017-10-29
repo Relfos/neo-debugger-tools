@@ -18,7 +18,7 @@ namespace Neo.Emulator.API
             return true;
         }
 
-        [Syscall("Neo.Runtime.CheckWitness")]
+        [Syscall("Neo.Runtime.CheckWitness", 0.2)]
         public static bool CheckWitness(ExecutionEngine engine)
         {
             //byte[] hashOrPubkey

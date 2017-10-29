@@ -26,7 +26,6 @@ namespace Neo.Debugger
         }
 
         private Scintilla TextArea;
-        private bool showLog = true;
 
         private NeoDebugger debugger;
         private AVMDisassemble avm_asm;
@@ -753,6 +752,8 @@ namespace Neo.Debugger
             logView.Clear();
             stackPanel.Clear();
 
+            UpdateGasCost();
+
             return true;
         }
 
@@ -850,7 +851,7 @@ namespace Neo.Debugger
                         shouldReset = true;
                         RemoveCurrentHighlight();
                         var val = debugger.GetResult();
-                        MessageBox.Show("Execution finished, result was " + StackItemAsString(val));
+                        MessageBox.Show("Execution finished.\nGAS cost: " + debugger.GetUsedGas()+"\nResult: " + StackItemAsString(val));
                         break;
                     }
 
@@ -961,6 +962,7 @@ namespace Neo.Debugger
             } while (currentLine <= 0 || oldLine == currentLine);
 
             UpdateStackPanel();
+            UpdateGasCost();
 
             var targetLine = TextArea.Lines[currentLine];
             targetLine.EnsureVisible();
@@ -994,8 +996,6 @@ namespace Neo.Debugger
             }
         }
 
-
-
         #endregion
 
         #region DEBUG PANELS
@@ -1022,6 +1022,12 @@ namespace Neo.Debugger
             }
 
             stackPanel.Text = sb.ToString();
+        }
+
+        private void UpdateGasCost()
+        {
+            gasCostLabel.Visible = true;
+            gasCostLabel.Text = "GAS used: "+ debugger.GetUsedGas();
         }
 
         private static string StackItemAsString(StackItem item)
@@ -1067,18 +1073,19 @@ namespace Neo.Debugger
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            if (showLog)
-            {
-                logView.Width = (this.ClientSize.Width / 2) - (logView.Left * 2);
-                logView.Top = this.ClientSize.Height - (logView.Left + logView.Height);
-                logLabel.Top = logView.Top - 18;
+            var padding = 18;
 
-                stackPanel.Width = logView.Width;
-                stackPanel.Left = logView.Left + logView.Width + logView.Left;
-                stackPanel.Top = logView.Top;
-                stackLabel.Left = stackPanel.Left;
-                stackLabel.Top = logLabel.Top;
-            }
+            logView.Width = (this.ClientSize.Width / 2) - (padding * 2);
+            logView.Top = this.ClientSize.Height - (padding + logView.Height);
+            logLabel.Top = logView.Top - 18;
+
+            stackPanel.Width = logView.Width + padding * 2;
+            stackPanel.Left = padding + logView.Width;
+            stackPanel.Top = logView.Top;
+            stackLabel.Left = stackPanel.Left;
+            stackLabel.Top = logLabel.Top;
+
+            gasCostLabel.Left = this.ClientSize.Width - 105;
         }
 
         #region DEBUG MENU

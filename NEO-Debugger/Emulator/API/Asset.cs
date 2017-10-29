@@ -69,7 +69,7 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
-        [Syscall("Neo.Asset.Create")]
+        [Syscall("Neo.Asset.Create", 5000)]
         public static bool Create(ExecutionEngine engine)
         {
             //byte asset_type, string name, long amount, byte precision, byte[] owner, byte[] admin, byte[] issuer
@@ -78,7 +78,7 @@ namespace Neo.Emulator.API
 
         }
 
-        [Syscall("Neo.Asset.Renew")]
+        [Syscall("Neo.Asset.Renew", 5000)]
         public static bool Renew(ExecutionEngine engine)
         {
             //byte years

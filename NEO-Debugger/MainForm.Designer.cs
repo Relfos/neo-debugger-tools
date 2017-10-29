@@ -65,6 +65,13 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.collapseAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.originalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.assemblyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PanelSearch = new System.Windows.Forms.Panel();
             this.BtnNextSearch = new System.Windows.Forms.Button();
             this.BtnPrevSearch = new System.Windows.Forms.Button();
@@ -75,13 +82,7 @@
             this.logLabel = new System.Windows.Forms.Label();
             this.stackPanel = new System.Windows.Forms.RichTextBox();
             this.stackLabel = new System.Windows.Forms.Label();
-            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.stepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.originalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.assemblyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gasCostLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -388,6 +389,61 @@
             this.expandAllToolStripMenuItem.Text = "Expand All";
             this.expandAllToolStripMenuItem.Click += new System.EventHandler(this.expandAllToolStripMenuItem_Click);
             // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.runToolStripMenuItem,
+            this.stepToolStripMenuItem,
+            this.resetToolStripMenuItem,
+            this.sourceToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(62, 23);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // runToolStripMenuItem
+            // 
+            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.runToolStripMenuItem.Text = "Run";
+            this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
+            // 
+            // stepToolStripMenuItem
+            // 
+            this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
+            this.stepToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.stepToolStripMenuItem.Text = "Step";
+            this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
+            // 
+            // resetToolStripMenuItem
+            // 
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.resetToolStripMenuItem.Text = "Reset";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            // 
+            // sourceToolStripMenuItem
+            // 
+            this.sourceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.originalToolStripMenuItem,
+            this.assemblyToolStripMenuItem});
+            this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
+            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.sourceToolStripMenuItem.Text = "Source";
+            // 
+            // originalToolStripMenuItem
+            // 
+            this.originalToolStripMenuItem.Name = "originalToolStripMenuItem";
+            this.originalToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
+            this.originalToolStripMenuItem.Text = "Original";
+            this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
+            // 
+            // assemblyToolStripMenuItem
+            // 
+            this.assemblyToolStripMenuItem.Name = "assemblyToolStripMenuItem";
+            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
+            this.assemblyToolStripMenuItem.Text = "Assembly";
+            this.assemblyToolStripMenuItem.Click += new System.EventHandler(this.assemblyToolStripMenuItem_Click);
+            // 
             // PanelSearch
             // 
             this.PanelSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -504,60 +560,17 @@
             this.stackLabel.TabIndex = 14;
             this.stackLabel.Text = "Stack";
             // 
-            // debugToolStripMenuItem
+            // gasCostLabel
             // 
-            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runToolStripMenuItem,
-            this.stepToolStripMenuItem,
-            this.resetToolStripMenuItem,
-            this.sourceToolStripMenuItem});
-            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
-            this.debugToolStripMenuItem.Size = new System.Drawing.Size(62, 23);
-            this.debugToolStripMenuItem.Text = "Debug";
-            // 
-            // runToolStripMenuItem
-            // 
-            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.runToolStripMenuItem.Text = "Run";
-            this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
-            // 
-            // stepToolStripMenuItem
-            // 
-            this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
-            this.stepToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.stepToolStripMenuItem.Text = "Step";
-            this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
-            // 
-            // resetToolStripMenuItem
-            // 
-            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.resetToolStripMenuItem.Text = "Reset";
-            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
-            // 
-            // sourceToolStripMenuItem
-            // 
-            this.sourceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.originalToolStripMenuItem,
-            this.assemblyToolStripMenuItem});
-            this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
-            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.sourceToolStripMenuItem.Text = "Source";
-            // 
-            // originalToolStripMenuItem
-            // 
-            this.originalToolStripMenuItem.Name = "originalToolStripMenuItem";
-            this.originalToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.originalToolStripMenuItem.Text = "Original";
-            this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
-            // 
-            // assemblyToolStripMenuItem
-            // 
-            this.assemblyToolStripMenuItem.Name = "assemblyToolStripMenuItem";
-            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
-            this.assemblyToolStripMenuItem.Text = "Assembly";
-            this.assemblyToolStripMenuItem.Click += new System.EventHandler(this.assemblyToolStripMenuItem_Click);
+            this.gasCostLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gasCostLabel.AutoSize = true;
+            this.gasCostLabel.Location = new System.Drawing.Point(730, 45);
+            this.gasCostLabel.Name = "gasCostLabel";
+            this.gasCostLabel.Size = new System.Drawing.Size(27, 15);
+            this.gasCostLabel.TabIndex = 15;
+            this.gasCostLabel.Text = "Log";
+            this.gasCostLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.gasCostLabel.Visible = false;
             // 
             // MainForm
             // 
@@ -565,6 +578,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(769, 628);
+            this.Controls.Add(this.gasCostLabel);
             this.Controls.Add(this.stackLabel);
             this.Controls.Add(this.stackPanel);
             this.Controls.Add(this.logLabel);
@@ -647,6 +661,7 @@
         private System.Windows.Forms.ToolStripMenuItem sourceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem originalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem assemblyToolStripMenuItem;
+        private System.Windows.Forms.Label gasCostLabel;
     }
 }
 

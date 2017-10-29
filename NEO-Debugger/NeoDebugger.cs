@@ -43,6 +43,8 @@ namespace Neo.Debugger
 
         private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
 
+        private double _usedGas;
+
         public NeoDebugger(byte[] contractBytes)
         {
             this.interop = new InteropService();
@@ -57,7 +59,8 @@ namespace Neo.Debugger
             foreach (var method in methods)
             {
                 var attr = (SyscallAttribute) method.GetCustomAttributes(typeof(SyscallAttribute), false).FirstOrDefault();
-                interop.Register(attr.Method, (engine) => { return (bool) method.Invoke(null, new object[] { engine }); });
+
+                interop.Register(attr.Method, (engine) => { return (bool) method.Invoke(null, new object[] { engine }); }, attr.gasCost);
             }
         }
 
@@ -115,6 +118,8 @@ namespace Neo.Debugger
             {
                 return;
             }
+
+            _usedGas = 0;
 
             engine = new ExecutionEngine(null, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
@@ -189,6 +194,40 @@ namespace Neo.Debugger
             try
             {
                 lastOffset = engine.CurrentContext.InstructionPointer;
+
+                var opcode = engine.lastOpcode;
+                double opCost;
+
+                if (opcode <= OpCode.PUSH16)
+                {
+                    opCost = 0;
+                }
+                else
+                switch (opcode)
+                {
+                        case OpCode.SYSCALL:
+                            {
+                                var callInfo = interop.FindCall(engine.lastSysCall);
+                                opCost = (callInfo != null) ? callInfo.gasCost : 0;
+                                break;
+                            }
+
+                    case OpCode.CHECKMULTISIG: 
+                    case OpCode.CHECKSIG: opCost = 0.1; break;
+
+                    case OpCode.APPCALL:
+                    case OpCode.TAILCALL:
+                    case OpCode.SHA256:
+                    case OpCode.SHA1: opCost = 0.01; break;
+
+                    case OpCode.HASH256:
+                    case OpCode.HASH160: opCost = 0.02; break;
+
+                    case OpCode.NOP: opCost = 0; break;
+                    default: opCost = 0.001; break;
+                }
+
+                _usedGas += opCost;
             }
             catch
             {
@@ -239,6 +278,11 @@ namespace Neo.Debugger
         public IEnumerable<StackItem> GetStack()
         {
             return engine.EvaluationStack;
+        }
+
+        public double GetUsedGas()
+        {
+            return _usedGas;
         }
     }
 }
