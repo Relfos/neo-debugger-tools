@@ -9,6 +9,9 @@ using System.Text;
 using System.Collections.Generic;
 using Neo.Tools.AVM;
 using Neo.VM;
+using Neo.Emulator;
+using LunarParser.JSON;
+using LunarParser.CSV;
 
 namespace Neo.Debugger
 {
@@ -81,6 +84,9 @@ namespace Neo.Debugger
         private void SetupEmulator()
         {
             Emulator.API.Runtime.OnLogMessage = this.SendLogToPanel;
+            Emulator.API.Storage.OnGet = this.StorageGet;
+            Emulator.API.Storage.OnPut = this.StoragePut;
+            Emulator.API.Storage.OnDelete = this.StorageDelete;
         }
 
         private void InitColors()
@@ -396,6 +402,8 @@ namespace Neo.Debugger
                 FileName.Text = Path.GetFileName(path);
 
                 ReloadTextArea();
+
+                StorageLoad();
 
                 shouldReset = true;
             }
@@ -851,7 +859,13 @@ namespace Neo.Debugger
                         shouldReset = true;
                         RemoveCurrentHighlight();
                         var val = debugger.GetResult();
-                        MessageBox.Show("Execution finished.\nGAS cost: " + debugger.GetUsedGas()+"\nResult: " + StackItemAsString(val));
+
+                        StorageSave();
+
+                        var gasStr = string.Format("{0:N4}", debugger.GetUsedGas()); 
+
+                        MessageBox.Show("Execution finished.\nGAS cost: " + gasStr +"\nResult: " + StackItemAsString(val));
+
                         break;
                     }
 
@@ -1120,5 +1134,79 @@ namespace Neo.Debugger
                 ToggleDebuggerSource();
             }
         }
+
+        #region STORAGE API
+        public string StoragePath()
+        {
+            if (string.IsNullOrEmpty(targetAVMPath))
+            {
+                return null;
+            }
+
+            return targetAVMPath.Replace(".avm", ".store");
+        }
+
+        public void StorageLoad()
+        {
+            var path = StoragePath();
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                return;
+            }
+
+            var lines = File.ReadAllLines(path);
+            _contractStorage.Clear();
+            foreach (var line in lines)
+            {
+                var temp = line.Split(',');
+                var key = Convert.FromBase64String(temp[0]);
+                var data = Convert.FromBase64String(temp[1]);
+
+                _contractStorage[key] = data;
+            }
+        }
+
+        public void StorageSave()
+        {
+            var path = StoragePath();
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var sb = new StringBuilder();
+            foreach (var entry in _contractStorage)
+            {
+                var key = Convert.ToBase64String(entry.Key);
+                var data = Convert.ToBase64String(entry.Value);
+                sb.Append(key);
+                sb.Append(',');
+                sb.AppendLine(data);
+            }
+            File.WriteAllText(path, sb.ToString());
+        }
+
+        private Dictionary<byte[], byte[]> _contractStorage = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+
+        private void StorageDelete(byte[] key)
+        {
+            _contractStorage.Remove(key);
+        }
+
+        private void StoragePut(byte[] key, byte[] data)
+        {
+            _contractStorage[key] = data;
+        }
+
+        private byte[] StorageGet(byte[] key)
+        {
+            if (_contractStorage.ContainsKey(key))
+            {
+                return _contractStorage[key];
+            }
+
+            return null;
+        }
+        #endregion
     }
 }

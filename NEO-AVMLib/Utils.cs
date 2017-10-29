@@ -12,6 +12,11 @@ namespace Neo.Tools.AVM
 
         public static string OutputData(byte[] data, bool addQuotes)
         {
+            if (data == null)
+            {
+                return "[Null]";
+            }
+
             for (int i = 0; i < data.Length; i++)
             {
                 var c = (char)data[i];

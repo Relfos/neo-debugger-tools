@@ -116,10 +116,14 @@ namespace Neo.Debugger
 
             button1.Enabled = _paramMap != null && _paramMap.Count > 0 ;
             paramsList.Items.Clear();
-            foreach (var entry in _paramMap)
+
+            if (_paramMap != null)
             {
-                paramsList.Items.Add(entry.Key);
-            }           
+                foreach (var entry in _paramMap)
+                {
+                    paramsList.Items.Add(entry.Key);
+                }
+            }
 
         }
     }

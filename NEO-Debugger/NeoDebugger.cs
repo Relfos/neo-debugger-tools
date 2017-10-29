@@ -209,6 +209,11 @@ namespace Neo.Debugger
                             {
                                 var callInfo = interop.FindCall(engine.lastSysCall);
                                 opCost = (callInfo != null) ? callInfo.gasCost : 0;
+
+                                if (engine.lastSysCall.EndsWith("Storage.Put"))
+                                {
+                                    opCost *= (Emulator.API.Storage.lastStorageLength / 1024.0);
+                                }
                                 break;
                             }
 
