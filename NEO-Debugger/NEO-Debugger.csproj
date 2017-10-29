@@ -130,6 +130,7 @@
     <Compile Include="Cryptography\UInt160.cs" />
     <Compile Include="Cryptography\UInt256.cs" />
     <Compile Include="Cryptography\UIntBase.cs" />
+    <Compile Include="LanguageSupport.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
