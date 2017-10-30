@@ -11,6 +11,8 @@ namespace Neo.Debugger
     {
         public NeoDebugger debugger;
 
+        private string lastParams = null;
+
         public RunForm()
         {
             InitializeComponent();
@@ -26,7 +28,8 @@ namespace Neo.Debugger
                 var json = JSONWriter.WriteToString(node);
                 textBox1.Text = json;
             }
-            
+
+            lastParams = key;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -130,6 +133,11 @@ namespace Neo.Debugger
                 foreach (var entry in _paramMap)
                 {
                     paramsList.Items.Add(entry.Key);
+
+                    if (lastParams != null && entry.Key.Equals(lastParams))
+                    {
+                        paramsList.SelectedIndex = paramsList.Items.Count - 1;
+                    }
                 }
             }
 
