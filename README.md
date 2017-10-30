@@ -68,7 +68,7 @@ A single smart contract can have different results and behaviours, depending on 
 
 So, when debugging a contract, it is necessary to be able to specify the inputs. Currently this is done via a `.json` file that resides in the same folder as the debugger executable.
 
-This file should have the same name as the `.avm` file. 
+This file should have the same name as the `.avm` file. So if your contract file is `hello.avm`, make sure the input file is called `hello.json`.
 
 Here's a example contract that takes a string and array of objects as argument.
 
