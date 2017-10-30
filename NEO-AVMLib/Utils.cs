@@ -42,7 +42,20 @@ namespace Neo.Tools.AVM
                 return "{InteropInterface}";
             }
 
-            return FormattingUtils.OutputData(item.GetByteArray(), false);
+            var data = item.GetByteArray();
+
+            if (data == null)
+            {
+                return "[Null]";
+            }
+
+            if (data == null || data.Length == 0)
+            {
+                return "False";
+            }
+
+
+            return FormattingUtils.OutputData(data, false);
 
         }
 

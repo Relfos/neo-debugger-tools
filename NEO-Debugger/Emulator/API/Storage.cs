@@ -37,6 +37,11 @@ namespace Neo.Emulator.API
 
             var data = OnGet != null ? OnGet(key) : null;
 
+            if (data == null)
+            {
+                data = new byte[0];
+            }
+
             var result = new VM.Types.ByteArray(data);
             engine.EvaluationStack.Push(result);
 
