@@ -34,7 +34,7 @@ namespace Neo.Debugger
         private AVMDisassemble avm_asm;
         private int currentLine = -1;
         private NeoMapFile map = null;
-        private bool shouldReset;
+        private bool shouldReset = true;
         private DebugMode debugMode;
         private SourceLanguageKind sourceLanguage = SourceLanguageKind.Other;
         private DebuggerState debugState;
@@ -734,6 +734,12 @@ namespace Neo.Debugger
 
         private bool ResetDebugger()
         {
+            if (string.IsNullOrEmpty(targetAVMPath))
+            {
+                MessageBox.Show("Please load an .avm file first!");
+                return false;
+            }
+
             runForm.debugger = this.debugger;
 
             var result = runForm.ShowDialog();
