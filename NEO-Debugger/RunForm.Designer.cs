@@ -31,6 +31,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.paramsList = new System.Windows.Forms.ListBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
@@ -60,9 +61,16 @@
             this.paramsList.FormattingEnabled = true;
             this.paramsList.Location = new System.Drawing.Point(12, 12);
             this.paramsList.Name = "paramsList";
-            this.paramsList.Size = new System.Drawing.Size(283, 173);
+            this.paramsList.Size = new System.Drawing.Size(283, 147);
             this.paramsList.TabIndex = 2;
             this.paramsList.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(12, 175);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(283, 20);
+            this.textBox1.TabIndex = 3;
             // 
             // RunForm
             // 
@@ -70,6 +78,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(307, 260);
             this.ControlBox = false;
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.paramsList);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -79,6 +88,7 @@
             this.Text = "Invoke Smart Contract";
             this.Shown += new System.EventHandler(this.RunForm_Shown);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -87,5 +97,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.ListBox paramsList;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

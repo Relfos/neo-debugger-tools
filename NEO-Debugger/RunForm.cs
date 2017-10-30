@@ -18,7 +18,15 @@ namespace Neo.Debugger
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            var key = paramsList.Text;
+            if (_paramMap.ContainsKey(key))
+            {
+                var node = _paramMap[key];
 
+                var json = JSONWriter.WriteToString(node);
+                textBox1.Text = json;
+            }
+            
         }
 
         private void button1_Click(object sender, EventArgs e)

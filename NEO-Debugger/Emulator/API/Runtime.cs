@@ -2,6 +2,7 @@
 using Neo.VM;
 using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace Neo.Emulator.API
 {
@@ -31,13 +32,27 @@ namespace Neo.Emulator.API
         {
             //params object[] state
             var something = engine.EvaluationStack.Pop();
+
             if (something.IsArray)
             {
+                var sb = new StringBuilder();
+
                 var items = something.GetArray();
+
+                int index = 0;
+
                 foreach (var item in items)
                 {
-                    LogItem(item);
+                    if (index > 0)
+                    {
+                        sb.Append(" / ");
+                    }
+
+                    sb.Append(FormattingUtils.StackItemAsString(item));
+                    index++;
                 }
+
+                DoLog(sb.ToString());
                 return true;
             }
             else
@@ -50,15 +65,12 @@ namespace Neo.Emulator.API
         public static bool Log(ExecutionEngine engine)
         {
             var msg = engine.EvaluationStack.Pop();
-            LogItem(msg);
+            DoLog(FormattingUtils.StackItemAsString(msg));
             return true;
         }
 
-        private static void LogItem(StackItem item)
+        private static void DoLog(string msg)
         {
-            var bytes = item.GetByteArray();
-            var msg = FormattingUtils.OutputData(bytes, false);
-
             Debug.WriteLine(msg);
 
             if (OnLogMessage != null)

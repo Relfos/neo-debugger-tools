@@ -864,7 +864,7 @@ namespace Neo.Debugger
 
                         var gasStr = string.Format("{0:N4}", debugger.GetUsedGas()); 
 
-                        MessageBox.Show("Execution finished.\nGAS cost: " + gasStr +"\nResult: " + StackItemAsString(val));
+                        MessageBox.Show("Execution finished.\nGAS cost: " + gasStr +"\nResult: " + FormattingUtils.StackItemAsString(val));
 
                         break;
                     }
@@ -1031,7 +1031,7 @@ namespace Neo.Debugger
 
             foreach (var item in items)
             {
-                string s = StackItemAsString(item);
+                string s = FormattingUtils.StackItemAsString(item);
                 sb.AppendLine(s);
             }
 
@@ -1044,45 +1044,6 @@ namespace Neo.Debugger
             gasCostLabel.Text = "GAS used: "+ debugger.GetUsedGas();
         }
 
-        private static string StackItemAsString(StackItem item)
-        {
-            if (item.IsArray)
-            {
-                var s = new StringBuilder();
-                var items = item.GetArray();
-
-                s.Append('[');
-                for (int i = 0; i < items.Length; i++)
-                {
-                    var element = items[i];
-                    if (i > 0)
-                    {
-                        s.Append(',');
-                    }
-                    s.Append(StackItemAsString(element));
-                }
-                s.Append(']');
-                return s.ToString();
-            }
-
-            if (item is Neo.VM.Types.Boolean)
-            {
-                return item.GetBoolean().ToString();
-            }
-
-            if (item is Neo.VM.Types.Integer)
-            {
-                return item.GetBigInteger().ToString();
-            }
-
-            if (item is Neo.VM.Types.InteropInterface)
-            {
-                return "{InteropInterface}";
-            }
-
-            return FormattingUtils.OutputData(item.GetByteArray(), false);
-
-        }
         #endregion
 
         private void MainForm_Resize(object sender, EventArgs e)
