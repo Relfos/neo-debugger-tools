@@ -115,7 +115,7 @@ And here is how to define inputs for it via the `.json` file.
 
 The different inputs in this file will appear in the debugger when you execute the contract.
 
-Note that the "name" field here can be anything, it is just used to display in the debugger GUI.
+Note that the "name" field here can be anything, it is just used to display in the debugger GUI. Optionally you can modify the inputs in the text box.
 
 ![Inputs Screenshot](images/inputs.png)
 

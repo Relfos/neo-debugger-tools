@@ -31,27 +31,27 @@ namespace Neo.Debugger
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (_paramMap == null)
+            var json = textBox1.Text;
+
+            if (string.IsNullOrEmpty(json))
             {
-                MessageBox.Show("Parameter map not loaded");
+                MessageBox.Show("Invalid input!");
                 return;
             }
 
-            if (paramsList.SelectedIndex<0)
+            DataNode node;
+
+            try
             {
-                MessageBox.Show("Select an input from the list");
+                node = JSONReader.ReadFromString(json);
+            }
+            catch
+            {
+                MessageBox.Show("Error parsing input!");
                 return;
             }
 
-            var selectedName = paramsList.Items[paramsList.SelectedIndex].ToString();
-
-            if (!_paramMap.ContainsKey(selectedName))
-            {
-                MessageBox.Show("Invalid function selected!");
-                return;
-            }
-
-            var items = _paramMap[selectedName];
+            var items = node.GetNode("params");
 
             debugger.ContractArgs.Clear();
             foreach (var item in items.Children)
