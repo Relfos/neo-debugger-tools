@@ -90,7 +90,7 @@ namespace Neo.Debugger
 
         private void RunForm_Shown(object sender, EventArgs e)
         { 
-            if (_paramMap == null && !string.IsNullOrEmpty(MainForm.targetAVMPath))
+            if (!string.IsNullOrEmpty(MainForm.targetAVMPath))
             {
                 var fileName = MainForm.targetAVMPath.Replace(".avm", ".json");
                 if (File.Exists(fileName))
