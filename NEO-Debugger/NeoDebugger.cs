@@ -95,6 +95,11 @@ namespace Neo.Debugger
                 sb.EmitPush((string)item);
             }
             else
+            if (item is bool)
+            {
+                sb.EmitPush((bool)item);
+            }
+            else
             if (item is int)
             {
                 BigInteger num = new BigInteger((int)item);

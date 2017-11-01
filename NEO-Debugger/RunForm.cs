@@ -79,9 +79,26 @@ namespace Neo.Debugger
             }
 
             int intVal;
-            if (int.TryParse(item.Value, out intVal))
+            if (item.Kind == NodeKind.Numeric)
             {
-                return intVal;
+                if ( int.TryParse(item.Value, out intVal))
+                {
+                    return intVal;
+                }                
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            if (item.Kind == NodeKind.Boolean)
+            {
+                return "true".Equals(item.Value.ToLowerInvariant()) ? true : false;
+            }
+            else
+            if (item.Kind == NodeKind.Null)
+            {
+                return null;
             }
             else
             {
