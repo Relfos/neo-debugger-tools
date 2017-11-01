@@ -26,7 +26,7 @@ namespace Neo.Debugger
                 var node = _paramMap[key];
 
                 var json = JSONWriter.WriteToString(node);
-                textBox1.Text = json;
+                contractInputField.Text = json;
             }
 
             lastParams = key;
@@ -34,7 +34,7 @@ namespace Neo.Debugger
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var json = textBox1.Text;
+            var json = contractInputField.Text;
 
             if (string.IsNullOrEmpty(json))
             {

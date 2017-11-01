@@ -95,7 +95,7 @@
             this.TextPanel.Location = new System.Drawing.Point(8, 95);
             this.TextPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.TextPanel.Name = "TextPanel";
-            this.TextPanel.Size = new System.Drawing.Size(749, 377);
+            this.TextPanel.Size = new System.Drawing.Size(749, 345);
             this.TextPanel.TabIndex = 0;
             // 
             // FileName
@@ -136,7 +136,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -526,17 +526,17 @@
             // 
             // logView
             // 
-            this.logView.Location = new System.Drawing.Point(8, 495);
+            this.logView.Location = new System.Drawing.Point(8, 463);
             this.logView.Name = "logView";
             this.logView.ReadOnly = true;
-            this.logView.Size = new System.Drawing.Size(361, 121);
+            this.logView.Size = new System.Drawing.Size(361, 153);
             this.logView.TabIndex = 11;
             this.logView.Text = "";
             // 
             // logLabel
             // 
             this.logLabel.AutoSize = true;
-            this.logLabel.Location = new System.Drawing.Point(5, 477);
+            this.logLabel.Location = new System.Drawing.Point(5, 445);
             this.logLabel.Name = "logLabel";
             this.logLabel.Size = new System.Drawing.Size(27, 15);
             this.logLabel.TabIndex = 12;
@@ -544,17 +544,17 @@
             // 
             // stackPanel
             // 
-            this.stackPanel.Location = new System.Drawing.Point(375, 495);
+            this.stackPanel.Location = new System.Drawing.Point(375, 463);
             this.stackPanel.Name = "stackPanel";
             this.stackPanel.ReadOnly = true;
-            this.stackPanel.Size = new System.Drawing.Size(361, 121);
+            this.stackPanel.Size = new System.Drawing.Size(361, 153);
             this.stackPanel.TabIndex = 13;
             this.stackPanel.Text = "";
             // 
             // stackLabel
             // 
             this.stackLabel.AutoSize = true;
-            this.stackLabel.Location = new System.Drawing.Point(372, 476);
+            this.stackLabel.Location = new System.Drawing.Point(372, 444);
             this.stackLabel.Name = "stackLabel";
             this.stackLabel.Size = new System.Drawing.Size(35, 15);
             this.stackLabel.TabIndex = 14;

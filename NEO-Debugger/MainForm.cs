@@ -1056,11 +1056,13 @@ namespace Neo.Debugger
         {
             var padding = 18;
 
-            logView.Width = (this.ClientSize.Width / 2) - (padding * 2);
+            var logWidthPercent = 0.6f;
+
+            logView.Width = (int)(this.ClientSize.Width * logWidthPercent) - (padding * 2);
             logView.Top = this.ClientSize.Height - (padding + logView.Height);
             logLabel.Top = logView.Top - 18;
 
-            stackPanel.Width = logView.Width + padding * 2;
+            stackPanel.Width = this.ClientSize.Width  - (logView.Width + padding * 2);
             stackPanel.Left = padding + logView.Width;
             stackPanel.Top = logView.Top;
             stackLabel.Left = stackPanel.Left;
