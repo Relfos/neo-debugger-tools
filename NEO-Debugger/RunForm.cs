@@ -3,6 +3,7 @@ using LunarParser.JSON;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Windows.Forms;
 
 namespace Neo.Debugger
@@ -78,10 +79,10 @@ namespace Neo.Debugger
                 return list;
             }
 
-            int intVal;
+            BigInteger intVal;
             if (item.Kind == NodeKind.Numeric)
-            {
-                if ( int.TryParse(item.Value, out intVal))
+            {                
+                if (BigInteger.TryParse(item.Value, out intVal))
                 {
                     return intVal;
                 }                
