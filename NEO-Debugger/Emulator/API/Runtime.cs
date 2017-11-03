@@ -48,7 +48,7 @@ namespace Neo.Emulator.API
                         sb.Append(" / ");
                     }
 
-                    sb.Append(FormattingUtils.StackItemAsString(item));
+                    sb.Append(FormattingUtils.StackItemAsString(item, true));
                     index++;
                 }
 

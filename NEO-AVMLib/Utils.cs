@@ -6,7 +6,7 @@ namespace Neo.Tools.AVM
 {
     public static class FormattingUtils
     {
-        public static string StackItemAsString(StackItem item)
+        public static string StackItemAsString(StackItem item, bool addQuotes = false)
         {
             if (item.IsArray)
             {
@@ -55,8 +55,7 @@ namespace Neo.Tools.AVM
             }
 
 
-            return FormattingUtils.OutputData(data, false);
-
+            return FormattingUtils.OutputData(data, addQuotes);
         }
 
         public static string OutputLine(string col1, string col2, string col3)
