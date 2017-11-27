@@ -601,7 +601,10 @@ namespace Neo.VM
                             byte[] signature = EvaluationStack.Pop().GetByteArray();
                             try
                             {
-                                EvaluationStack.Push(Crypto.VerifySignature(ScriptContainer.GetMessage(), signature, pubkey));
+                                var msg = ScriptContainer.GetMessage();
+                                var verification = Crypto.VerifySignature(msg, signature, pubkey);
+                                //var verification = true;
+                                EvaluationStack.Push(verification);
                             }
                             catch (ArgumentException)
                             {
