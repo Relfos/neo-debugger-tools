@@ -121,6 +121,7 @@
     <Compile Include="Cryptography\Fixed8.cs" />
     <Compile Include="Cryptography\Helper.cs" />
     <Compile Include="Cryptography\ISerializable.cs" />
+    <Compile Include="Cryptography\KeyPair.cs" />
     <Compile Include="Cryptography\MerkleTree.cs" />
     <Compile Include="Cryptography\MerkleTreeNode.cs" />
     <Compile Include="Cryptography\Murmur3.cs" />
@@ -140,7 +141,6 @@
     <Compile Include="Emulator\Attributes\AppcallAttribute.cs" />
     <Compile Include="Emulator\Helper.cs" />
     <Compile Include="Emulator\IApiInterface.cs" />
-    <Compile Include="Emulator\IScriptContainer.cs" />
     <Compile Include="Emulator\Attributes\NonemitAttribute.cs" />
     <Compile Include="Emulator\Attributes\OpCodeAttribute.cs" />
     <Compile Include="Emulator\API\Account.cs" />

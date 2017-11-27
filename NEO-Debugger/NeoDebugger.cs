@@ -31,6 +31,14 @@ namespace Neo.Debugger
         }
     }
 
+    public class NeoDebuggerTransaction : IScriptContainer
+    {
+        byte[] IScriptContainer.GetMessage()
+        {
+            return null;
+        }
+    }
+
     public class NeoDebugger
     {
         private ExecutionEngine engine;
@@ -100,6 +108,11 @@ namespace Neo.Debugger
                 sb.EmitPush((bool)item);
             }
             else
+            if (item is byte[])
+            {
+                sb.EmitPush((byte[])item);
+            }
+            else
             if (item is BigInteger)
             {
                 sb.EmitPush((BigInteger)item);
@@ -119,7 +132,9 @@ namespace Neo.Debugger
 
             _usedGas = 0;
 
-            engine = new ExecutionEngine(null, Crypto.Default, null, interop);
+            var container = new NeoDebuggerTransaction();
+
+            engine = new ExecutionEngine(container, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
 
             using (ScriptBuilder sb = new ScriptBuilder())

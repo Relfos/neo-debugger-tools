@@ -10,6 +10,11 @@ namespace Neo.Cryptography
     {
         public static readonly Crypto Default = new Crypto();
 
+        public UInt160 ToScriptHash(byte[] script)
+        {
+            return new UInt160(Hash160(script));
+        }
+   
         public byte[] Hash160(byte[] message)
         {
             return message.Sha256().RIPEMD160();
@@ -27,7 +32,7 @@ namespace Neo.Cryptography
             using (CngKey key = CngKey.Import(prikey, CngKeyBlobFormat.EccPrivateBlob))
             using (ECDsaCng ecdsa = new ECDsaCng(key))
             {
-                return null; // ecdsa.SignData(message, HashAlgorithmName.SHA256);
+                return ecdsa.SignData(message, HashAlgorithmName.SHA256);
             }
         }
 
@@ -57,7 +62,7 @@ namespace Neo.Cryptography
             using (CngKey key = CngKey.Import(pubkey, CngKeyBlobFormat.EccPublicBlob))
             using (ECDsaCng ecdsa = new ECDsaCng(key))
             {
-                return true; // ecdsa.VerifyData(message, signature, HashAlgorithmName.SHA256);
+                return ecdsa.VerifyData(message, signature, HashAlgorithmName.SHA256);
             }
         }
     }
