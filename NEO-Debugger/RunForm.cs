@@ -2,6 +2,7 @@
 using LunarParser.JSON;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
@@ -67,6 +68,19 @@ namespace Neo.Debugger
             }
         }
 
+        public static byte[] HexToByte(string HexString)
+        {
+            if (HexString.Length % 2 != 0)
+                throw new Exception("Invalid HEX");
+            byte[] retArray = new byte[HexString.Length / 2];
+            for (int i = 0; i < retArray.Length; ++i)
+            {
+                retArray[i] = byte.Parse(HexString.Substring(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+            }
+
+            return retArray;
+        }
+
         private object ConvertArgument(DataNode item)
         {
             if (item.HasChildren)
@@ -80,6 +94,7 @@ namespace Neo.Debugger
             }
 
             BigInteger intVal;
+
             if (item.Kind == NodeKind.Numeric)
             {                
                 if (BigInteger.TryParse(item.Value, out intVal))
@@ -100,6 +115,11 @@ namespace Neo.Debugger
             if (item.Kind == NodeKind.Null)
             {
                 return null;
+            }
+            else
+            if (item.Value.StartsWith("0x"))
+            {
+                return HexToByte(item.Value.Substring(2));
             }
             else
             {

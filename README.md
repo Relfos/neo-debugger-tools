@@ -119,6 +119,18 @@ Note that the "name" field here can be anything, it is just used to display in t
 
 ![Inputs Screenshot](images/inputs.png)
 
+### Input types
+
+Inputs follow the json specs, so a "5" will have a different meaning from a 5.
+
+| Type          | Examples                          		| Comments                                      								|
+| ------------- |:------------------------------------------| :-----------------------------------------------------------------------------|
+| Number        | "params": [5]               				| 					                            								|
+| String        | "params": ["5", "hello"]               	| 					                            								|
+| Bool        	| "params": [true]             				| 					                  									        |
+| Byte array    | "params": ["0xFF03DA22", [10, 20, 44]]    | Either specified as an hexadecimal string or as an array of decimal numbers	|
+
+
 ### Storage Emulation
 
 The debugger supports emulation of the Storage API, meaning Storage.Put and Storage.Get work fine when debugging. 
