@@ -23,7 +23,7 @@ namespace Neo.Emulator.API
         public static bool CheckWitness(ExecutionEngine engine)
         {
             //byte[] hashOrPubkey
-            engine.EvaluationStack.Push(false);
+            engine.EvaluationStack.Push(true);
             return true;
         }
 

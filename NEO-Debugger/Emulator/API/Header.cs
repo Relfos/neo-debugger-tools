@@ -3,7 +3,7 @@ using System;
 
 namespace Neo.Emulator.API
 {
-    public class Header : IScriptContainer
+    public class Header 
     {
         [Syscall("Neo.Header.GetHash")]
         public static bool GetHash(ExecutionEngine engine)
@@ -60,6 +60,5 @@ namespace Neo.Emulator.API
             //returns byte[] 
             throw new NotImplementedException();
         }
-
     }
 }

@@ -3,7 +3,7 @@ using System;
 
 namespace Neo.Emulator.API
 {
-    public class Transaction : IScriptContainer
+    public class Transaction 
     {
         [Syscall("Neo.Transaction.GetHash")]
         public static bool GetHash(ExecutionEngine engine)
