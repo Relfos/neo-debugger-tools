@@ -65,8 +65,8 @@ namespace Neo.Emulator.API
             // return void
 
             var context = engine.EvaluationStack.Pop();
-            var keyItem = (VM.Types.ByteArray)engine.EvaluationStack.Pop();
-            var dataItem = (VM.Types.ByteArray)engine.EvaluationStack.Pop();
+            var keyItem = engine.EvaluationStack.Pop();
+            var dataItem = engine.EvaluationStack.Pop();
 
             var key = keyItem.GetByteArray();
             var data = dataItem.GetByteArray();
