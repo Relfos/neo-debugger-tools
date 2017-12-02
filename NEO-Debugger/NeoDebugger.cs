@@ -6,6 +6,7 @@ using System.Linq;
 using Neo.Emulator;
 using System;
 using System.Numerics;
+using NeoLux;
 
 namespace Neo.Debugger
 {

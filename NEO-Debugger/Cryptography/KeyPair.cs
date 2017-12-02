@@ -1,15 +1,22 @@
-﻿//using Neo.SmartContract;
+﻿using Neo.Cryptography;
+using Neo.Cryptography.ECC;
+using Neo.Debugger.Utils;
 using System;
 using System.Linq;
-using System.Text;
 
-namespace Neo.Cryptography
+namespace NeoLux
 {
-    public class KeyPair : IEquatable<KeyPair>
+    public class KeyPair 
     {
         public readonly byte[] PrivateKey;
-        public readonly ECC.ECPoint PublicKey;
+        public readonly byte[] PublicKey;
+        public readonly byte[] CompressedPublicKey;
         public readonly UInt160 PublicKeyHash;
+        public readonly string address;
+        public readonly string WIF;
+
+        public readonly UInt160 signatureHash;
+        public readonly string signatureScript;
 
         public KeyPair(byte[] privateKey)
         {
@@ -17,30 +24,38 @@ namespace Neo.Cryptography
                 throw new ArgumentException();
             this.PrivateKey = new byte[32];
             Buffer.BlockCopy(privateKey, privateKey.Length - 32, PrivateKey, 0, 32);
+
+            ECPoint pKey;
+
             if (privateKey.Length == 32)
             {
-                this.PublicKey = ECC.ECCurve.Secp256r1.G * privateKey;
+                pKey = ECCurve.Secp256r1.G * privateKey;
             }
             else
             {
-                this.PublicKey = ECC.ECPoint.FromBytes(privateKey, ECC.ECCurve.Secp256r1);
+                pKey = ECPoint.FromBytes(privateKey, ECCurve.Secp256r1);
             }
-            this.PublicKeyHash = Crypto.Default.ToScriptHash(PublicKey.EncodePoint(true));
+
+            var bytes = pKey.EncodePoint(true).ToArray();
+            this.CompressedPublicKey = bytes;
+
+            this.PublicKeyHash = Crypto.Default.ToScriptHash(bytes);
+
+            this.signatureScript = CreateSignatureScript(bytes);
+            signatureHash = Crypto.Default.ToScriptHash(signatureScript.HexToBytes());
+
+            this.PublicKey = pKey.EncodePoint(false).Skip(1).ToArray();
+
+            this.address = Crypto.Default.ToAddress(signatureHash);
+            this.WIF = GetWIF();
         }
 
-        public bool Equals(KeyPair other)
+        public static string CreateSignatureScript(byte[] bytes)
         {
-            if (ReferenceEquals(this, other)) return true;
-            if (ReferenceEquals(null, other)) return false;
-            return PublicKeyHash.Equals(other.PublicKeyHash);
+            return "21" + bytes.ByteToHex() + "ac";
         }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as KeyPair);
-        }
-
-        public string Export()
+      
+        private string GetWIF()
         {
             byte[] data = new byte[34];
             data[0] = 0x80;
@@ -49,11 +64,6 @@ namespace Neo.Cryptography
             string wif = data.Base58CheckEncode();
             Array.Clear(data, 0, data.Length);
             return wif;
-        }
-
-        public override int GetHashCode()
-        {
-            return PublicKeyHash.GetHashCode();
         }
 
         private static byte[] XOR(byte[] x, byte[] y)

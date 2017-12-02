@@ -1,5 +1,7 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
+using Neo.Debugger.Utils;
+using Neo.Emulator.API;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -68,19 +70,6 @@ namespace Neo.Debugger
             }
         }
 
-        public static byte[] HexToByte(string HexString)
-        {
-            if (HexString.Length % 2 != 0)
-                throw new Exception("Invalid HEX");
-            byte[] retArray = new byte[HexString.Length / 2];
-            for (int i = 0; i < retArray.Length; ++i)
-            {
-                retArray[i] = byte.Parse(HexString.Substring(i * 2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-            }
-
-            return retArray;
-        }
-
         private object ConvertArgument(DataNode item)
         {
             if (item.HasChildren)
@@ -119,7 +108,7 @@ namespace Neo.Debugger
             else
             if (item.Value.StartsWith("0x"))
             {
-                return HexToByte(item.Value.Substring(2));
+                return item.Value.Substring(2).HexToByte();
             }
             else
             {
@@ -130,7 +119,25 @@ namespace Neo.Debugger
         private static Dictionary<string, DataNode> _paramMap = null;
 
         private void RunForm_Shown(object sender, EventArgs e)
-        { 
+        {
+            if (Runtime.invokerKeys == null && File.Exists("last.key"))
+            {
+                var privKey = File.ReadAllBytes("last.key");
+                if (privKey.Length == 32)
+                {
+                    Runtime.invokerKeys = new NeoLux.KeyPair(privKey);
+                }
+            }
+
+            if (Runtime.invokerKeys != null)
+            {
+                addressLabel.Text = Runtime.invokerKeys.address;
+            }
+            else
+            {
+                addressLabel.Text = "(No key loaded)";
+            }
+
             if (!string.IsNullOrEmpty(MainForm.targetAVMPath))
             {
                 var fileName = MainForm.targetAVMPath.Replace(".avm", ".json");
@@ -180,5 +187,26 @@ namespace Neo.Debugger
             }
 
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string input = "";
+            if (InputUtils.ShowInputDialog("Enter private key", ref input) == DialogResult.OK)
+            {
+                var privKey = input.HexToByte();
+                if (privKey.Length == 32)
+                {
+                    Runtime.invokerKeys = new NeoLux.KeyPair(privKey);
+                    addressLabel.Text = Runtime.invokerKeys.address;
+
+                    File.WriteAllBytes("last.key", privKey);
+                }
+                else
+                {
+                    MessageBox.Show("Invalid private key, length should be 32");
+                }
+            }
+        }
+
     }
 }

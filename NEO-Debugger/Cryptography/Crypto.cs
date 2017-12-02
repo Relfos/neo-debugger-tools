@@ -10,6 +10,14 @@ namespace Neo.Cryptography
     {
         public static readonly Crypto Default = new Crypto();
 
+        public string ToAddress(UInt160 scriptHash)
+        {
+            byte[] data = new byte[21];
+            data[0] = 23;
+            Buffer.BlockCopy(scriptHash.ToArray(), 0, data, 1, 20);
+            return data.Base58CheckEncode();
+        }
+
         public UInt160 ToScriptHash(byte[] script)
         {
             return new UInt160(Hash160(script));

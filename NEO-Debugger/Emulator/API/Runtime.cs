@@ -1,13 +1,17 @@
 ﻿using Neo.Tools.AVM;
 using Neo.VM;
+using Neo.Debugger.Utils;
 using System;
 using System.Diagnostics;
 using System.Text;
+using NeoLux;
 
 namespace Neo.Emulator.API
 {
     public static class Runtime
     {
+        public static KeyPair invokerKeys;
+
         public static Action<string> OnLogMessage;
 
         [Syscall("Neo.Runtime.GetTrigger")]
@@ -22,8 +26,39 @@ namespace Neo.Emulator.API
         [Syscall("Neo.Runtime.CheckWitness", 0.2)]
         public static bool CheckWitness(ExecutionEngine engine)
         {
-            //byte[] hashOrPubkey
-            engine.EvaluationStack.Push(true);
+            byte[] hashOrPubkey = engine.EvaluationStack.Pop().GetByteArray();
+
+            bool result;
+
+            string matchType;
+
+            if (hashOrPubkey.Length == 20) // script hash
+            {
+                matchType = "Script Hash";
+                result = true;
+            }
+            else if (hashOrPubkey.Length == 33) // public key
+            {
+                matchType = "Public Key";
+
+                if (invokerKeys != null)
+                {
+                    result = invokerKeys.CompressedPublicKey.ByteMatch(hashOrPubkey);
+                }
+                else
+                {
+                    result = false;
+                }
+            }
+            else
+            {
+                matchType = "Unknown";
+                result = false;
+            }
+
+            DoLog($"Checking Witness [{matchType}]: {hashOrPubkey.ByteToHex()} => {result}");
+
+            engine.EvaluationStack.Push(new VM.Types.Boolean(result));
             return true;
         }
 
