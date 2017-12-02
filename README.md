@@ -137,12 +137,19 @@ The debugger supports emulation of the Storage API, meaning Storage.Put and Stor
 
 The actual data is stored in a file with extension `.store`, in same folder as the `.avm`. If required to reset the smart contract storage, it's fine to delete this file.
 
-## Support for Other Languages
+### Asset Transfer
+
+The current version does support sending virtual NEO and GAS to the smart contract, emulating an asset transfer.
+
+## Support for Other Programming Languages
 
 NEO smart contracts can be coded in many different languages, and in theory, this compiler already supports any language as long as a `.neomap` file exists in the same directory as the `.avm` file.
 However, since only NeoN was modified to emit those map files during compilation, to add other languages it would be necessary to modify other compilers to emit a `.neomap`.
 The `.neomap` file format is simple; for each line you need to list a starting offset, ending offset, the source line and the corresponding source file, all values separated by a comma.
 
+### Demo Project
+
+In the folder ICO Template you can find an example of a complex `.json` input file.
 
 ## Roadmap
 - Transactions emulation
