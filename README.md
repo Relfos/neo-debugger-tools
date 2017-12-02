@@ -45,7 +45,7 @@ Includes a cli disassembler and a GUI debugger. A helper library that helps load
 - Windows only for now, using .NET Framework / Winforms / ScintillaNET
 - Smart contract source is limited to a single file for now
 - Not possible yet to inspect variable values
-- Most NEO syscalls / APIs not supported yet (work in progress)
+- Some NEO syscalls / APIs not supported yet (work in progress)
 
 
 ## Usage
