@@ -3,8 +3,10 @@ using System;
 
 namespace Neo.Emulator.API
 {
-    public class Header 
+    public class Header: IInteropInterface
     {
+        public uint timestamp;
+
         [Syscall("Neo.Header.GetHash")]
         public static bool GetHash(ExecutionEngine engine)
         {
@@ -40,9 +42,17 @@ namespace Neo.Emulator.API
         [Syscall("Neo.Header.GetTimestamp")]
         public static bool GetTimestamp(ExecutionEngine engine)
         {
-            // Header
-            //returns uint 
-            throw new NotImplementedException();
+            var obj = engine.EvaluationStack.Pop() as VM.Types.InteropInterface;
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            var header = obj.GetInterface<Header>();
+
+            engine.EvaluationStack.Push(header.timestamp);
+            return true;
         }
 
         [Syscall("Neo.Header.GetConsensusData")]

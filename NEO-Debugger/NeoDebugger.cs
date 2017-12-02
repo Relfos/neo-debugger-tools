@@ -32,15 +32,13 @@ namespace Neo.Debugger
         }
     }
 
-    public class NeoDebuggerTransaction : IScriptContainer
+    public struct DebugTransaction
     {
-        byte[] IScriptContainer.GetMessage()
-        {
-            return null;
-        }
+        public byte[] id;
+        public BigInteger ammount;
     }
 
-    public class NeoDebugger
+    public class NeoDebugger : IScriptContainer
     {
         private ExecutionEngine engine;
         private byte[] contractBytes;
@@ -53,6 +51,11 @@ namespace Neo.Debugger
         private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
 
         private double _usedGas;
+
+        byte[] IScriptContainer.GetMessage()
+        {
+            return null;
+        }
 
         public NeoDebugger(byte[] contractBytes)
         {
@@ -67,9 +70,9 @@ namespace Neo.Debugger
 
             foreach (var method in methods)
             {
-                var attr = (SyscallAttribute) method.GetCustomAttributes(typeof(SyscallAttribute), false).FirstOrDefault();
+                var attr = (SyscallAttribute)method.GetCustomAttributes(typeof(SyscallAttribute), false).FirstOrDefault();
 
-                interop.Register(attr.Method, (engine) => { return (bool) method.Invoke(null, new object[] { engine }); }, attr.gasCost);
+                interop.Register(attr.Method, (engine) => { return (bool)method.Invoke(null, new object[] { engine }); }, attr.gasCost);
             }
         }
 
@@ -133,9 +136,7 @@ namespace Neo.Debugger
 
             _usedGas = 0;
 
-            var container = new NeoDebuggerTransaction();
-
-            engine = new ExecutionEngine(container, Crypto.Default, null, interop);
+            engine = new ExecutionEngine(this, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
 
             using (ScriptBuilder sb = new ScriptBuilder())
@@ -146,7 +147,7 @@ namespace Neo.Debugger
                     items.Push(item);
                 }
 
-                while (items.Count> 0)
+                while (items.Count > 0)
                 {
                     var item = items.Pop();
                     EmitObject(sb, item);
@@ -217,8 +218,8 @@ namespace Neo.Debugger
                     opCost = 0;
                 }
                 else
-                switch (opcode)
-                {
+                    switch (opcode)
+                    {
                         case OpCode.SYSCALL:
                             {
                                 var callInfo = interop.FindCall(engine.lastSysCall);
@@ -231,20 +232,20 @@ namespace Neo.Debugger
                                 break;
                             }
 
-                    case OpCode.CHECKMULTISIG: 
-                    case OpCode.CHECKSIG: opCost = 0.1; break;
+                        case OpCode.CHECKMULTISIG:
+                        case OpCode.CHECKSIG: opCost = 0.1; break;
 
-                    case OpCode.APPCALL:
-                    case OpCode.TAILCALL:
-                    case OpCode.SHA256:
-                    case OpCode.SHA1: opCost = 0.01; break;
+                        case OpCode.APPCALL:
+                        case OpCode.TAILCALL:
+                        case OpCode.SHA256:
+                        case OpCode.SHA1: opCost = 0.01; break;
 
-                    case OpCode.HASH256:
-                    case OpCode.HASH160: opCost = 0.02; break;
+                        case OpCode.HASH256:
+                        case OpCode.HASH160: opCost = 0.02; break;
 
-                    case OpCode.NOP: opCost = 0; break;
-                    default: opCost = 0.001; break;
-                }
+                        case OpCode.NOP: opCost = 0; break;
+                        default: opCost = 0.001; break;
+                    }
 
                 _usedGas += opCost;
             }
@@ -303,5 +304,26 @@ namespace Neo.Debugger
         {
             return _usedGas;
         }
+
+        #region TRANSACTIONS
+        private List<DebugTransaction> _transactions = new List<DebugTransaction>();
+        public IEnumerable<DebugTransaction> transaction
+        {
+            get
+            {
+                return _transactions;
+            }
+        }
+
+        public void ClearTransactions()
+        {
+            _transactions.Clear();
+        }
+
+        public void AddTransaction(byte[] id, BigInteger ammount)
+        {
+            _transactions.Add(new DebugTransaction() { ammount = ammount, id = id });
+        }
+        #endregion
     }
 }

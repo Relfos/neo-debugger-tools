@@ -1,25 +1,62 @@
 ﻿using Neo.VM;
 using System;
+using System.Collections.Generic;
 
 namespace Neo.Emulator.API
 {
-    public static class Blockchain
+    public class Blockchain
     {
+        public static uint currentHeight = 1;
+        public static Dictionary<uint, Block> blocks = new Dictionary<uint, Block>();
+
         [Syscall("Neo.Blockchain.GetHeight")]
         public static bool GetHeight(ExecutionEngine engine)
         {
-            //returns uint
-            throw new NotImplementedException();
+            engine.EvaluationStack.Push(currentHeight);
+
+            return true;
         }
 
         [Syscall("Neo.Blockchain.GetHeader", 0.1)]
         public static bool GetHeader(ExecutionEngine engine)
         {
-            //byte[] hash
-            //OR
-            //uint height
+            var obj = engine.EvaluationStack.Pop();
+
+            Block block = null;
+
+            var hash = obj.GetByteArray();
+
+            if (hash.Length>1)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (hash.Length == 1)
+            { 
+                var temp = obj.GetBigInteger();
+
+                var height = (uint)temp;
+
+                if (blocks.ContainsKey(height))
+                {
+                    block = blocks[height];
+                }
+                else
+                if (height<=currentHeight)
+                {
+                    block = new Block();
+                    block.timestamp = 1506787300;
+                    blocks[height] = block;
+                }
+            }
+
+            if (block == null)
+            {
+            }
+
+            engine.EvaluationStack.Push(new VM.Types.InteropInterface(block));
+            return true;
             // returns Header
-            throw new NotImplementedException();
         }
 
         [Syscall("Neo.Blockchain.GetBlock", 0.2)]

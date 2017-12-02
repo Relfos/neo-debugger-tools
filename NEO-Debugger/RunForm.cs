@@ -20,30 +20,43 @@ namespace Neo.Debugger
         public RunForm()
         {
             InitializeComponent();
+
+            assetListBox.Items.Clear();
+            assetListBox.Items.Add("None");
+            foreach (var entry in Asset.Entries)
+            {
+                assetListBox.Items.Add(entry.name);
+            }
+            assetListBox.SelectedIndex = 0;
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void LoadInvokeTemplate(string key)
         {
-            var key = paramsList.Text;
             if (_paramMap.ContainsKey(key))
             {
                 var node = _paramMap[key];
 
                 var json = JSONWriter.WriteToString(node);
                 contractInputField.Text = json;
-            }
 
-            lastParams = key;
+                lastParams = key;
+            }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var key = paramsList.Text;
+            LoadInvokeTemplate(key);
+        }
+
+        private bool InitInvoke()
         {
             var json = contractInputField.Text;
 
             if (string.IsNullOrEmpty(json))
             {
                 MessageBox.Show("Invalid input!");
-                return;
+                return false;
             }
 
             DataNode node;
@@ -55,7 +68,7 @@ namespace Neo.Debugger
             catch
             {
                 MessageBox.Show("Error parsing input!");
-                return;
+                return false;
             }
 
             var items = node.GetNode("params");
@@ -67,6 +80,42 @@ namespace Neo.Debugger
 
                 var obj = ConvertArgument(item);
                 debugger.ContractArgs.Add(obj);
+            }
+
+            debugger.ClearTransactions();
+            if (assetListBox.SelectedIndex > 0)
+            {
+                foreach (var entry in Asset.Entries)
+                {
+                    if (entry.name == assetListBox.SelectedItem.ToString())
+                    {
+                        BigInteger ammount;
+
+                        BigInteger.TryParse(assetAmmount.Text, out ammount);
+
+                        if (ammount > 0)
+                        {
+                            debugger.AddTransaction(entry.id, ammount);
+                        }
+                        else
+                        {
+                            MessageBox.Show(entry.name + " ammount must be greater than zero");
+                            return false;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (InitInvoke())
+            {
+                this.DialogResult = DialogResult.OK;
             }
         }
 
@@ -120,6 +169,10 @@ namespace Neo.Debugger
 
         private void RunForm_Shown(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.None;
+
+            assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
+
             if (Runtime.invokerKeys == null && File.Exists("last.key"))
             {
                 var privKey = File.ReadAllBytes("last.key");
@@ -161,12 +214,11 @@ namespace Neo.Debugger
                             var data = node.GetNode("params");
                             _paramMap[name] = data;
                         }
-
-                        paramsList.SelectedIndex = 0;
                     }
-                    catch
+                    finally
                     {
-                    }                    
+                        
+                    }                                    
                 }
             }
 
@@ -184,6 +236,12 @@ namespace Neo.Debugger
                         paramsList.SelectedIndex = paramsList.Items.Count - 1;
                     }
                 }
+
+                if (paramsList.SelectedIndex<0 && paramsList.Items.Count > 0)
+                {
+                    paramsList.SelectedIndex = 0;
+                }
+
             }
 
         }
@@ -208,5 +266,9 @@ namespace Neo.Debugger
             }
         }
 
+        private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
+        }
     }
 }
