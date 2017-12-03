@@ -239,7 +239,7 @@ namespace Neo.Debugger
 
             marker = TextArea.Markers[STEP_BG];
             marker.Symbol = MarkerSymbol.Background;
-            marker.SetBackColor(IntToColor(0xC0C000));
+            marker.SetBackColor(IntToColor(0xCC000));
         }
 
         private void InitCodeFolding()
