@@ -344,11 +344,9 @@ namespace Neo.Debugger
                     Array a = (Array)e.Data.GetData(DataFormats.FileDrop);
                     if (a != null)
                     {
-
                         string path = a.GetValue(0).ToString();
 
                         LoadDataFromFile(path);
-
                     }
                 }
             };
@@ -404,6 +402,8 @@ namespace Neo.Debugger
                 ReloadTextArea();
 
                 StorageLoad();
+
+                UpdateSourceViewMenus();
 
                 shouldReset = true;
             }
@@ -936,8 +936,13 @@ namespace Neo.Debugger
                 TextArea.Lines[currentLine].MarkerAdd(STEP_BG);
             }
 
-            assemblyToolStripMenuItem.Enabled = debugMode == DebugMode.Assembly;
-            originalToolStripMenuItem.Enabled = debugMode == DebugMode.Source;
+            UpdateSourceViewMenus();
+        }
+
+        private void UpdateSourceViewMenus()
+        {
+            assemblyToolStripMenuItem.Enabled = debugMode != DebugMode.Assembly;
+            originalToolStripMenuItem.Enabled = debugMode != DebugMode.Source;
         }
 
         private void RunDebugger()
