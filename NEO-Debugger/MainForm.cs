@@ -91,9 +91,7 @@ namespace Neo.Debugger
 
         private void InitColors()
         {
-
             TextArea.SetSelectionBackColor(true, IntToColor(0x114D9C));
-
         }
 
         private void InitHotkeys()
@@ -143,12 +141,12 @@ namespace Neo.Debugger
             TextArea.Styles[Style.Cpp.Comment].ForeColor = IntToColor(0xBD758B);
             TextArea.Styles[Style.Cpp.CommentLine].ForeColor = IntToColor(0x40BF57);
             TextArea.Styles[Style.Cpp.CommentDoc].ForeColor = IntToColor(0x2FAE35);
-            TextArea.Styles[Style.Cpp.Number].ForeColor = IntToColor(0xFFFF00);
-            TextArea.Styles[Style.Cpp.String].ForeColor = IntToColor(0xFFFF00);
+            TextArea.Styles[Style.Cpp.Number].ForeColor = IntToColor(0xD69D85);
+            TextArea.Styles[Style.Cpp.String].ForeColor = IntToColor(0xD69D85);
             TextArea.Styles[Style.Cpp.Character].ForeColor = IntToColor(0xE95454);
             TextArea.Styles[Style.Cpp.Preprocessor].ForeColor = IntToColor(0x8AAFEE);
             TextArea.Styles[Style.Cpp.Operator].ForeColor = IntToColor(0xE0E0E0);
-            TextArea.Styles[Style.Cpp.Regex].ForeColor = IntToColor(0xff00ff);
+            TextArea.Styles[Style.Cpp.Regex].ForeColor = IntToColor(0xD69D85);
             TextArea.Styles[Style.Cpp.CommentLineDoc].ForeColor = IntToColor(0x77A7DB);
             TextArea.Styles[Style.Cpp.Word].ForeColor = IntToColor(0x48A8EE);
             TextArea.Styles[Style.Cpp.Word2].ForeColor = IntToColor(0xF98906);
@@ -241,7 +239,7 @@ namespace Neo.Debugger
 
             marker = TextArea.Markers[STEP_BG];
             marker.Symbol = MarkerSymbol.Background;
-            marker.SetBackColor(Color.Yellow);
+            marker.SetBackColor(IntToColor(0xC0C000));
         }
 
         private void InitCodeFolding()

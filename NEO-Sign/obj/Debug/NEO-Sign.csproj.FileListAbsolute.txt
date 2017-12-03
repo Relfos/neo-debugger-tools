@@ -1,0 +1,17 @@
+D:\code\neo-debugger-tools\NEO-Sign\obj\Debug\NEO-Sign.csprojResolveAssemblyReference.cache
+D:\code\neo-debugger-tools\NEO-Sign\obj\Debug\NEO-Sign.csproj.CoreCompileInputs.cache
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-Sign.exe.config
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-Sign.exe
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-Sign.pdb
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\neod.exe
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-VM.dll
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\ScintillaNET.dll
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-AVMLib.dll
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\LunarParser.dll
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\neod.pdb
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\neod.exe.config
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-VM.pdb
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\ScintillaNET.xml
+D:\code\neo-debugger-tools\NEO-Sign\bin\Debug\NEO-AVMLib.pdb
+D:\code\neo-debugger-tools\NEO-Sign\obj\Debug\NEO-Sign.exe
+D:\code\neo-debugger-tools\NEO-Sign\obj\Debug\NEO-Sign.pdb
