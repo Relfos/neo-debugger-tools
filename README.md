@@ -23,7 +23,9 @@
 A suite of development tools for NEO smart contracts.  
 Includes a cli disassembler and a GUI debugger. A helper library that helps loading `.avm` files and create and load `.neomap` files is also included, and can be used to create other dev tools.
 
-![Debugger Screenshot](images/debugger.png)
+[![IntroductionVideo](images/debugger.png)](https://www.youtube.com/watch?v=W7DfxEcVSTk "Introduction video")
+
+(click picture to view video)
 
 ### How this works
 
