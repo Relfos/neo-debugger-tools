@@ -7,6 +7,7 @@ using Neo.Emulator;
 using System;
 using System.Numerics;
 using NeoLux;
+using Neo.Emulator.API;
 
 namespace Neo.Debugger
 {
@@ -30,12 +31,6 @@ namespace Neo.Debugger
             this.state = state;
             this.offset = offset;
         }
-    }
-
-    public struct DebugTransaction
-    {
-        public byte[] id;
-        public BigInteger ammount;
     }
 
     public class NeoDebugger : IScriptContainer
@@ -306,23 +301,22 @@ namespace Neo.Debugger
         }
 
         #region TRANSACTIONS
-        private List<DebugTransaction> _transactions = new List<DebugTransaction>();
-        public IEnumerable<DebugTransaction> transaction
-        {
-            get
-            {
-                return _transactions;
-            }
-        }
-
-        public void ClearTransactions()
-        {
-            _transactions.Clear();
-        }
-
         public void AddTransaction(byte[] id, BigInteger ammount)
         {
-            _transactions.Add(new DebugTransaction() { ammount = ammount, id = id });
+            var key = Runtime.invokerKeys;
+
+            var output = new TransactionOutput();
+            output.ammount = ammount;
+            output.id = id;
+            output.hash = key != null?  key.CompressedPublicKey: new byte[0];
+
+            var tx = new Transaction();
+            tx.outputs = new List<TransactionOutput>();
+            tx.outputs.Add(output);
+
+            var block = new Block();
+            block.transactions.Add(tx);
+            Blockchain.blocks[Blockchain.currentHeight+1] = block;
         }
         #endregion
     }

@@ -82,7 +82,6 @@ namespace Neo.Debugger
                 debugger.ContractArgs.Add(obj);
             }
 
-            debugger.ClearTransactions();
             if (assetListBox.SelectedIndex > 0)
             {
                 foreach (var entry in Asset.Entries)

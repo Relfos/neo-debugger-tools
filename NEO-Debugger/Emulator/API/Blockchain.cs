@@ -1,13 +1,56 @@
-﻿using Neo.VM;
+﻿using LunarParser;
+using LunarParser.JSON;
+using Neo.VM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Neo.Emulator.API
 {
-    public class Blockchain
+    public static class Blockchain
     {
-        public static uint currentHeight = 1;
+        public static uint currentHeight { get { return (uint)blocks.Count; } }
         public static Dictionary<uint, Block> blocks = new Dictionary<uint, Block>();
+
+        public static bool Load(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                return false;
+            }
+
+            var json = File.ReadAllText(fileName);
+            var root = JSONReader.ReadFromString(json);
+
+            blocks.Clear();
+            foreach (var child in root.Children)
+            {
+                if (child.Name.Equals("block"))
+                {
+                    var block = new Block();
+                    if (block.Load(child))
+                    {
+                        uint index = (uint)(blocks.Count + 1);
+                        blocks[index] = block;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public static void Save(string fileName)
+        {
+            var result = DataNode.CreateObject("blockchain");
+            for (uint i=1; i<=blocks.Count; i++)
+            {
+                var block = blocks[i];
+                result.AddNode(block.Save());
+            }
+
+            var json = JSONWriter.WriteToString(result);
+            File.WriteAllText(fileName, json);
+        }
 
         [Syscall("Neo.Blockchain.GetHeight")]
         public static bool GetHeight(ExecutionEngine engine)

@@ -398,6 +398,7 @@ namespace Neo.Debugger
                 ReloadTextArea();
 
                 StorageLoad();
+                BlockchainLoad();
 
                 UpdateSourceViewMenus();
 
@@ -863,6 +864,7 @@ namespace Neo.Debugger
                         var val = debugger.GetResult();
 
                         StorageSave();
+                        BlockchainSave();
 
                         var gasStr = string.Format("{0:N4}", debugger.GetUsedGas()); 
 
@@ -1104,6 +1106,30 @@ namespace Neo.Debugger
                 ToggleDebuggerSource();
             }
         }
+
+        #region BLOCKCHAIN API
+        public string BlockchainPath()
+        {
+            if (string.IsNullOrEmpty(targetAVMPath))
+            {
+                return null;
+            }
+
+            return targetAVMPath.Replace(".avm", ".chain");
+        }
+
+        public void BlockchainLoad()
+        {
+            var path = BlockchainPath();
+            Blockchain.Load(path);
+        }
+
+        public void BlockchainSave()
+        {
+            var path = BlockchainPath();
+            Blockchain.Save(path);
+        }
+        #endregion
 
         #region STORAGE API
         public string StoragePath()

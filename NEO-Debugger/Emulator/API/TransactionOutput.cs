@@ -1,6 +1,7 @@
-﻿using Neo.Debugger;
+﻿using LunarParser;
+using Neo.Debugger;
+using Neo.Debugger.Utils;
 using Neo.VM;
-using System;
 using System.Numerics;
 
 namespace Neo.Emulator.API
@@ -9,6 +10,28 @@ namespace Neo.Emulator.API
     {
         public byte[] id;
         public BigInteger ammount;
+        public byte[] hash;
+
+        internal void Load(DataNode root)
+        {
+            var hex = root.GetString("id");
+            this.id = hex.HexToByte();
+
+            hex = root.GetString("hash");
+            this.hash = hex.HexToByte();
+
+            var amm = root.GetString("ammount");
+            this.ammount = BigInteger.Parse(amm);
+        }
+
+        public DataNode Save()
+        {
+            var result = DataNode.CreateObject("output");
+            result.AddField("id", this.id.ByteToHex());
+            result.AddField("hash", this.hash.ByteToHex());
+            result.AddField("ammount", this.ammount.ToString());
+            return result;
+        }
 
         [Syscall("Neo.Output.GetAssetId")]
         public static bool GetAssetId(ExecutionEngine engine)
@@ -52,15 +75,18 @@ namespace Neo.Emulator.API
                 return false;
             }
 
-            var debugger = engine.ScriptContainer as NeoDebugger;
+            var tx = obj.GetInterface<TransactionOutput>();
+            engine.EvaluationStack.Push(tx.hash);
+
+            /*var debugger = engine.ScriptContainer as NeoDebugger;
 
             if (debugger == null)
             {
                 return false;
             }
 
-            // returns byte[] 
             engine.EvaluationStack.Push(engine.CurrentContext.ScriptHash);
+            */
 
             return true;
         }
