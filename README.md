@@ -139,6 +139,10 @@ The debugger supports emulation of the Storage API, meaning Storage.Put and Stor
 
 The actual data is stored in a file with extension `.store`, in same folder as the `.avm`. If required to reset the smart contract storage, it's fine to delete this file.
 
+In the latest version it is possible to view the storage contents using the Debug>Storage menu.
+
+![Storage Screenshot](images/storage.png)
+
 ### Asset Transfer
 
 The current version does support sending virtual NEO and GAS to the smart contract, emulating an asset transfer.
@@ -154,7 +158,7 @@ The `.neomap` file format is simple; for each line you need to list a starting o
 In the folder ICO Template you can find an example of a complex `.json` input file.
 
 ## Roadmap
-- Transactions emulation
+- Transactions emulation (In progress)
 - Debugger map generation for Java / Python / others
 
 
