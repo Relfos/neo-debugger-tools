@@ -36,8 +36,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LunarParser, Version=1.0.15.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LunarParser.1.0.15\lib\net45\LunarParser.dll</HintPath>
+    <Reference Include="LunarParser, Version=1.0.23.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LunarParser.1.0.23\lib\net45\LunarParser.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
@@ -169,6 +169,12 @@
     <Compile Include="RunForm.Designer.cs">
       <DependentUpon>RunForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="StorageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StorageForm.Designer.cs">
+      <DependentUpon>StorageForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\HotKeyManager.cs" />
     <Compile Include="Utils\InputBox.cs" />
     <Compile Include="Utils\SearchManager.cs" />
@@ -188,6 +194,9 @@
     </Compile>
     <EmbeddedResource Include="RunForm.resx">
       <DependentUpon>RunForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StorageForm.resx">
+      <DependentUpon>StorageForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />

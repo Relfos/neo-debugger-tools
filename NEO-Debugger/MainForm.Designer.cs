@@ -69,6 +69,7 @@
             this.stackPanel = new System.Windows.Forms.RichTextBox();
             this.stackLabel = new System.Windows.Forms.Label();
             this.gasCostLabel = new System.Windows.Forms.Label();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -121,7 +122,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -267,7 +268,8 @@
             this.runToolStripMenuItem,
             this.stepToolStripMenuItem,
             this.resetToolStripMenuItem,
-            this.sourceToolStripMenuItem});
+            this.sourceToolStripMenuItem,
+            this.toolStripMenuItem2});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(62, 23);
             this.debugToolStripMenuItem.Text = "Debug";
@@ -275,21 +277,21 @@
             // runToolStripMenuItem
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
             // 
             // stepToolStripMenuItem
             // 
             this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
-            this.stepToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.stepToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.stepToolStripMenuItem.Text = "Step";
             this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -299,20 +301,20 @@
             this.originalToolStripMenuItem,
             this.assemblyToolStripMenuItem});
             this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
-            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(119, 24);
+            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.sourceToolStripMenuItem.Text = "Source";
             // 
             // originalToolStripMenuItem
             // 
             this.originalToolStripMenuItem.Name = "originalToolStripMenuItem";
-            this.originalToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
+            this.originalToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.originalToolStripMenuItem.Text = "Original";
             this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
             // 
             // assemblyToolStripMenuItem
             // 
             this.assemblyToolStripMenuItem.Name = "assemblyToolStripMenuItem";
-            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
+            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.assemblyToolStripMenuItem.Text = "Assembly";
             this.assemblyToolStripMenuItem.Click += new System.EventHandler(this.assemblyToolStripMenuItem_Click);
             // 
@@ -444,6 +446,13 @@
             this.gasCostLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.gasCostLabel.Visible = false;
             // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 24);
+            this.toolStripMenuItem2.Text = "Storage";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -520,6 +529,7 @@
         private System.Windows.Forms.ToolStripMenuItem originalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem assemblyToolStripMenuItem;
         private System.Windows.Forms.Label gasCostLabel;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
     }
 }
 

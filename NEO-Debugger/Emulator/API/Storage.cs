@@ -1,14 +1,13 @@
 ﻿using Neo.VM;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Neo.Emulator.API
 {
     public static class Storage
     {
-        public static Action<byte[], byte[]> OnPut;
-        public static Func<byte[], byte[]> OnGet;
-        public static Action<byte[]> OnDelete;
+        public static Dictionary<byte[], byte[]> storage = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
 
         public static int lastStorageLength;
 
@@ -35,7 +34,11 @@ namespace Neo.Emulator.API
 
             var key = item.GetByteArray();
 
-            var data = OnGet != null ? OnGet(key) : null;
+            byte[] data = null;
+            if (storage.ContainsKey(key))
+            {
+                data = storage[key];
+            }
 
             if (data == null)
             {
@@ -71,10 +74,7 @@ namespace Neo.Emulator.API
             var key = keyItem.GetByteArray();
             var data = dataItem.GetByteArray();
 
-            if (OnPut != null)
-            {
-                OnPut(key, data);
-            }
+            storage[key] = data;
 
             lastStorageLength = data != null ? data.Length : 0;
 
@@ -87,6 +87,7 @@ namespace Neo.Emulator.API
             //StorageContext context, byte[] key
             //OR
             //StorageContext context, string key
+            //data.Remove(key);
             throw new NotImplementedException();
         }
 

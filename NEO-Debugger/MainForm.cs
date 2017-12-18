@@ -12,6 +12,7 @@ using Neo.VM;
 using Neo.Emulator;
 using LunarParser.JSON;
 using LunarParser.CSV;
+using Neo.Emulator.API;
 
 namespace Neo.Debugger
 {
@@ -84,9 +85,6 @@ namespace Neo.Debugger
         private void SetupEmulator()
         {
             Emulator.API.Runtime.OnLogMessage = this.SendLogToPanel;
-            Emulator.API.Storage.OnGet = this.StorageGet;
-            Emulator.API.Storage.OnPut = this.StoragePut;
-            Emulator.API.Storage.OnDelete = this.StorageDelete;
         }
 
         private void InitColors()
@@ -1127,14 +1125,14 @@ namespace Neo.Debugger
             }
 
             var lines = File.ReadAllLines(path);
-            _contractStorage.Clear();
+            Storage.storage.Clear();
             foreach (var line in lines)
             {
                 var temp = line.Split(',');
                 var key = Convert.FromBase64String(temp[0]);
                 var data = Convert.FromBase64String(temp[1]);
 
-                _contractStorage[key] = data;
+                Storage.storage[key] = data;
             }
         }
 
@@ -1147,7 +1145,7 @@ namespace Neo.Debugger
             }
 
             var sb = new StringBuilder();
-            foreach (var entry in _contractStorage)
+            foreach (var entry in Storage.storage)
             {
                 var key = Convert.ToBase64String(entry.Key);
                 var data = Convert.ToBase64String(entry.Value);
@@ -1158,27 +1156,12 @@ namespace Neo.Debugger
             File.WriteAllText(path, sb.ToString());
         }
 
-        private Dictionary<byte[], byte[]> _contractStorage = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
-
-        private void StorageDelete(byte[] key)
-        {
-            _contractStorage.Remove(key);
-        }
-
-        private void StoragePut(byte[] key, byte[] data)
-        {
-            _contractStorage[key] = data;
-        }
-
-        private byte[] StorageGet(byte[] key)
-        {
-            if (_contractStorage.ContainsKey(key))
-            {
-                return _contractStorage[key];
-            }
-
-            return null;
-        }
         #endregion
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            var form = new StorageForm();
+            form.ShowDialog();
+        }
     }
 }
