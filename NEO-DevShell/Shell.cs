@@ -36,6 +36,7 @@ namespace NEO_DevShell
             AddCommand(new ExitCommand());
             AddCommand(new LoadCommand());
             AddCommand(new CallCommand());
+            AddCommand(new StorageCommand());
         }
 
         private void AddCommand(Command cmd)
@@ -149,6 +150,20 @@ namespace NEO_DevShell
         }
     }
 
+    internal class StorageCommand : Command
+    {
+        public override string Name => "storage";
+        public override string Help => "View content of storage";
+
+        public override void Execute(string[] args)
+        {
+            foreach (var entry in Storage.entries)
+            {
+                Shell.Write(FormattingUtils.OutputData(entry.Key, false) + " => "+ FormattingUtils.OutputData(entry.Value, false, true));
+            }
+        }
+    }
+
     internal class HelpCommand : Command
     {
         public override string Name => "help";
@@ -192,6 +207,14 @@ namespace NEO_DevShell
 
                 var avmName = Path.GetFileName(filePath);
                 Shell.Write($"Loaded {avmName} ({bytes.Length} bytes)");
+
+                var storagePath = filePath.Replace(".avm", ".store");
+                if (File.Exists(storagePath))
+                {
+                    Storage.Load(storagePath);
+
+                    Shell.Write($"Loaded storage ({bytes.Length} bytes, {Storage.entries.Count} entries)");
+                }
 
                 Runtime.OnLogMessage = (x=> Shell.Write(x));
             }

@@ -29,7 +29,7 @@ namespace Neo.Debugger
             dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridView1.Columns[1].FillWeight = 4;
 
-            foreach (var entry in Storage.storage)
+            foreach (var entry in Storage.entries)
             {
                 dataGridView1.Rows.Add(FormattingUtils.OutputData(entry.Key, false), FormattingUtils.OutputData(entry.Value, false));
             }

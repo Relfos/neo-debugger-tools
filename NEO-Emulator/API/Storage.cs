@@ -1,13 +1,15 @@
 ﻿using Neo.VM;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace Neo.Emulator.API
 {
     public static class Storage
     {
-        public static Dictionary<byte[], byte[]> storage = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+        public static Dictionary<byte[], byte[]> entries = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
 
         public static int lastStorageLength;
 
@@ -35,9 +37,9 @@ namespace Neo.Emulator.API
             var key = item.GetByteArray();
 
             byte[] data = null;
-            if (storage.ContainsKey(key))
+            if (entries.ContainsKey(key))
             {
-                data = storage[key];
+                data = entries[key];
             }
 
             if (data == null)
@@ -74,7 +76,7 @@ namespace Neo.Emulator.API
             var key = keyItem.GetByteArray();
             var data = dataItem.GetByteArray();
 
-            storage[key] = data;
+            entries[key] = data;
 
             lastStorageLength = data != null ? data.Length : 0;
 
@@ -91,5 +93,32 @@ namespace Neo.Emulator.API
             throw new NotImplementedException();
         }
 
+        public static void Load(string path)
+        {
+            var lines = File.ReadAllLines(path);
+            entries.Clear();
+            foreach (var line in lines)
+            {
+                var temp = line.Split(',');
+                var key = Convert.FromBase64String(temp[0]);
+                var data = Convert.FromBase64String(temp[1]);
+
+                entries[key] = data;
+            }
+        }
+
+        public static void Save(string path)
+        {
+            var sb = new StringBuilder();
+            foreach (var entry in entries)
+            {
+                var key = Convert.ToBase64String(entry.Key);
+                var data = Convert.ToBase64String(entry.Value);
+                sb.Append(key);
+                sb.Append(',');
+                sb.AppendLine(data);
+            }
+            File.WriteAllText(path, sb.ToString());
+        }
     }
 }

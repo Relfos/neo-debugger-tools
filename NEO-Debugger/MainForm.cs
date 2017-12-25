@@ -1148,16 +1148,7 @@ namespace Neo.Debugger
                 return;
             }
 
-            var lines = File.ReadAllLines(path);
-            Storage.storage.Clear();
-            foreach (var line in lines)
-            {
-                var temp = line.Split(',');
-                var key = Convert.FromBase64String(temp[0]);
-                var data = Convert.FromBase64String(temp[1]);
-
-                Storage.storage[key] = data;
-            }
+            Storage.Load(path);
         }
 
         public void StorageSave()
@@ -1168,16 +1159,7 @@ namespace Neo.Debugger
                 return;
             }
 
-            var sb = new StringBuilder();
-            foreach (var entry in Storage.storage)
-            {
-                var key = Convert.ToBase64String(entry.Key);
-                var data = Convert.ToBase64String(entry.Value);
-                sb.Append(key);
-                sb.Append(',');
-                sb.AppendLine(data);
-            }
-            File.WriteAllText(path, sb.ToString());
+            Storage.Save(path);
         }
 
         #endregion
