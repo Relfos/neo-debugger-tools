@@ -9,6 +9,11 @@ namespace NEO_DevShell
             Console.WriteLine("-NEO Developer Shell- version 0.1");
             var shell = new Shell();
 
+            if (args.Length>0)
+            {
+                shell.Execute("load " + args[0]);
+            }
+
             while (true)
             {
                 Console.Write(">");
