@@ -11,6 +11,8 @@ NEO-CLI-Disassembler/obj/
 Example/
 ICO-Template/bin/
 ICO-Template/obj/
+ICO-Unit-Tests/bin/
+ICO-Unit-Tests/obj/
 NEO-DevShell/bin/
 NEO-DevShell/obj/
 NEO-Emulator/bin/

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-Emulator", "NEO-Emulato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-DevShell", "NEO-DevShell\NEO-DevShell.csproj", "{FD85090A-67F5-455C-896D-2B4A3520086F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICO-Unit-Tests", "ICO-Unit-Tests\ICO-Unit-Tests.csproj", "{503F4AC7-1852-46AA-AD0F-B5ED1018ACDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{FD85090A-67F5-455C-896D-2B4A3520086F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD85090A-67F5-455C-896D-2B4A3520086F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD85090A-67F5-455C-896D-2B4A3520086F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503F4AC7-1852-46AA-AD0F-B5ED1018ACDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503F4AC7-1852-46AA-AD0F-B5ED1018ACDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503F4AC7-1852-46AA-AD0F-B5ED1018ACDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503F4AC7-1852-46AA-AD0F-B5ED1018ACDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
