@@ -1,4 +1,4 @@
-﻿using Neo.Tools.AVM;
+﻿using Neo.Emulator.Dissambler;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;

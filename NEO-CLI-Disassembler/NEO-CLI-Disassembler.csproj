@@ -49,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NEO-AVMLib\NEO-AVMLib.csproj">
-      <Project>{0ee11865-5308-4b46-ab78-94fadb6e3462}</Project>
-      <Name>NEO-AVMLib</Name>
+    <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj">
+      <Project>{372429c2-71be-41c2-92d0-5a9187bc238a}</Project>
+      <Name>NEO-Emulator</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
