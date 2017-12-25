@@ -10,6 +10,7 @@ namespace Neo.Emulator.API
     public static class Storage
     {
         public static Dictionary<byte[], byte[]> entries = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+        public static int sizeInBytes { get; private set; }
 
         public static int lastStorageLength;
 
@@ -76,7 +77,21 @@ namespace Neo.Emulator.API
             var key = keyItem.GetByteArray();
             var data = dataItem.GetByteArray();
 
+            if (entries.ContainsKey(key))
+            {
+                var oldEntry = entries[key];
+                if (oldEntry != null)
+                {
+                    sizeInBytes -= oldEntry.Length;
+                }
+            }
+
             entries[key] = data;
+
+            if (data != null)
+            {
+                sizeInBytes += data.Length;
+            }
 
             lastStorageLength = data != null ? data.Length : 0;
 
@@ -89,19 +104,38 @@ namespace Neo.Emulator.API
             //StorageContext context, byte[] key
             //OR
             //StorageContext context, string key
-            //data.Remove(key);
-            throw new NotImplementedException();
+
+            var context = engine.EvaluationStack.Pop();
+            var keyItem = engine.EvaluationStack.Pop();
+
+            var key = keyItem.GetByteArray();
+
+            if (entries.ContainsKey(key))
+            {
+                var oldEntry = entries[key];
+                if (oldEntry != null)
+                {
+                    sizeInBytes -= oldEntry.Length;
+                }
+
+                entries.Remove(key);
+            }
+
+            return true;
         }
 
         public static void Load(string path)
         {
             var lines = File.ReadAllLines(path);
+            sizeInBytes = 0;
             entries.Clear();
             foreach (var line in lines)
             {
                 var temp = line.Split(',');
                 var key = Convert.FromBase64String(temp[0]);
                 var data = Convert.FromBase64String(temp[1]);
+
+                sizeInBytes += data.Length;
 
                 entries[key] = data;
             }
