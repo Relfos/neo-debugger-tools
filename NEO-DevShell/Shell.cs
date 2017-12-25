@@ -27,6 +27,10 @@ namespace NEO_DevShell
         public List<Command> commands = new List<Command>();
         public NeoDebugger debugger;
 
+        public string avmPath;
+        public string storagePath;
+        public string blockchainPath;
+
 
         public Shell()
         {
@@ -202,18 +206,26 @@ namespace NEO_DevShell
 
             if (File.Exists(filePath))
             {
+                Shell.avmPath = filePath;
+
                 var bytes = File.ReadAllBytes(filePath);
                 Shell.debugger = new NeoDebugger(bytes);
 
                 var avmName = Path.GetFileName(filePath);
                 Shell.Write($"Loaded {avmName} ({bytes.Length} bytes)");
 
-                var storagePath = filePath.Replace(".avm", ".store");
-                if (File.Exists(storagePath))
+                Shell.storagePath = filePath.Replace(".avm", ".store");
+                if (File.Exists(Shell.storagePath))
                 {
-                    Storage.Load(storagePath);
+                    Storage.Load(Shell.storagePath);
+                    Shell.Write($"Loaded storage ({Storage.sizeInBytes} bytes, {Storage.entries.Count} entries)");
+                }
 
-                    Shell.Write($"Loaded storage ({bytes.Length} bytes, {Storage.entries.Count} entries)");
+                Shell.blockchainPath = filePath.Replace(".avm", ".chain");
+                if (File.Exists(Shell.blockchainPath))
+                {
+                    Blockchain.Load(Shell.blockchainPath);
+                    Shell.Write($"Loaded blockchain ({bytes.Length} bytes, {Storage.entries.Count} entries)");
                 }
 
                 Runtime.OnLogMessage = (x=> Shell.Write(x));
@@ -345,8 +357,9 @@ namespace NEO_DevShell
 
                 var val = Shell.debugger.GetResult();
 
-                //StorageSave();
-                //BlockchainSave();
+                Storage.Save(Shell.storagePath);
+
+                Blockchain.Save(Shell.blockchainPath);
 
                 Shell.Write("Result: " + FormattingUtils.StackItemAsString(val));
                 Shell.Write("GAS used: " + Shell.debugger.GetUsedGas());
