@@ -72,18 +72,6 @@ namespace Neo.Emulator
 
         private int lastOffset = -1;
 
-        public List<object> ContractInputs = new List<object>();
-
-        public void LoadInputs(DataNode items)
-        {
-            ContractInputs.Clear();
-            foreach (var item in items.Children)
-            {
-                var obj = NeoEmulator.ConvertArgument(item);
-                ContractInputs.Add(obj);
-            }
-        }
-
         private static void EmitObject(ScriptBuilder sb, object item)
         {
             if (item is List<object>)
@@ -131,8 +119,9 @@ namespace Neo.Emulator
             }
         }
 
-        public void Reset()
+        public void Reset(DataNode inputs)
         {
+            
             if (lastState.state == DebuggerState.State.Reset)
             {
                 return;
@@ -146,9 +135,14 @@ namespace Neo.Emulator
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 var items = new Stack<object>();
-                foreach (var item in ContractInputs)
+
+                if (inputs != null)
                 {
-                    items.Push(item);
+                    foreach (var item in inputs.Children)
+                    {
+                        var obj = NeoEmulator.ConvertArgument(item);
+                        items.Push(obj);
+                    }
                 }
 
                 while (items.Count > 0)
@@ -293,7 +287,7 @@ namespace Neo.Emulator
             return lastState;
         }
 
-        public StackItem GetResult()
+        public StackItem GetOutput()
         {
             var result = engine.EvaluationStack.Peek();
             return result;

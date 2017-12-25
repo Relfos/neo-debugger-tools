@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using LunarParser;
-using LunarParser.JSON;
 using Neo.Emulator;
 using NUnit.Framework;
 
@@ -28,12 +26,10 @@ namespace ICO_Unit_Tests
             inputs.AddValue("symbol");
             inputs.AddValue(null);
 
-            emulator.LoadInputs(inputs);
-            emulator.Reset();
-
+            emulator.Reset(inputs);
             emulator.Run();
 
-            var result = emulator.GetResult();
+            var result = emulator.GetOutput();
             Assert.NotNull(result);
 
             var symbol = result.GetString();

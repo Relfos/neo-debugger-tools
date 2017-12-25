@@ -14,7 +14,7 @@ namespace Neo.Debugger
 {
     public partial class RunForm : Form
     {
-        public NeoEmulator debugger;
+        public NeoEmulator emulator;
 
         private string lastParams = null;
 
@@ -74,7 +74,7 @@ namespace Neo.Debugger
 
             var items = node.GetNode("params");
 
-            debugger.LoadInputs(items);
+            emulator.Reset(items);
 
             if (assetListBox.SelectedIndex > 0)
             {
@@ -88,7 +88,7 @@ namespace Neo.Debugger
 
                         if (ammount > 0)
                         {
-                            debugger.AddTransaction(entry.id, ammount);
+                            emulator.AddTransaction(entry.id, ammount);
                         }
                         else
                         {

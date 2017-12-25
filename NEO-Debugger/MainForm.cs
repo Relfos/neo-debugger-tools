@@ -735,7 +735,7 @@ namespace Neo.Debugger
                 return false;
             }
 
-            runForm.debugger = this.debugger;
+            runForm.emulator = this.debugger;
 
             var result = runForm.ShowDialog();
 
@@ -755,8 +755,6 @@ namespace Neo.Debugger
             currentLine = -1;
 
             shouldReset = false;
-
-            debugger.Reset();
 
             logView.Clear();
             stackPanel.Clear();
@@ -859,7 +857,7 @@ namespace Neo.Debugger
                     {
                         shouldReset = true;
                         RemoveCurrentHighlight();
-                        var val = debugger.GetResult();
+                        var val = debugger.GetOutput();
 
                         StorageSave();
                         BlockchainSave();

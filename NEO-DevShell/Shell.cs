@@ -298,13 +298,10 @@ namespace NEO_DevShell
 
                 Shell.Write("Executing transaction...");
 
-                Shell.debugger.LoadInputs(inputs);
-
-                Shell.debugger.Reset();
-
+                Shell.debugger.Reset(inputs);
                 Shell.debugger.Run();
 
-                var val = Shell.debugger.GetResult();
+                var val = Shell.debugger.GetOutput();
 
                 Storage.Save(Shell.storagePath);
 
