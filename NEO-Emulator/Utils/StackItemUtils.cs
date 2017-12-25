@@ -1,5 +1,7 @@
-﻿using Neo.VM;
+﻿using Neo.Cryptography;
+using Neo.VM;
 using System;
+using System.Numerics;
 using System.Text;
 
 namespace Neo.Emulator.Utils
@@ -64,7 +66,7 @@ namespace Neo.Emulator.Utils
             return col1.PadRight(colSize) + col2.PadRight(colSize) + col3;
         }
 
-        public static string OutputData(byte[] data, bool addQuotes)
+        public static string OutputData(byte[] data, bool addQuotes, bool preferInts = false)
         {
             if (data == null)
             {
@@ -77,6 +79,18 @@ namespace Neo.Emulator.Utils
                 var isValidText = char.IsLetterOrDigit(c) || char.IsPunctuation(c) || char.IsWhiteSpace(c);
                 if (!isValidText)
                 {
+                    if (preferInts)
+                    {
+                        var val = new BigInteger(data);
+                        return val.ToString();
+                    }
+
+                    if (data.Length == 20)
+                    {
+                        var signatureHash = Crypto.Default.ToScriptHash(data);
+                        return Crypto.Default.ToAddress(signatureHash);
+                    }
+
                     return OutputHex(data);
                 }
             }
