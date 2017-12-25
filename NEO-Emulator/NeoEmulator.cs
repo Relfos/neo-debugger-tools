@@ -5,6 +5,8 @@ using System.Linq;
 using System;
 using System.Numerics;
 using Neo.Emulator.API;
+using LunarParser;
+using Neo.Emulator.Utils;
 
 namespace Neo.Emulator
 {
@@ -30,7 +32,7 @@ namespace Neo.Emulator
         }
     }
 
-    public class NeoDebugger : IScriptContainer
+    public class NeoEmulator : IScriptContainer
     {
         private ExecutionEngine engine;
         private byte[] contractBytes;
@@ -49,7 +51,7 @@ namespace Neo.Emulator
             return null;
         }
 
-        public NeoDebugger(byte[] contractBytes)
+        public NeoEmulator(byte[] contractBytes)
         {
             this.interop = new InteropService();
             this.contractBytes = contractBytes;
@@ -70,7 +72,17 @@ namespace Neo.Emulator
 
         private int lastOffset = -1;
 
-        public List<object> ContractArgs = new List<object>();
+        public List<object> ContractInputs = new List<object>();
+
+        public void LoadInputs(DataNode items)
+        {
+            ContractInputs.Clear();
+            foreach (var item in items.Children)
+            {
+                var obj = NeoEmulator.ConvertArgument(item);
+                ContractInputs.Add(obj);
+            }
+        }
 
         private static void EmitObject(ScriptBuilder sb, object item)
         {
@@ -134,7 +146,7 @@ namespace Neo.Emulator
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 var items = new Stack<object>();
-                foreach (var item in ContractArgs)
+                foreach (var item in ContractInputs)
                 {
                     items.Push(item);
                 }
@@ -316,5 +328,53 @@ namespace Neo.Emulator
             Blockchain.blocks[Blockchain.currentHeight+1] = block;
         }
         #endregion
+
+        public static object ConvertArgument(DataNode item)
+        {
+            if (item.HasChildren)
+            {
+                var list = new List<object>();
+                foreach (var child in item.Children)
+                {
+                    list.Add(ConvertArgument(child));
+                }
+                return list;
+            }
+
+            BigInteger intVal;
+
+            if (item.Kind == NodeKind.Numeric)
+            {
+                if (BigInteger.TryParse(item.Value, out intVal))
+                {
+                    return intVal;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            if (item.Kind == NodeKind.Boolean)
+            {
+                return "true".Equals(item.Value.ToLowerInvariant()) ? true : false;
+            }
+            else
+            if (item.Kind == NodeKind.Null)
+            {
+                return null;
+            }
+            else
+            if (item.Value.StartsWith("0x"))
+            {
+                return item.Value.Substring(2).HexToByte();
+            }
+            else
+            {
+                return item.Value;
+            }
+        }
+
+
     }
 }

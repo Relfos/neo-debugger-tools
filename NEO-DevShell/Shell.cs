@@ -25,7 +25,7 @@ namespace NEO_DevShell
     public class Shell
     {
         public List<Command> commands = new List<Command>();
-        public NeoDebugger debugger;
+        public NeoEmulator debugger;
 
         public string avmPath;
         public string storagePath;
@@ -209,7 +209,7 @@ namespace NEO_DevShell
                 Shell.avmPath = filePath;
 
                 var bytes = File.ReadAllBytes(filePath);
-                Shell.debugger = new NeoDebugger(bytes);
+                Shell.debugger = new NeoEmulator(bytes);
 
                 var avmName = Path.GetFileName(filePath);
                 Shell.Write($"Loaded {avmName} ({bytes.Length} bytes)");
@@ -243,52 +243,6 @@ namespace NEO_DevShell
     {
         public override string Name => "call";
         public override string Help => "Calls a smart contract method";
-
-        private object ConvertArgument(DataNode item)
-        {
-            if (item.HasChildren)
-            {
-                var list = new List<object>();
-                foreach (var child in item.Children)
-                {
-                    list.Add(ConvertArgument(child));
-                }
-                return list;
-            }
-
-            BigInteger intVal;
-
-            if (item.Kind == NodeKind.Numeric)
-            {
-                if (BigInteger.TryParse(item.Value, out intVal))
-                {
-                    return intVal;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            if (item.Kind == NodeKind.Boolean)
-            {
-                return "true".Equals(item.Value.ToLowerInvariant()) ? true : false;
-            }
-            else
-            if (item.Kind == NodeKind.Null)
-            {
-                return null;
-            }
-            else
-            if (item.Value.StartsWith("0x"))
-            {
-                return item.Value.Substring(2).HexToByte();
-            }
-            else
-            {
-                return item.Value;
-            }
-        }
 
         public override void Execute(string[] args)
         {
@@ -344,12 +298,7 @@ namespace NEO_DevShell
 
                 Shell.Write("Executing transaction...");
 
-                Shell.debugger.ContractArgs.Clear();
-                foreach (var item in inputs.Children)
-                {
-                    var obj = ConvertArgument(item);
-                    Shell.debugger.ContractArgs.Add(obj);
-                }
+                Shell.debugger.LoadInputs(inputs);
 
                 Shell.debugger.Reset();
 

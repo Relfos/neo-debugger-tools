@@ -14,7 +14,7 @@ namespace Neo.Debugger
 {
     public partial class RunForm : Form
     {
-        public NeoDebugger debugger;
+        public NeoEmulator debugger;
 
         private string lastParams = null;
 
@@ -74,12 +74,7 @@ namespace Neo.Debugger
 
             var items = node.GetNode("params");
 
-            debugger.ContractArgs.Clear();
-            foreach (var item in items.Children)
-            {
-                var obj = ConvertArgument(item);
-                debugger.ContractArgs.Add(obj);
-            }
+            debugger.LoadInputs(items);
 
             if (assetListBox.SelectedIndex > 0)
             {
@@ -114,52 +109,6 @@ namespace Neo.Debugger
             if (InitInvoke())
             {
                 this.DialogResult = DialogResult.OK;
-            }
-        }
-
-        private object ConvertArgument(DataNode item)
-        {
-            if (item.HasChildren)
-            {
-                var list = new List<object>();
-                foreach (var child in item.Children)
-                {
-                    list.Add(ConvertArgument(child));
-                }
-                return list;
-            }
-
-            BigInteger intVal;
-
-            if (item.Kind == NodeKind.Numeric)
-            {                
-                if (BigInteger.TryParse(item.Value, out intVal))
-                {
-                    return intVal;
-                }                
-                else
-                {
-                    return 0;
-                }
-            }
-            else
-            if (item.Kind == NodeKind.Boolean)
-            {
-                return "true".Equals(item.Value.ToLowerInvariant()) ? true : false;
-            }
-            else
-            if (item.Kind == NodeKind.Null)
-            {
-                return null;
-            }
-            else
-            if (item.Value.StartsWith("0x"))
-            {
-                return item.Value.Substring(2).HexToByte();
-            }
-            else
-            {
-                return item.Value;
             }
         }
 

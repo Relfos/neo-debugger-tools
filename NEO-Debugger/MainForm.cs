@@ -29,7 +29,7 @@ namespace Neo.Debugger
 
         private Scintilla TextArea;
 
-        private NeoDebugger debugger;
+        private NeoEmulator debugger;
         private AVMDisassemble avm_asm;
         private int currentLine = -1;
         private NeoMapFile map = null;
@@ -375,7 +375,7 @@ namespace Neo.Debugger
                     map = null;
                 }
 
-                this.debugger = new NeoDebugger(bytes);
+                this.debugger = new NeoEmulator(bytes);
                 this.avm_asm = NeoDisassembler.Disassemble(bytes);
 
                 if (map != null && map.Entries.Any())

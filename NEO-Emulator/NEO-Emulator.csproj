@@ -87,7 +87,7 @@
     <Compile Include="IApiInterface.cs" />
     <Compile Include="Dissambler\NeoDebugMap.cs" />
     <Compile Include="Dissambler\NeoDisassembler.cs" />
-    <Compile Include="NeoDebugger.cs" />
+    <Compile Include="NeoEmulator.cs" />
     <Compile Include="StorageContext.cs" />
     <Compile Include="TriggerType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
