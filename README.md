@@ -169,9 +169,60 @@ If using Linux or OSX, [Mono](http://www.mono-project.com/) is required.
 
 ![Inputs Screenshot](images/shell.png)
 
-### Demo Project
+## Unit testing
 
-In the folder ICO Template you can find an example of a complex `.json` input file.
+The NEO emulator library makes it easy to create your own unit tests for smart contracts. 
+
+```c#
+using System.IO;
+using LunarParser;
+using Neo.Emulator;
+using NUnit.Framework;
+
+[TestFixture]
+public class ContractTests
+{
+	private static NeoEmulator emulator; 
+
+	// load the .avm file before tests run
+	[OneTimeSetUp]
+	public void Setup()
+	{
+		var path = TestContext.CurrentContext.TestDirectory.Replace("ICO-Unit-Tests", "ICO-Template");
+		Directory.SetCurrentDirectory(path);
+		var avmBytes = File.ReadAllBytes("ICOContract.avm");
+		emulator = new NeoEmulator(avmBytes);
+	}
+
+	[Test]
+	public void TestSymbol()
+	{
+		// create the inputs to be passed to the NEO smart contract
+		var inputs = DataNode.CreateArray();
+		inputs.AddValue("symbol");
+		inputs.AddValue(null);
+
+		// reset the Emulator then run it
+		emulator.Reset();
+		emulator.Run(inputs);
+
+		// obtain the smart contract output
+		var result = emulator.GetOutput();
+		Assert.NotNull(result);
+
+		// validate output
+		var symbol = result.GetString();
+		Assert.IsTrue(symbol.Equals("DEMO"));
+	}
+}   
+```
+
+
+## Demo Project
+
+In the folder ICO Template you can find an example of a complex `.json` input file. 
+
+Included is also a small project to demonstrate unit tests of the demo project.
 
 ## Roadmap
 - Transactions emulation (In progress)
