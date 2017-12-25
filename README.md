@@ -159,6 +159,16 @@ NEO smart contracts can be coded in many different languages, and in theory, thi
 However, since only NeoN was modified to emit those map files during compilation, to add other languages it would be necessary to modify other compilers to emit a `.neomap`.
 The `.neomap` file format is simple; for each line you need to list a starting offset, ending offset, the source line and the corresponding source file, all values separated by a comma.
 
+### Developer Shell
+
+A developer shell is also included and can be used to emulate and debug NEO smart contracts from the terminal. 
+
+The smart contract inputs should also be passed as a JSON string, same as in the debugger GUI.
+
+If using Linux or OSX, [Mono](http://www.mono-project.com/) is required.
+
+![Inputs Screenshot](images/shell.png)
+
 ### Demo Project
 
 In the folder ICO Template you can find an example of a complex `.json` input file.
