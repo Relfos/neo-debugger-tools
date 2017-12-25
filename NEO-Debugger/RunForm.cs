@@ -1,10 +1,11 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
 using Neo.Debugger.Utils;
+using Neo.Emulator;
 using Neo.Emulator.API;
+using Neo.Emulator.Utils;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
@@ -76,8 +77,6 @@ namespace Neo.Debugger
             debugger.ContractArgs.Clear();
             foreach (var item in items.Children)
             {
-                // TODO - auto convert value to proper types, currently everything is assumed to be strings!
-
                 var obj = ConvertArgument(item);
                 debugger.ContractArgs.Add(obj);
             }

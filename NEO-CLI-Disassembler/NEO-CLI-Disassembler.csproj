@@ -7,7 +7,7 @@
     <ProjectGuid>{4AB8DA86-649F-4F8C-A448-B3F10B8D3350}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>NEO_CLI_Disassembler</RootNamespace>
-    <AssemblyName>NEO-CLI-Disassembler</AssemblyName>
+    <AssemblyName>neo_disasm</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -111,26 +111,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cryptography\Base58.cs" />
-    <Compile Include="Cryptography\BloomFilter.cs" />
-    <Compile Include="Cryptography\Crypto.cs" />
-    <Compile Include="Cryptography\ECC\ECCurve.cs" />
-    <Compile Include="Cryptography\ECC\ECDsa.cs" />
-    <Compile Include="Cryptography\ECC\ECFieldElement.cs" />
-    <Compile Include="Cryptography\ECC\ECPoint.cs" />
-    <Compile Include="Cryptography\Fixed8.cs" />
-    <Compile Include="Cryptography\Helper.cs" />
-    <Compile Include="Cryptography\ISerializable.cs" />
-    <Compile Include="Cryptography\KeyPair.cs" />
-    <Compile Include="Cryptography\MerkleTree.cs" />
-    <Compile Include="Cryptography\MerkleTreeNode.cs" />
-    <Compile Include="Cryptography\Murmur3.cs" />
-    <Compile Include="Cryptography\ProtectedMemoryContext.cs" />
-    <Compile Include="Cryptography\RIPEMD160Managed.cs" />
-    <Compile Include="Cryptography\SCrypt.cs" />
-    <Compile Include="Cryptography\UInt160.cs" />
-    <Compile Include="Cryptography\UInt256.cs" />
-    <Compile Include="Cryptography\UIntBase.cs" />
     <Compile Include="LanguageSupport.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -138,29 +118,6 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Emulator\Attributes\AppcallAttribute.cs" />
-    <Compile Include="Emulator\Helper.cs" />
-    <Compile Include="Emulator\IApiInterface.cs" />
-    <Compile Include="Emulator\Attributes\NonemitAttribute.cs" />
-    <Compile Include="Emulator\Attributes\OpCodeAttribute.cs" />
-    <Compile Include="Emulator\API\Account.cs" />
-    <Compile Include="Emulator\API\Asset.cs" />
-    <Compile Include="Emulator\API\Block.cs" />
-    <Compile Include="Emulator\API\Blockchain.cs" />
-    <Compile Include="Emulator\API\Contract.cs" />
-    <Compile Include="Emulator\API\Header.cs" />
-    <Compile Include="Emulator\API\Runtime.cs" />
-    <Compile Include="Emulator\API\Storage.cs" />
-    <Compile Include="Emulator\StorageContext.cs" />
-    <Compile Include="Emulator\API\Transaction.cs" />
-    <Compile Include="Emulator\API\TransactionAttribute.cs" />
-    <Compile Include="Emulator\API\TransactionInput.cs" />
-    <Compile Include="Emulator\API\TransactionOutput.cs" />
-    <Compile Include="Emulator\TriggerType.cs" />
-    <Compile Include="Emulator\API\Validator.cs" />
-    <Compile Include="Emulator\API\SmartContract.cs" />
-    <Compile Include="Emulator\Attributes\SyscallAttribute.cs" />
-    <Compile Include="NeoDebugger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RunForm.cs">
@@ -178,7 +135,6 @@
     <Compile Include="Utils\HotKeyManager.cs" />
     <Compile Include="Utils\InputBox.cs" />
     <Compile Include="Utils\SearchManager.cs" />
-    <Compile Include="Utils\StringUtils.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -211,9 +167,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NEO-AVMLib\NEO-AVMLib.csproj">
-      <Project>{0ee11865-5308-4b46-ab78-94fadb6e3462}</Project>
-      <Name>NEO-AVMLib</Name>
+    <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj">
+      <Project>{372429c2-71be-41c2-92d0-5a9187bc238a}</Project>
+      <Name>NEO-Emulator</Name>
     </ProjectReference>
     <ProjectReference Include="..\NEO-VM\NEO-VM.csproj">
       <Project>{6e380d57-508d-4e99-9ab6-ac264d8e44d0}</Project>

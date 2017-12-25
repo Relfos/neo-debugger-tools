@@ -1,0 +1,9 @@
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\obj\Debug\NEO-Emulator.csprojResolveAssemblyReference.cache
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\obj\Debug\NEO-Emulator.csproj.CoreCompileInputs.cache
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\bin\Debug\NEO-Emulator.dll
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\bin\Debug\NEO-Emulator.pdb
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\bin\Debug\LunarParser.dll
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\bin\Debug\NEO-VM.dll
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\bin\Debug\NEO-VM.pdb
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\obj\Debug\NEO-Emulator.dll
+D:\code\Crypto\neo-debugger-tools\NEO-Emulator\obj\Debug\NEO-Emulator.pdb

@@ -7,12 +7,10 @@ using ScintillaNET;
 using Neo.Debugger.Utils;
 using System.Text;
 using System.Collections.Generic;
-using Neo.Tools.AVM;
-using Neo.VM;
-using Neo.Emulator;
-using LunarParser.JSON;
-using LunarParser.CSV;
 using Neo.Emulator.API;
+using Neo.Emulator.Utils;
+using Neo.Emulator.Dissambler;
+using Neo.Emulator;
 
 namespace Neo.Debugger
 {
