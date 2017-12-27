@@ -59,10 +59,6 @@
       <Project>{372429C2-71BE-41C2-92D0-5A9187BC238A}</Project>
       <Name>NEO-Emulator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NEO-VM\NEO-VM.csproj">
-      <Project>{6E380D57-508D-4E99-9AB6-AC264D8E44D0}</Project>
-      <Name>NEO-VM</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

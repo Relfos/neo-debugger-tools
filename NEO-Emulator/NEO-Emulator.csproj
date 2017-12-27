@@ -93,12 +93,25 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Utils\StackItemUtils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NEO-VM\NEO-VM.csproj">
-      <Project>{6e380d57-508d-4e99-9ab6-ac264d8e44d0}</Project>
-      <Name>NEO-VM</Name>
-    </ProjectReference>
+    <Compile Include="VM\ExecutionContext.cs" />
+    <Compile Include="VM\ExecutionEngine.cs" />
+    <Compile Include="VM\Helper.cs" />
+    <Compile Include="VM\ICrypto.cs" />
+    <Compile Include="VM\IInteropInterface.cs" />
+    <Compile Include="VM\InteropService.cs" />
+    <Compile Include="VM\IScriptContainer.cs" />
+    <Compile Include="VM\IScriptTable.cs" />
+    <Compile Include="VM\OpCode.cs" />
+    <Compile Include="VM\RandomAccessStack.cs" />
+    <Compile Include="VM\ScriptBuilder.cs" />
+    <Compile Include="VM\StackItem.cs" />
+    <Compile Include="VM\Types\Array.cs" />
+    <Compile Include="VM\Types\Boolean.cs" />
+    <Compile Include="VM\Types\ByteArray.cs" />
+    <Compile Include="VM\Types\Integer.cs" />
+    <Compile Include="VM\Types\InteropInterface.cs" />
+    <Compile Include="VM\Types\Struct.cs" />
+    <Compile Include="VM\VMState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
