@@ -18,3 +18,4 @@ NEO-DevShell/obj/
 NEO-Emulator/bin/
 NEO-Emulator/obj/
 Release/
+*.nupkg
