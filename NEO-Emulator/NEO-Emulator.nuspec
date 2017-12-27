@@ -2,8 +2,8 @@
 <package >
   <metadata>
     <id>Neo.Emulator</id>
-    <version>0.1</version>
-    <title>NEO Emulator</title>
+    <version>0.2</version>
+    <title>Neo.Emulator</title>
     <authors>Sérgio Flores</authors>
     <owners>Sérgio Flores</owners>
     <projectUrl>https://github.com/CityOfZion/neo-debugger-tools/</projectUrl>
