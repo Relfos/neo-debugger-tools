@@ -173,6 +173,13 @@ If using Linux or OSX, [Mono](http://www.mono-project.com/) is required.
 
 The NEO emulator library makes it easy to create your own unit tests for smart contracts. 
 
+### Install
+
+It's not necessary to download the debugger and the others tools if you just need Unit Testing.
+
+    PM> Install-Package Neo.Emulator
+
+### Example
 ```c#
 using System.IO;
 using LunarParser;
