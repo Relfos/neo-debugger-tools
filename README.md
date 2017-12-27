@@ -177,6 +177,8 @@ The NEO emulator library makes it easy to create your own unit tests for smart c
 
 It's not necessary to download the debugger and the others tools if you just need Unit Testing.
 
+In that case, just install the Neo.Emulator, which is available as a Nuget package.
+
     PM> Install-Package Neo.Emulator
 
 ### Example
