@@ -37,7 +37,16 @@ namespace Neo.Compiler.MSIL
                 return null;
             }
         }
-        public static void Parse(ILMethod from, AntsModule to)
+        public static byte[] HexString2Bytes(string str)
+        {
+            byte[] outd = new byte[str.Length / 2];
+            for (var i = 0; i < str.Length / 2; i++)
+            {
+                outd[i] = byte.Parse(str.Substring(i * 2, 2), System.Globalization.NumberStyles.HexNumber);
+            }
+            return outd;
+        }
+        public static void Parse(ILMethod from, NeoModule to)
         {
             calcStack = new Stack<object>();
             bool bEnd = false;
@@ -87,7 +96,7 @@ namespace Neo.Compiler.MSIL
                         break;
                     case CodeEx.Newarr:
                         {
-                            if(src.tokenType == "System.Byte")
+                            if (src.tokenType == "System.Byte")
                             {
                                 var count = (int)calcStack.Pop();
                                 byte[] data = new byte[count];
@@ -107,19 +116,58 @@ namespace Neo.Compiler.MSIL
                             calcStack.Push(src.tokenUnknown);
                         }
                         break;
+                    case CodeEx.Ldstr:
+                        {
+                            calcStack.Push(src.tokenStr);
+                        }
+                        break;
                     case CodeEx.Call:
                         {
                             var m = src.tokenUnknown as Mono.Cecil.MethodReference;
-                            if(m.DeclaringType.FullName== "System.Runtime.CompilerServices.RuntimeHelpers"&&m.Name== "InitializeArray")
+                            if (m.DeclaringType.FullName == "System.Runtime.CompilerServices.RuntimeHelpers" && m.Name == "InitializeArray")
                             {
                                 var p1 = (byte[])calcStack.Pop();
                                 var p2 = (byte[])calcStack.Pop();
-                                for(var i=0;i<p2.Length;i++)
+                                for (var i = 0; i < p2.Length; i++)
                                 {
                                     p2[i] = p1[i];
                                 }
                             }
-                        }break;
+                            else
+                            {
+                                foreach (var attr in m.Resolve().CustomAttributes)
+                                {
+                                    if (attr.AttributeType.FullName == "Neo.SmartContract.Framework.NonemitWithConvertAttribute")
+                                    {
+                                        var text = (string)calcStack.Pop();
+                                        var value = (int)attr.ConstructorArguments[0].Value;
+                                        var type = attr.ConstructorArguments[0].Type.Resolve();
+                                        string attrname = "";
+                                        foreach(var f in type.Fields)
+                                        {
+                                            if(f.Constant!=null&& (int)f.Constant== value)
+                                            {
+                                                attrname = f.Name;
+                                                break;
+                                            }
+                                        }
+                                        if (attrname == "ToScriptHash")//AddressString2ScriptHashBytes to bytes
+                                        {
+                                            var bytes = NEO.AllianceOfThinWallet.Cryptography.Base58.Decode(text);
+                                            var hash = bytes.Skip(1).Take(20).ToArray();
+                                            calcStack.Push(hash);
+                                        }
+                                        else if (attrname == "HexToBytes")//HexString2Bytes to bytes[]
+                                        {
+                                            if (text.IndexOf("0x") == 0) text = text.Substring(2);
+                                            var hex = HexString2Bytes(text);
+                                            calcStack.Push(hex);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
                     case CodeEx.Stsfld:
                         {
                             var field = src.tokenUnknown as Mono.Cecil.FieldReference;

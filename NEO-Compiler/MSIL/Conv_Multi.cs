@@ -9,7 +9,7 @@ namespace Neo.Compiler.MSIL
     /// </summary>
     public partial class ModuleConverter
     {
-        private void _ConvertStLoc(ILMethod method, OpCode src, AntsMethod to, int pos)
+        private void _ConvertStLoc(ILMethod method, OpCode src, NeoMethod to, int pos)
         {
 
             //get array
@@ -56,7 +56,7 @@ namespace Neo.Compiler.MSIL
             //_Convert1by1(VM.OpCode.DROP, null, to);
 
         }
-        private void _ConvertLdLoc(ILMethod method, OpCode src, AntsMethod to, int pos)
+        private void _ConvertLdLoc(ILMethod method, OpCode src, NeoMethod to, int pos)
         {
             //get array
             _Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
@@ -68,7 +68,7 @@ namespace Neo.Compiler.MSIL
 
 
         }
-        private void _ConvertLdLocA(ILMethod method, OpCode src, AntsMethod to, int pos)
+        private void _ConvertLdLocA(ILMethod method, OpCode src, NeoMethod to, int pos)
         {//这有两种情况，我们需要先判断这个引用地址是拿出来干嘛的
 
             var n1 = method.body_Codes[method.GetNextCodeAddr(src.addr)];
@@ -87,8 +87,54 @@ namespace Neo.Compiler.MSIL
                 _ConvertLdLoc(method, src, to, pos);
             }
         }
-        private void _ConvertLdArg(OpCode src, AntsMethod to, int pos)
+        private void _ConvertCastclass(ILMethod method, OpCode src, NeoMethod to)
         {
+            var type = src.tokenUnknown as Mono.Cecil.TypeReference;
+            try
+            {
+                var dtype = type.Resolve();
+                if (dtype.BaseType.FullName == "System.MulticastDelegate" || dtype.BaseType.FullName == "System.Delegate")
+                {
+                    foreach (var m in dtype.Methods)
+                    {
+                        if (m.Name == "Invoke")
+                        {
+                            to.lastparam = m.Parameters.Count;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+        private void _ConvertLdArg(ILMethod method, OpCode src, NeoMethod to, int pos)
+        {
+            try
+            {
+                var ptype = method.method.Parameters[pos].ParameterType.Resolve();
+                //var ptype = method.method.Parameters[pos].ParameterType;
+                //if (ptype.BaseType.IsFunctionPointer)
+                //{
+                if (ptype.BaseType.FullName == "System.MulticastDelegate" || ptype.BaseType.FullName == "System.Delegate")
+                {
+                    foreach (var m in ptype.Methods)
+                    {
+                        if (m.Name == "Invoke")
+                        {
+                            to.lastparam = m.Parameters.Count;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            //}
             //get array
             _Convert1by1(VM.OpCode.FROMALTSTACK, src, to);
             _Convert1by1(VM.OpCode.DUP, null, to);
@@ -120,7 +166,7 @@ namespace Neo.Compiler.MSIL
             ////pick
             //_Convert1by1(VM.OpCode.PICK, null, to);
         }
-        private void _ConvertStArg(OpCode src, AntsMethod to, int pos)
+        private void _ConvertStArg(OpCode src, NeoMethod to, int pos)
         {
             //get array
             _Convert1by1(VM.OpCode.DUPFROMALTSTACK, src, to);
@@ -237,6 +283,10 @@ namespace Neo.Compiler.MSIL
                 {
                     return true;
                 }
+                if(attr.AttributeType.Name== "NonemitWithConvertAttribute")
+                {
+                    throw new Exception("NonemitWithConvert func only used for readonly static field.");
+                }
                 //if(attr.t)
             }
             return false;
@@ -279,9 +329,13 @@ namespace Neo.Compiler.MSIL
             return false;
 
         }
-        public bool IsNotifyCall(Mono.Cecil.MethodDefinition defs, Mono.Cecil.MethodReference refs, AntsMethod to, out string name)
+        public bool IsNotifyCall(Mono.Cecil.MethodDefinition defs, Mono.Cecil.MethodReference refs, NeoMethod to, out string name)
         {
+
             name = to.lastsfieldname;
+            if (to.lastsfieldname == null)
+                return false;
+
             Mono.Cecil.TypeDefinition call = null;
             if (defs == null)
             {
@@ -303,6 +357,7 @@ namespace Neo.Compiler.MSIL
             {
                 if (call.BaseType.Name == "MulticastDelegate" || call.BaseType.Name == "Delegate")
                 {
+                    to.lastsfieldname = null;
                     return true;
                 }
             }
@@ -310,19 +365,20 @@ namespace Neo.Compiler.MSIL
             {
                 if (refs.Name == "Invoke" && refs.DeclaringType.Name.Contains("Action`"))
                 {
+                    to.lastsfieldname = null;
                     return true;
-
                 }
             }
             name = "Notify";
             return false;
         }
-        private int _ConvertCall(OpCode src, AntsMethod to)
+        private int _ConvertCall(OpCode src, NeoMethod to)
         {
             Mono.Cecil.MethodReference refs = src.tokenUnknown as Mono.Cecil.MethodReference;
 
             int calltype = 0;
             string callname = "";
+            int callpcount = 0;
             byte[] callhash = null;
             VM.OpCode callcode = VM.OpCode.NOP;
 
@@ -343,6 +399,11 @@ namespace Neo.Compiler.MSIL
             else if (IsNotifyCall(defs, refs, to, out callname))
             {
                 calltype = 5;
+            }
+            else if (to.lastparam >= 0)
+            {
+                callpcount = to.lastparam;
+                calltype = 6;
             }
             else if (IsOpCall(defs, out callname))
             {
@@ -574,7 +635,7 @@ namespace Neo.Compiler.MSIL
                 }
                 else if (src.tokenMethod == "System.String System.String::Substring(System.Int32)")
                 {
-                    throw new Exception("antsmachine cant use this call,please use  .SubString(1,2) with 2 params.");
+                    throw new Exception("neomachine cant use this call,please use  .SubString(1,2) with 2 params.");
                 }
                 else if (src.tokenMethod == "System.String System.Char::ToString()")
                 {
@@ -596,7 +657,9 @@ namespace Neo.Compiler.MSIL
                 }
                 else if (src.tokenMethod == "System.UInt32 <PrivateImplementationDetails>::ComputeStringHash(System.String)")
                 {
-                    throw new Exception("需要neo.vm nuget更新以后，这个才可以放开，就可以处理 string switch了。");
+                    throw new Exception("not supported on neovm now.");
+                    // 需要neo.vm nuget更新以后，这个才可以放开，就可以处理 string switch了。");
+
                     //_Convert1by1(VM.OpCode.CSHARPSTRHASH32, src, to);
                     //return 0;
                 }
@@ -607,16 +670,21 @@ namespace Neo.Compiler.MSIL
             }
 
             if (calltype == 0)
-                throw new Exception("unknown call:" + src.tokenMethod);
+                throw new Exception("unknown call: " + src.tokenMethod + "\r\n   in: " + to.name + "\r\n");
             var md = src.tokenUnknown as Mono.Cecil.MethodReference;
             var pcount = md.Parameters.Count;
-
-            if(calltype==2)
+            bool havethis = md.HasThis;
+            if (calltype == 2)
             {
                 //opcode call 
             }
             else
             {//翻转参数顺序
+
+                //如果是syscall 并且有this的，翻转范围加一
+                if (calltype == 3 && havethis)
+                    pcount++;
+
                 _Convert1by1(VM.OpCode.NOP, src, to);
                 if (pcount <= 1)
                 {
@@ -656,7 +724,7 @@ namespace Neo.Compiler.MSIL
             if (calltype == 1)
             {
                 var c = _Convert1by1(VM.OpCode.CALL, null, to, new byte[] { 5, 0 });
-                c.needfix = true;
+                c.needfixfunc = true;
                 c.srcfunc = src.tokenMethod;
                 return 0;
             }
@@ -702,10 +770,19 @@ namespace Neo.Compiler.MSIL
                     _Convert1by1(VM.OpCode.SYSCALL, null, to, outbytes);
                 }
             }
+            else if (calltype == 6)
+            {
+                _ConvertPush(callpcount, src, to);
+                _Convert1by1(VM.OpCode.ROLL, null, to);
+                byte[] nullhash = new byte[20];
+                //dyn appcall
+                _Convert1by1(VM.OpCode.APPCALL, null, to, nullhash);
+
+            }
             return 0;
         }
 
-        private int _ConvertNewArr(ILMethod method, OpCode src, AntsMethod to)
+        private int _ConvertNewArr(ILMethod method, OpCode src, NeoMethod to)
         {
             var type = src.tokenType;
             if (type != "System.Byte")
@@ -748,12 +825,15 @@ namespace Neo.Compiler.MSIL
                 //移除上一条指令
                 to.body_Codes.Remove(code.addr);
                 this.addr = code.addr;
-                if (code.bytes != null)
-                    this.addr -= code.bytes.Length;
+
+                //new array 指令處理有問題，這個addr 已經包括了data
+                //if (code.bytes != null)
+                //    this.addr -= code.bytes.Length;
 
                 int n = method.GetNextCodeAddr(src.addr);
                 int n2 = method.GetNextCodeAddr(n);
                 int n3 = method.GetNextCodeAddr(n2);
+                int n4 = method.GetNextCodeAddr(n3);
                 if (n >= 0 && n2 >= 0 && n3 >= 0 && method.body_Codes[n].code == CodeEx.Dup && method.body_Codes[n2].code == CodeEx.Ldtoken && method.body_Codes[n3].code == CodeEx.Call)
                 {//這是在初始化數組
 
@@ -765,7 +845,83 @@ namespace Neo.Compiler.MSIL
                 }
                 else
                 {
-                    this._ConvertPush(new byte[number], src, to);
+                    var outbyte = new byte[number];
+                    var skip = 0;
+                    int start = n;
+                    System.Collections.Generic.Stack<int> stack = new System.Collections.Generic.Stack<int>();
+                    var _code = method.body_Codes[start];
+                    if (_code.code == CodeEx.Dup)//生成的setlem代码用dup
+                    {
+                        while (true)
+                        {
+                            int start2 = method.GetNextCodeAddr(start);
+                            int start3 = method.GetNextCodeAddr(start2);
+                            int start4 = method.GetNextCodeAddr(start3);
+                            if (start < 0 || start2 < 0 || start3 < 0 || start4 < 0)
+                                break;
+
+                            _code = method.body_Codes[start];
+                            var _code2 = method.body_Codes[start2];
+                            var _code3 = method.body_Codes[start3];
+                            var _code4 = method.body_Codes[start4];
+                            if (_code.code != CodeEx.Dup || (_code4.code != CodeEx.Stelem_I1 && _code4.code != CodeEx.Stelem_I))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                var pos = _code2.tokenI32;
+                                var value = _code3.tokenI32;
+                                outbyte[pos] = (byte)value;
+
+                                skip += 4;
+                                start = method.GetNextCodeAddr(start4);
+                            }
+                        }
+                    }
+                    else if ((_code.code == CodeEx.Stloc || _code.code == CodeEx.Stloc_0 || _code.code == CodeEx.Stloc_1 || _code.code == CodeEx.Stloc_2 || _code.code == CodeEx.Stloc_3 || _code.code == CodeEx.Stloc_S))
+                    {
+                        skip++;
+                        start = method.GetNextCodeAddr(start);
+                        _code = method.body_Codes[start];
+                        while (true)
+                        {
+                            int start2 = method.GetNextCodeAddr(start);
+                            int start3 = method.GetNextCodeAddr(start2);
+                            int start4 = method.GetNextCodeAddr(start3);
+                            if (start < 0 || start2 < 0 || start3 < 0 || start4 < 0)
+                                break;
+                            _code = method.body_Codes[start];
+                            var _code2 = method.body_Codes[start2];
+                            var _code3 = method.body_Codes[start3];
+                            var _code4 = method.body_Codes[start4];
+                            bool bLdLoc = (_code.code == CodeEx.Ldloc || _code.code == CodeEx.Ldloc_0 || _code.code == CodeEx.Ldloc_1 || _code.code == CodeEx.Ldloc_2 || _code.code == CodeEx.Ldloc_3 || _code.code == CodeEx.Ldloc_S);
+                            bool bStelem = (_code4.code == CodeEx.Stelem_I1 || _code4.code == CodeEx.Stelem_I);
+                            if(bLdLoc&&bStelem)
+                            {
+                                var pos = _code2.tokenI32;
+                                var value = _code3.tokenI32;
+                                outbyte[pos] = (byte)value;
+
+                                skip += 4;
+                                start = method.GetNextCodeAddr(start4);
+                            }
+                            else if(bLdLoc&&!bStelem)
+                            {
+                                skip++;
+                                break;
+                            }
+                            else
+                            {
+                                break;
+                            }
+
+                        }
+                    }
+                    //有时c#也会用填数值的方式初始化，对于byte这会出错
+
+                    this._ConvertPush(outbyte, src, to);
+                    return skip;
                 }
             }
 
@@ -774,7 +930,7 @@ namespace Neo.Compiler.MSIL
             return 0;
 
         }
-        private int _ConvertInitObj(OpCode src, AntsMethod to)
+        private int _ConvertInitObj(OpCode src, NeoMethod to)
         {
             var type = (src.tokenUnknown as Mono.Cecil.TypeReference).Resolve();
             _Convert1by1(VM.OpCode.NOP, src, to);//空白
@@ -829,7 +985,7 @@ namespace Neo.Compiler.MSIL
             //_Convert1by1(VM.OpCode.DROP, null, to);
             return 0;
         }
-        private int _ConvertNewObj(OpCode src, AntsMethod to)
+        private int _ConvertNewObj(OpCode src, NeoMethod to)
         {
             var _type = (src.tokenUnknown as Mono.Cecil.MethodReference);
             if (_type.FullName == "System.Void System.Numerics.BigInteger::.ctor(System.Byte[])")
@@ -861,7 +1017,7 @@ namespace Neo.Compiler.MSIL
             return 0;
         }
 
-        private int _ConvertStfld(ILMethod method, OpCode src, AntsMethod to)
+        private int _ConvertStfld(ILMethod method, OpCode src, NeoMethod to)
         {
             var field = (src.tokenUnknown as Mono.Cecil.FieldReference).Resolve();
             var type = field.DeclaringType;
@@ -878,7 +1034,7 @@ namespace Neo.Compiler.MSIL
             return 0;
         }
 
-        private int _ConvertLdfld(OpCode src, AntsMethod to)
+        private int _ConvertLdfld(OpCode src, NeoMethod to)
         {
             var field = (src.tokenUnknown as Mono.Cecil.FieldReference).Resolve();
             var type = field.DeclaringType;

@@ -6,23 +6,23 @@ using System.Text;
 namespace Neo.Compiler.MSIL
 {
 
-    public class Converter
-    {
-        public static byte[] Convert(string fileName, System.IO.Stream dllstream, ILogger logger = null)
-        {
-            var module = new ILModule();
-            module.LoadModule(dllstream, null);
-            if (logger == null)
-            {
-                logger = new DefLogger();
-            }
-            var converter = new ModuleConverter(logger);
-            //有异常的话在 convert 函数中会直接throw 出来
-            var antmodule = converter.Convert(module);
-            return antmodule.Build(fileName);
-        }
+    //public class Converter
+    //{
+    //    public static byte[] Convert(System.IO.Stream dllstream, ILogger logger = null)
+    //    {
+    //        var module = new ILModule();
+    //        module.LoadModule(dllstream, null);
+    //        if (logger == null)
+    //        {
+    //            logger = new DefLogger();
+    //        }
+    //        var converter = new ModuleConverter(logger);
+    //        //有异常的话在 convert 函数中会直接throw 出来
+    //        var antmodule = converter.Convert(module);
+    //        return antmodule.Build();
+    //    }
 
-    }
+    //}
     class DefLogger : ILogger
     {
         public void Log(string log)
@@ -42,28 +42,46 @@ namespace Neo.Compiler.MSIL
                 logger = new DefLogger();
             }
             this.logger = logger;
+#if NET47
+            try
+            {
+                var assm = System.Reflection.Assembly.GetAssembly(typeof(System.Action));
+                var name = System.IO.Path.GetFileName(assm.Location);
+                if (name.ToLower() == "mscorlib.dll")
+                {
+                    var path = System.IO.Path.GetFullPath(".");
+                    System.IO.File.Copy(assm.Location, System.IO.Path.Combine(path, name));
+                }
+            }
+            catch
+            {
 
+            }
+            //assm.Location
+#endif
         }
 
         ILogger logger;
-        public AntsModule outModule;
-        public Dictionary<ILMethod, AntsMethod> methodLink = new Dictionary<ILMethod, AntsMethod>();
-        public AntsModule Convert(ILModule _in)
+        public NeoModule outModule;
+        public Dictionary<ILMethod, NeoMethod> methodLink = new Dictionary<ILMethod, NeoMethod>();
+        public NeoModule Convert(ILModule _in)
         {
             //logger.Log("beginConvert.");
-            this.outModule = new AntsModule(this.logger);
+            this.outModule = new NeoModule(this.logger);
             foreach (var t in _in.mapType)
             {
-                if (t.Key[0] == '<') continue;//系统的，不要
+                if (t.Key.Contains("<"))
+                    continue;//系统的，不要
                 if (t.Key.Contains("_API_")) continue;//api的，不要
                 if (t.Key.Contains(".My."))
                     continue;//vb system
                 foreach (var m in t.Value.methods)
                 {
                     if (m.Value.method == null) continue;
-                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn) continue;//event 自动生成的代码，不要
-                    AntsMethod nm = new AntsMethod();
-                    if (m.Key == ".cctor")
+                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn)
+                        continue;//event 自动生成的代码，不要
+                    NeoMethod nm = new NeoMethod();
+                    if (m.Key.Contains(".cctor"))
                     {
                         CctorSubVM.Parse(m.Value, this.outModule);
                         continue;
@@ -71,15 +89,42 @@ namespace Neo.Compiler.MSIL
                     if (m.Value.method.IsConstructor) continue;
                     nm._namespace = m.Value.method.DeclaringType.FullName;
                     nm.name = m.Value.method.FullName;
+                    nm.displayName = m.Value.method.Name;
+
+                    Mono.Collections.Generic.Collection<Mono.Cecil.CustomAttribute> ca = m.Value.method.CustomAttributes;
+                    foreach (var attr in ca)
+                    {
+                        if (attr.AttributeType.Name == "DisplayNameAttribute")
+                        {
+                            nm.displayName = (string)attr.ConstructorArguments[0].Value;
+                        }
+                    }
+                    nm.inSmartContract = m.Value.method.DeclaringType.BaseType.Name == "SmartContract";
                     nm.isPublic = m.Value.method.IsPublic;
                     this.methodLink[m.Value] = nm;
                     outModule.mapMethods[nm.name] = nm;
 
                 }
+                foreach (var e in t.Value.fields)
+                {
+                    if (e.Value.isEvent)
+                    {
+                        NeoEvent ae = new NeoEvent();
+                        ae._namespace = e.Value.field.DeclaringType.FullName;
+                        ae.name = ae._namespace + "::" + e.Key;
+                        ae.displayName = e.Value.displayName;
+                        ae.returntype = e.Value.returntype;
+                        ae.paramtypes = e.Value.paramtypes;
+                        outModule.mapEvents[ae.name] = ae;
+                    }
+                }
             }
+
+
             foreach (var t in _in.mapType)
             {
-                if (t.Key[0] == '<') continue;//系统的，不要
+                if (t.Key.Contains("<"))
+                    continue;//系统的，不要
                 if (t.Key.Contains("_API_")) continue;//api的，不要
                 if (t.Key.Contains(".My."))
                     continue;//vb system
@@ -88,16 +133,50 @@ namespace Neo.Compiler.MSIL
                 {
 
                     if (m.Value.method == null) continue;
-                    if (m.Key == ".cctor")
+                    if (m.Key.Contains(".cctor"))
                     {
                         continue;
                     }
-                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn) continue;//event 自动生成的代码，不要
+                    if (m.Value.method.IsAddOn || m.Value.method.IsRemoveOn)
+                        continue;//event 自动生成的代码，不要
 
                     var nm = this.methodLink[m.Value];
 
+
                     //try
                     {
+                        nm.returntype = m.Value.returntype;
+                        try
+                        {
+                            var type = m.Value.method.ReturnType.Resolve();
+                            foreach (var i in type.Interfaces)
+                            {
+                                if (i.Name == "IApiInterface")
+                                {
+                                    nm.returntype = "IInteropInterface";
+                                }
+                            }
+                        }
+                        catch (Exception err)
+                        {
+
+                        }
+
+                        foreach (var src in m.Value.paramtypes)
+                        {
+                            nm.paramtypes.Add(new NeoParam(src.name, src.type));
+                        }
+
+                        byte[] outcall; string name;
+                        if (IsAppCall(m.Value.method, out outcall))
+                            continue;
+                        if (IsNonCall(m.Value.method))
+                            continue;
+                        if (IsOpCall(m.Value.method, out name))
+                            continue;
+                        if (IsSysCall(m.Value.method, out name))
+                            continue;
+
                         this.ConvertMethod(m.Value, nm);
                     }
                     //catch (Exception err)
@@ -108,35 +187,39 @@ namespace Neo.Compiler.MSIL
             }
             //转换完了，做个link，全部拼到一起
             string mainmethod = "";
+
             foreach (var key in outModule.mapMethods.Keys)
             {
+
                 if (key.Contains("::Main("))
                 {
-                    var m = outModule.mapMethods[key];
-                    foreach (var l in this.methodLink)
+                    NeoMethod m = outModule.mapMethods[key];
+                    if (m.inSmartContract)
                     {
-                        if (l.Value == m)
+                        foreach (var l in this.methodLink)
                         {
-                            var srcm = l.Key.method;
-                            if (srcm.DeclaringType.BaseType.Name == "SmartContract")
+                            if (l.Value == m)
                             {
-                                logger.Log("找到函数入口点:" + key);
                                 if (mainmethod != "")
-                                    throw new Exception("拥有多个函数入口点，请检查");
+                                    throw new Exception("Have too mush EntryPoint,Check it.");
                                 mainmethod = key;
-
                             }
                         }
                     }
+
                 }
             }
             if (mainmethod == "")
             {
-                throw new Exception("找不到入口函数，请检查");
-
+                throw new Exception("Can't find EntryPoint,Check it.");
             }
+            else
+            {
+                //单一默认入口
+                logger.Log("Find entrypoint:" + mainmethod);
+            }
+
             outModule.mainMethod = mainmethod;
-            //得找到第一个函数
             this.LinkCode(mainmethod);
             //this.findFirstFunc();//得找到第一个函数
             //然后给每个method 分配一个func addr
@@ -149,7 +232,7 @@ namespace Neo.Compiler.MSIL
         {
             if (this.outModule.mapMethods.ContainsKey(main) == false)
             {
-                throw new Exception("找不到名为" + main + "的入口");
+                throw new Exception("Can't find entrypoint:" + main);
             }
             var first = this.outModule.mapMethods[main];
             first.funcaddr = 0;
@@ -187,22 +270,18 @@ namespace Neo.Compiler.MSIL
 
             foreach (var c in this.outModule.total_Codes.Values)
             {
-                if (c.needfix)
+                if (c.needfixfunc)
                 {//需要地址转换
                     var addrfunc = this.outModule.mapMethods[c.srcfunc].funcaddr;
                     Int16 addrconv = (Int16)(addrfunc - c.addr);
                     c.bytes = BitConverter.GetBytes(addrconv);
+                    c.needfixfunc = false;
                 }
             }
         }
 
-        private void ConvertMethod(ILMethod from, AntsMethod to)
+        private void ConvertMethod(ILMethod from, NeoMethod to)
         {
-            to.returntype = from.returntype;
-            foreach (var src in from.paramtypes)
-            {
-                to.paramtypes.Add(new AntsParam(src.name, src.type));
-            }
 
 
             this.addr = 0;
@@ -225,8 +304,14 @@ namespace Neo.Compiler.MSIL
                     {
                         _insertEndCode(from, to, src);
                     }
-
-                    skipcount = ConvertCode(from, src, to);
+                    try
+                    {
+                        skipcount = ConvertCode(from, src, to);
+                    }
+                    catch (Exception err)
+                    {
+                        throw new Exception("error:" + from.method.FullName + "::" + src, err);
+                    }
                 }
             }
 
@@ -254,7 +339,7 @@ namespace Neo.Compiler.MSIL
         //    }
         //    return "";
         //}
-        static int getNumber(AntsCode code)
+        static int getNumber(NeoCode code)
         {
             if (code.code <= VM.OpCode.PUSHBYTES75 && code.code >= VM.OpCode.PUSHBYTES1)
                 return (int)new BigInteger(code.bytes);
@@ -287,40 +372,31 @@ namespace Neo.Compiler.MSIL
             var n = BitConverter.ToInt32(target, 0);
             return n;
         }
-        private void ConvertAddrInMethod(AntsMethod to)
+        private void ConvertAddrInMethod(NeoMethod to)
         {
             foreach (var c in to.body_Codes.Values)
             {
-                if (c.needfix &&
-
-                    c.code != VM.OpCode.CALL //call 要做函数间的转换
-
-                    )
+                if (c.needfix)
                 {
-                    //need neo.vm update.
-                    //if (c.code == VM.OpCode.SWITCH)
-                    //{
-                    //    for (var i = 0; i < c.srcaddrswitch.Length; i++)
-                    //    {
-                    //        var addr = addrconv[c.srcaddrswitch[i]];
-                    //        Int16 addroff = (Int16)(addr - c.addr);
-                    //        var bs = BitConverter.GetBytes(addroff);
-                    //        c.bytes[i * 2 + 2] = bs[0];
-                    //        c.bytes[i * 2 + 2 + 1] = bs[1];
-                    //        c.needfix = false;
-                    //    }
-                    //}
-                    //else
+
+                    try
                     {
-                        var addr = addrconv[c.srcaddr];
-                        Int16 addroff = (Int16)(addr - c.addr);
+                        var _addr = addrconv[c.srcaddr];
+                        Int16 addroff = (Int16)(_addr - c.addr);
                         c.bytes = BitConverter.GetBytes(addroff);
                         c.needfix = false;
                     }
+                    catch
+                    {
+                        throw new Exception("cannot convert addr in: " + to.name + "\r\n");
+                    }
+
+
+
                 }
             }
         }
-        private int ConvertCode(ILMethod method, OpCode src, AntsMethod to)
+        private int ConvertCode(ILMethod method, OpCode src, NeoMethod to)
         {
             int skipcount = 0;
             switch (src.code)
@@ -342,7 +418,7 @@ namespace Neo.Compiler.MSIL
 
                 case CodeEx.Ldc_I4:
                 case CodeEx.Ldc_I4_S:
-                    skipcount= _ConvertPushI4WithConv(method, src.tokenI32, src, to);
+                    skipcount = _ConvertPushI4WithConv(method, src.tokenI32, src, to);
                     break;
                 case CodeEx.Ldc_I4_0:
                     _ConvertPush(0, src, to);
@@ -372,7 +448,7 @@ namespace Neo.Compiler.MSIL
                     _ConvertPush(8, src, to);
                     break;
                 case CodeEx.Ldc_I4_M1:
-                    skipcount = _ConvertPushI4WithConv(method ,- 1, src, to);
+                    skipcount = _ConvertPushI4WithConv(method, -1, src, to);
                     break;
                 case CodeEx.Ldc_I8:
                     skipcount = _ConvertPushI8WithConv(method, src.tokenI64, src, to);
@@ -413,22 +489,22 @@ namespace Neo.Compiler.MSIL
                     break;
 
                 case CodeEx.Ldarg_0:
-                    _ConvertLdArg(src, to, 0);
+                    _ConvertLdArg(method, src, to, 0);
                     break;
                 case CodeEx.Ldarg_1:
-                    _ConvertLdArg(src, to, 1);
+                    _ConvertLdArg(method, src, to, 1);
                     break;
                 case CodeEx.Ldarg_2:
-                    _ConvertLdArg(src, to, 2);
+                    _ConvertLdArg(method, src, to, 2);
                     break;
                 case CodeEx.Ldarg_3:
-                    _ConvertLdArg(src, to, 3);
+                    _ConvertLdArg(method, src, to, 3);
                     break;
                 case CodeEx.Ldarg_S:
                 case CodeEx.Ldarg:
                 case CodeEx.Ldarga:
                 case CodeEx.Ldarga_S:
-                    _ConvertLdArg(src, to, src.tokenI32);
+                    _ConvertLdArg(method, src, to, src.tokenI32);
                     break;
 
                 case CodeEx.Starg_S:
@@ -705,6 +781,7 @@ namespace Neo.Compiler.MSIL
                     break;
 
                 case CodeEx.Castclass:
+                    _ConvertCastclass(method, src, to);
                     break;
 
                 case CodeEx.Box:
@@ -767,7 +844,7 @@ namespace Neo.Compiler.MSIL
                 case CodeEx.Ldsfld:
 
                     {
-
+                        _Convert1by1(VM.OpCode.NOP, src, to);
                         var d = src.tokenUnknown as Mono.Cecil.FieldDefinition;
                         //如果是readonly，可以pull个常量上来的
                         if (
@@ -799,7 +876,7 @@ namespace Neo.Compiler.MSIL
                             }
                             else
                             {
-                                throw new Exception("not support type Ldsfld");
+                                throw new Exception("not support type Ldsfld\r\n   in: " + to.name + "\r\n");
                             }
                             break;
                         }
@@ -838,10 +915,10 @@ namespace Neo.Compiler.MSIL
                     break;
                 default:
 #if WITHPDB
-                    logger.Log("unsupported instruction " + src.code);
+                    logger.Log("unsupported instruction " + src.code + "\r\n   in: " + to.name + "\r\n");
                     break;
 #else
-                    throw new Exception("unsupported instruction " + src.code);
+                    throw new Exception("unsupported instruction " + src.code + "\r\n   in: " + to.name + "\r\n");
 #endif
             }
 

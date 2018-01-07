@@ -686,14 +686,21 @@ namespace Neo.Compiler
             }
             public void ConvertToStringWithFormat(StringBuilder sb, int spacesub)
             {
-                //for (int _i = 0; _i < space; _i++)
-                //    sb.Append(' ');
+                for (int _i = 0; _i < spacesub; _i++)
+                    sb.Append(' ');
                 sb.Append("[\n");
+
                 for (int i = 0; i < this.Count; i++)
                 {
-                    for (int _i = 0; _i < spacesub; _i++)
-                        sb.Append(' ');
+                    if (this[i] is MyJson.JsonNode_Object || this[i] is MyJson.JsonNode_Array)
+                    {
 
+                    }
+                    else
+                    {
+                        for (int _i = 0; _i < spacesub; _i++)
+                            sb.Append(' ');
+                    }
                     this[i].ConvertToStringWithFormat(sb, spacesub + 4);
                     if (i != this.Count - 1)
                         sb.Append(',');
@@ -983,18 +990,20 @@ namespace Neo.Compiler
             }
             public void ConvertToStringWithFormat(StringBuilder sb, int spacesub)
             {
-                //for (int _i = 0; _i < space; _i++)
-                //    sb.Append(' ');
+                for (int _i = 0; _i < spacesub; _i++)
+                    sb.Append(' ');
                 sb.Append("{\n");
                 int i = Count;
                 foreach (var item in this)
                 {
-                    for (int _i = 0; _i < spacesub; _i++)
+                    for (int _i = 0; _i < spacesub + 4; _i++)
                         sb.Append(' ');
 
                     sb.Append('\"');
                     sb.Append(item.Key);
                     sb.Append("\":");
+                    if (item.Value is MyJson.JsonNode_Array || item.Value is MyJson.JsonNode_Object)
+                        sb.Append('\n');
                     item.Value.ConvertToStringWithFormat(sb, spacesub + 4);
                     i--;
                     if (i != 0) sb.Append(',');
