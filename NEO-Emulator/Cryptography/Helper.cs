@@ -20,6 +20,13 @@ namespace Neo.Cryptography
         private static ThreadLocal<SHA256> _sha256 = new ThreadLocal<SHA256>(() => SHA256.Create());
         private static ThreadLocal<RIPEMD160Managed> _ripemd160 = new ThreadLocal<RIPEMD160Managed>(() => new RIPEMD160Managed());
 
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
+
         internal static byte[] AES256Decrypt(this byte[] block, byte[] key)
         {
             using (Aes aes = Aes.Create())

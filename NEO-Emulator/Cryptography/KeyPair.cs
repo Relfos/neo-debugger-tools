@@ -50,6 +50,18 @@ namespace NeoLux
             this.WIF = GetWIF();
         }
 
+        public static KeyPair FromWIF(string wif)
+        {
+            if (wif == null) throw new ArgumentNullException();
+            byte[] data = wif.Base58CheckDecode();
+            if (data.Length != 34 || data[0] != 0x80 || data[33] != 0x01)
+                throw new FormatException();
+            byte[] privateKey = new byte[32];
+            Buffer.BlockCopy(data, 1, privateKey, 0, privateKey.Length);
+            Array.Clear(data, 0, data.Length);
+            return new KeyPair(privateKey);
+        }
+
         public static string CreateSignatureScript(byte[] bytes)
         {
             return "21" + bytes.ByteToHex() + "ac";
@@ -70,6 +82,13 @@ namespace NeoLux
         {
             if (x.Length != y.Length) throw new ArgumentException();
             return x.Zip(y, (a, b) => (byte)(a ^ b)).ToArray();
+        }
+
+        public static byte[] GetScriptHashFromAddress(string address)
+        {
+            var temp = address.Base58CheckDecode();
+            temp = temp.SubArray(1, 20);
+            return temp;
         }
     }
 }
