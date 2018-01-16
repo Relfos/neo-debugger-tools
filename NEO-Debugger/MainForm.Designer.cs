@@ -58,6 +58,7 @@
             this.sourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.originalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.assemblyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.PanelSearch = new System.Windows.Forms.Panel();
             this.BtnNextSearch = new System.Windows.Forms.Button();
             this.BtnPrevSearch = new System.Windows.Forms.Button();
@@ -69,7 +70,6 @@
             this.stackPanel = new System.Windows.Forms.RichTextBox();
             this.stackLabel = new System.Windows.Forms.Label();
             this.gasCostLabel = new System.Windows.Forms.Label();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -277,6 +277,7 @@
             // runToolStripMenuItem
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.ShortcutKeyDisplayString = "F5";
             this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
@@ -284,6 +285,7 @@
             // stepToolStripMenuItem
             // 
             this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
+            this.stepToolStripMenuItem.ShortcutKeyDisplayString = "F10";
             this.stepToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.stepToolStripMenuItem.Text = "Step";
             this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
@@ -301,6 +303,7 @@
             this.originalToolStripMenuItem,
             this.assemblyToolStripMenuItem});
             this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
+            this.sourceToolStripMenuItem.ShortcutKeyDisplayString = "F12";
             this.sourceToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.sourceToolStripMenuItem.Text = "Source";
             // 
@@ -317,6 +320,14 @@
             this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.assemblyToolStripMenuItem.Text = "Assembly";
             this.assemblyToolStripMenuItem.Click += new System.EventHandler(this.assemblyToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.ShortcutKeyDisplayString = "F6";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 24);
+            this.toolStripMenuItem2.Text = "Storage";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // PanelSearch
             // 
@@ -445,13 +456,6 @@
             this.gasCostLabel.Text = "Log";
             this.gasCostLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.gasCostLabel.Visible = false;
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 24);
-            this.toolStripMenuItem2.Text = "Storage";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // MainForm
             // 

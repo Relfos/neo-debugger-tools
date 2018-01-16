@@ -217,5 +217,10 @@ namespace Neo.Debugger
         {
             assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
         }
+
+        private void paramsList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            button1_Click(null, null);
+        }
     }
 }

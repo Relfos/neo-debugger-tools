@@ -72,6 +72,7 @@
             this.paramsList.Size = new System.Drawing.Size(277, 147);
             this.paramsList.TabIndex = 2;
             this.paramsList.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.paramsList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.paramsList_MouseDoubleClick);
             // 
             // label1
             // 

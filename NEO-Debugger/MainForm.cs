@@ -113,10 +113,12 @@ namespace Neo.Debugger
             TextArea.ClearCmdKey(Keys.Control | Keys.U);
 
             TextArea.ClearCmdKey(Keys.F5);
+            TextArea.ClearCmdKey(Keys.F6);
             TextArea.ClearCmdKey(Keys.F10);
             TextArea.ClearCmdKey(Keys.F12);
 
             HotKeyManager.AddHotKey(this, RunDebugger, Keys.F5);
+            HotKeyManager.AddHotKey(this, OpenStorage, Keys.F6);
             HotKeyManager.AddHotKey(this, StepDebugger, Keys.F10);
             HotKeyManager.AddHotKey(this, ToggleDebuggerSource, Keys.F12);
         }
@@ -1015,6 +1017,11 @@ namespace Neo.Debugger
             }
         }
 
+        private void OpenStorage()
+        {
+            var form = new StorageForm();
+            form.ShowDialog();
+        }
         #endregion
 
         #region DEBUG PANELS
@@ -1075,7 +1082,11 @@ namespace Neo.Debugger
         {
             RunDebugger();
         }
-        #endregion
+        
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            OpenStorage();
+        }
 
         private void stepToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1102,6 +1113,7 @@ namespace Neo.Debugger
                 ToggleDebuggerSource();
             }
         }
+        #endregion
 
         #region BLOCKCHAIN API
         public string BlockchainPath()
@@ -1143,6 +1155,7 @@ namespace Neo.Debugger
             var path = StoragePath();
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {
+                Storage.entries.Clear();
                 return;
             }
 
@@ -1162,10 +1175,5 @@ namespace Neo.Debugger
 
         #endregion
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            var form = new StorageForm();
-            form.ShowDialog();
-        }
     }
 }
