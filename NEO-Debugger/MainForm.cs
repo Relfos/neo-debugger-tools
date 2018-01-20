@@ -362,18 +362,23 @@ namespace Neo.Debugger
 
                 var bytes = File.ReadAllBytes(path);
 
-                var mapFileName = path.Replace(".avm", ".neomap");
+                var oldMapFileName = path.Replace(".avm", ".neomap");
+                var newMapFileName = path.Replace(".avm", ".debug.json");
 
                 debugMode = DebugMode.Assembly;
                 sourceLanguage = SourceLanguageKind.Other;
 
-                if (File.Exists(mapFileName))
+                if (File.Exists(newMapFileName))
                 {
                     map = new NeoMapFile();
-                    map.LoadFromFile(mapFileName);
+                    map.LoadFromFile(newMapFileName, bytes);
                 }
                 else
                 {
+                    if (File.Exists(oldMapFileName))
+                    {
+                        MessageBox.Show("Warning: The file format of debug map changed. Please recompile your AVM with the latest compiler.");
+                    }
                     map = null;
                 }
 

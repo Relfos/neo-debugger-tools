@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using LunarParser.JSON;
+using Neo.Cryptography;
 
 namespace Neo.Emulator.Dissambler
 {
@@ -23,24 +25,56 @@ namespace Neo.Emulator.Dissambler
         private List<DebugMapEntry> _entries = new List<DebugMapEntry>();
         public IEnumerable<DebugMapEntry> Entries { get { return _entries; } }
 
-        public void LoadFromFile(string path)
+        public void LoadFromFile(string path, byte[] bytes)
         {
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException();
             }
 
-            var lines = File.ReadAllLines(path);
-            _entries = new List<DebugMapEntry>();
-            foreach (var line in lines)
+            var json = File.ReadAllText(path);
+            var root = JSONReader.ReadFromString(json);
+
+            var sha256 = System.Security.Cryptography.SHA256.Create();
+            byte[] hash256 = sha256.ComputeHash(bytes);
+            var ripemd160 = new Cryptography.RIPEMD160Managed();
+            var hash = ripemd160.ComputeHash(hash256);
+
+            var avmInfo = root["avm"];
+            if (avmInfo != null)
             {
-                var temp = line.Split(new char[] { ',' }, 4);
+                var curHash = Base58.Encode(hash);
+                var oldHash = avmInfo.GetString("hash");
+
+                if (curHash != oldHash)
+                {
+                    throw new Exception("Hash mismatch, please recompile the code to get line number info");
+                }
+            }
+
+            var files = new Dictionary<int, string>();
+            var fileNode = root["files"];
+            foreach (var temp in fileNode.Children)
+            {
+                files[temp.GetInt32("id")] = temp.GetString("url");
+            }
+
+            _entries = new List<DebugMapEntry>();
+            var mapNode = root["map"];
+            foreach (var temp in mapNode.Children)
+            {
+                int fileID = temp.GetInt32("file");
+
+                if (!files.ContainsKey(fileID))
+                {
+                    throw new Exception("Error loading map file, invalid file entry");
+                }
 
                 var entry = new DebugMapEntry();
-                int.TryParse(temp[0], out entry.startOfs);
-                int.TryParse(temp[1], out entry.endOfs);
-                int.TryParse(temp[2], out entry.line);
-                entry.url = temp[3];
+                entry.startOfs = temp.GetInt32("start");
+                entry.endOfs = temp.GetInt32("end");
+                entry.line = temp.GetInt32("line");
+                entry.url = files[fileID];
                 _entries.Add(entry);
             }
         }
