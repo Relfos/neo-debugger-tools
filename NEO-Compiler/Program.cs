@@ -30,7 +30,6 @@ namespace Neo.Compiler
 
 
             string filename = args[0];
-            string onlyname = System.IO.Path.GetFileNameWithoutExtension(filename);
             string filepdb = filename.Replace(".dll", ".pdb");
 
             // fix necessary when debugging the compiler via VS
@@ -47,111 +46,8 @@ namespace Neo.Compiler
                     Environment.Exit(-1);
                 }
             }
-            ILModule mod = new ILModule();
-            System.IO.Stream fs = null;
-            System.IO.Stream fspdb = null;
 
-            //open file
-            try
-            {
-                fs = System.IO.File.OpenRead(filename);
-
-                if (System.IO.File.Exists(filepdb))
-                {
-                    fspdb = System.IO.File.OpenRead(filepdb);
-                }
-
-            }
-            catch (Exception err)
-            {
-                log.Log("Open File Error:" + err.ToString());
-                return;
-            }
-            //load module
-            try
-            {
-                mod.LoadModule(fs, fspdb);
-            }
-            catch (Exception err)
-            {
-                log.Log("LoadModule Error:" + err.ToString());
-                return;
-            }
-            byte[] bytes = null;
-            bool bSucc = false;
-            string jsonstr = null;
-            //convert and build
-            try
-            {
-                var conv = new ModuleConverter(log);
-
-                NeoModule am = conv.Convert(mod);
-                bytes = am.Build();
-                log.Log("convert succ");
-
-
-                try
-                {
-                    var outjson = vmtool.FuncExport.Export(am, bytes);
-                    StringBuilder sb = new StringBuilder();
-                    outjson.ConvertToStringWithFormat(sb, 0);
-                    jsonstr = sb.ToString();
-                    log.Log("gen abi succ");
-                }
-                catch (Exception err)
-                {
-                    log.Log("gen abi Error:" + err.ToString());
-                }
-
-            }
-            catch (Exception err)
-            {
-                log.Log("Convert Error:" + err.ToString());
-                return;
-            }
-            //write bytes
-            try
-            {
-
-                string bytesname = onlyname + ".avm";
-
-                System.IO.File.Delete(bytesname);
-                System.IO.File.WriteAllBytes(bytesname, bytes);
-                log.Log("write:" + bytesname);
-                bSucc = true;
-            }
-            catch (Exception err)
-            {
-                log.Log("Write Bytes Error:" + err.ToString());
-                return;
-            }
-            try
-            {
-
-                string abiname = onlyname + ".abi.json";
-
-                System.IO.File.Delete(abiname);
-                System.IO.File.WriteAllText(abiname, jsonstr);
-                log.Log("write:" + abiname);
-                bSucc = true;
-            }
-            catch (Exception err)
-            {
-                log.Log("Write abi Error:" + err.ToString());
-                return;
-            }
-            try
-            {
-                fs.Dispose();
-                if (fspdb != null)
-                    fspdb.Dispose();
-            }
-            catch
-            {
-
-            }
-
-            if (bSucc)
+            if (Compiler.Execute(filename, filepdb, log))
             {
                 log.Log("SUCC");
             }

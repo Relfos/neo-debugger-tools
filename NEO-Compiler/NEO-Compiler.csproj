@@ -49,18 +49,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>1FD78DD71239E2866E24983E92AA3E3AAB2D1609</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>NEO-Compiler_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll</HintPath>
@@ -88,19 +76,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="base58.cs" />
-    <Compile Include="FuncExport.cs" />
-    <Compile Include="ILogger.cs" />
     <Compile Include="MSIL\CctorSubVM.cs" />
     <Compile Include="MSIL\Converter.cs" />
     <Compile Include="MSIL\Conv_Common.cs" />
     <Compile Include="MSIL\Conv_Multi.cs" />
     <Compile Include="MSIL\ILModule.cs" />
-    <Compile Include="MyJson.cs" />
-    <Compile Include="NeoModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RIPEMD160Managed.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -119,6 +101,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NEO-Compiler-Lib\NEO-Compiler-Lib.csproj">
+      <Project>{dd92bc77-e062-4e9e-a5f2-d8bdd1689848}</Project>
+      <Name>NEO-Compiler-Lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj">
       <Project>{372429c2-71be-41c2-92d0-5a9187bc238a}</Project>
       <Name>NEO-Emulator</Name>
