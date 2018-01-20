@@ -16,31 +16,9 @@ namespace Neo.Compiler
         public SortedDictionary<int, NeoCode> total_Codes = new SortedDictionary<int, NeoCode>();
         public byte[] Build()
         {
-            //BEGIN_DEBUGGER
-            var debugMap = new List<DebugMapEntry>();
-            DebugMapEntry currentDebugEntry = null;
-            //END_DEBUGGER
-
             List<byte> bytes = new List<byte>();
             foreach (var c in this.total_Codes.Values)
             {
-                //BEGIN_DEBUGGER
-                if (c.debugcode != null && c.debugline > 0 && c.debugline < 2000)
-                {
-                    currentDebugEntry = new DebugMapEntry();
-                    currentDebugEntry.startOfs = debugMap.Count > 0 ? bytes.Count : 0;
-                    currentDebugEntry.endOfs = currentDebugEntry.startOfs;
-                    currentDebugEntry.url = c.debugcode;
-                    currentDebugEntry.line = c.debugline;
-                    debugMap.Add(currentDebugEntry);
-                }
-                else
-                if (currentDebugEntry != null)
-                {
-                    currentDebugEntry.endOfs = bytes.Count;
-                }
-                //END_DEBUGGER
-
                 bytes.Add((byte)c.code);
                 if (c.bytes != null)
                     for (var i = 0; i < c.bytes.Length; i++)
@@ -48,18 +26,6 @@ namespace Neo.Compiler
                         bytes.Add(c.bytes[i]);
                     }
             }
-
-            //BEGIN_DEBUGGER
-            var mapLines = new List<string>();
-            foreach (var entry in debugMap)
-            {
-                mapLines.Add(entry.startOfs + "," + entry.endOfs + "," + entry.line + "," + entry.url);
-            }
-            //END_DEBUGGER
-
-            string fileName = System.Environment.GetCommandLineArgs()[1];
-            var mapName = fileName.Replace(".dll", ".neomap");
-            System.IO.File.WriteAllLines(mapName, mapLines);
 
             return bytes.ToArray();
             //将body链接，生成this.code       byte[]

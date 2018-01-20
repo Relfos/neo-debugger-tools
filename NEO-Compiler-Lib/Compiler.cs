@@ -52,6 +52,7 @@ namespace Neo.Compiler
             byte[] bytes = null;
             bool bSucc = false;
             string jsonstr = null;
+            string debugmapstr = null;
             //convert and build
             try
             {
@@ -73,6 +74,19 @@ namespace Neo.Compiler
                 catch (Exception err)
                 {
                     log.Log("gen abi Error:" + err.ToString());
+                }
+
+                try
+                {
+                    var outjson = DebugInfo.ExportDebugInfo(onlyname, am);
+                    StringBuilder sb = new StringBuilder();
+                    outjson.ConvertToStringWithFormat(sb, 0);
+                    debugmapstr = sb.ToString();
+                    log.Log("gen debug map succ");
+                }
+                catch (Exception err)
+                {
+                    log.Log("gen debug map Error:" + err.ToString());
                 }
 
             }
@@ -105,6 +119,20 @@ namespace Neo.Compiler
                 System.IO.File.Delete(abiname);
                 System.IO.File.WriteAllText(abiname, jsonstr);
                 log.Log("write:" + abiname);
+                bSucc = true;
+            }
+            catch (Exception err)
+            {
+                log.Log("Write abi Error:" + err.ToString());
+                return false;
+            }
+            try
+            {
+                string debugname = onlyname + ".debug.json";
+
+                System.IO.File.Delete(debugname);
+                System.IO.File.WriteAllText(debugname, debugmapstr);
+                log.Log("write:" + debugname);
                 bSucc = true;
             }
             catch (Exception err)
