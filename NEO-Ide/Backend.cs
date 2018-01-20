@@ -32,10 +32,10 @@ namespace NEO.Ide
 
             var server = new HTTPServer(log, settings);
 
-            var templateEngine = new TemplateEngine(server, "views");
+            var templateEngine = new TemplateEngine(server, "../views");
 
             // instantiate a new site, the second argument is the file path where the public site contents will be found
-            var site = new Site(server, "public");
+            var site = new Site(server, "../public");
 
             site.Get("/", (request) =>
             {
