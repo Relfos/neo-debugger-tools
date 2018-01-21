@@ -389,6 +389,18 @@ namespace Neo.Debugger
                 {
                     var srcFile = map.Entries.FirstOrDefault().url;
 
+                    if (string.IsNullOrEmpty(srcFile))
+                    {
+                        MessageBox.Show("Error: Could not load the debug map correct, no file entries.");
+                        return;
+                    }
+
+                    if (!File.Exists(srcFile))
+                    {
+                        MessageBox.Show("Error: Could not load the source code, check that this file exists:"+srcFile);
+                        return;
+                    }
+
                     FileName.Text = srcFile;
 
                     sourceLanguage = LanguageSupport.DetectLanguage(srcFile);

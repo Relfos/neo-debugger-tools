@@ -28,6 +28,15 @@ namespace Neo.Debugger
                         };
                     }
 
+                case SourceLanguageKind.Python:
+                    {
+                        return new string[2]
+                        {
+                             "class finally is return continue for lambda try def from nonlocal while and del global not with as elif if or yield assert else import pass break except in raise",
+                             "False True None Runtime"
+                        };
+                    }
+
                 default: return new string[0] { };
             }
         }
