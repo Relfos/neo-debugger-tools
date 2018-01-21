@@ -35,16 +35,11 @@ namespace Neo.Emulator.Dissambler
             var json = File.ReadAllText(path);
             var root = JSONReader.ReadFromString(json);
 
-            var sha256 = System.Security.Cryptography.SHA256.Create();
-            byte[] hash256 = sha256.ComputeHash(bytes);
-            var ripemd160 = new Cryptography.RIPEMD160Managed();
-            var hash = ripemd160.ComputeHash(hash256);
-
             var avmInfo = root["avm"];
             if (avmInfo != null)
             {
-                var curHash = Base58.Encode(hash);
-                var oldHash = avmInfo.GetString("hash");
+                var curHash = bytes.MD5().ToLowerInvariant();
+                var oldHash = avmInfo.GetString("hash").ToLowerInvariant();
 
                 if (curHash != oldHash)
                 {
