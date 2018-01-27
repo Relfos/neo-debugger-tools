@@ -49,7 +49,7 @@ Includes a cli disassembler and a GUI debugger. A helper library that helps load
 
 ### Limitations
 
-- Debugging ASM and C# only for now (see section below how to add new languages)
+- Debugging ASM, C# and Python only for now (see section below how to add new languages)
 - Windows only for now, using .NET Framework / Winforms / ScintillaNET
 - Smart contract source is limited to a single file for now
 - Not possible yet to inspect variable values
@@ -153,11 +153,65 @@ In the latest version it is possible to view the storage contents using the Debu
 
 The current version does support sending virtual NEO and GAS to the smart contract, emulating an asset transfer.
 
-## Support for Other Programming Languages
+## Supported Programming Languages
 
 NEO smart contracts can be coded in many different languages, and in theory, this compiler already supports any language as long as a `.neomap` file exists in the same directory as the `.avm` file.
-However, since only NeoN was modified to emit those map files during compilation, to add other languages it would be necessary to modify other compilers to emit a `.neomap`.
-The `.neomap` file format is simple; for each line you need to list a starting offset, ending offset, the source line and the corresponding source file, all values separated by a comma.
+However, in order to be able to debug an compiled `.avm` file, the compiler used must be able to emit those map files during compilation. 
+The table below lists the current supported languages / compilers.
+
+| Language      | Compiler                          		| Comments                                      								|
+| ------------- |:------------------------------------------| :-----------------------------------------------------------------------------|
+| C#        	| neon               						| Only supported if using the neon version from this repository.				|
+| Python        | [neo-boa](https://github.com/CityOfZion/neo-boa)| 					                            						|
+
+
+To add other languages it would be necessary to modify compilers to emit a `.neomap`.
+The `.neomap` file format is `json` and consists of a `compiler` section that includes info about the compiler used, `files` section including list of source code files used to generate the `avm`, an `avm` section including an MD5 hash of the compiled `avm`, plus an `map` section used to map start and end byte offsets to source code.
+
+```json
+{
+    "compiler": {
+        "name": "neo-boa",
+        "version": "0.1"
+    },
+    "files": [
+        {
+            "url": "D:\\MySmartContracts\\HelloWorld.py",
+            "id": "1"
+        }
+    ],
+    "avm": {
+        "name": "AddTest",
+        "hash": "c485df80dc0551162a344ed1617956e5"
+    },
+    "map": [
+        {
+            "start": 17,
+            "end": 43,
+            "file": 1,
+            "line": 10
+        },
+        {
+            "start": 44,
+            "end": 61,
+            "file": 1,
+            "line": 11
+        },
+        {
+            "start": 62,
+            "end": 88,
+            "file": 1,
+            "line": 13
+        },
+        {
+            "start": 89,
+            "end": 100,
+            "file": 1,
+            "line": 14
+        }
+    ]
+}
+```
 
 ### Developer Shell
 
