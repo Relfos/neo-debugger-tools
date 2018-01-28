@@ -349,6 +349,9 @@ namespace Neo.Debugger
 
         }
 
+        private byte[] contractBytecode;
+        private string contractName;
+
         private void LoadDataFromFile(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -360,7 +363,9 @@ namespace Neo.Debugger
             {
                 MainForm.targetAVMPath = path;
 
-                var bytes = File.ReadAllBytes(path);
+                this.contractName = Path.GetFileNameWithoutExtension(path);
+
+                this.contractBytecode = File.ReadAllBytes(path);
 
                 var oldMapFileName = path.Replace(".avm", ".neomap");
                 var newMapFileName = path.Replace(".avm", ".debug.json");
@@ -371,7 +376,9 @@ namespace Neo.Debugger
                 if (File.Exists(newMapFileName))
                 {
                     map = new NeoMapFile();
-                    map.LoadFromFile(newMapFileName, bytes);
+                    map.LoadFromFile(newMapFileName, contractBytecode);
+
+                    this.contractName = map.contractName;
                 }
                 else
                 {
@@ -382,8 +389,9 @@ namespace Neo.Debugger
                     map = null;
                 }
 
-                this.debugger = new NeoEmulator(bytes);
-                this.avm_asm = NeoDisassembler.Disassemble(bytes);
+                this.debugger = null;
+
+                this.avm_asm = NeoDisassembler.Disassemble(contractBytecode);
 
                 if (map != null && map.Entries.Any())
                 {
@@ -414,7 +422,6 @@ namespace Neo.Debugger
 
                 ReloadTextArea();
 
-                StorageLoad();
                 BlockchainLoad();
 
                 UpdateSourceViewMenus();
@@ -754,6 +761,29 @@ namespace Neo.Debugger
                 return false;
             }
 
+            if (this.debugger == null)
+            {
+                this.debugger = new NeoEmulator(blockchain);
+
+                var address = blockchain.FindAddressByName(this.contractName);
+
+                if (address == null)
+                {
+                    address = blockchain.DeployContract(this.contractName, this.contractBytecode);
+                    SendLogToPanel($"Deployed contract {contractName} on virtual blockchain.");
+                }
+                else
+                {
+                    if (!address.byteCode.SequenceEqual(this.contractBytecode))
+                    {
+                        address.byteCode = this.contractBytecode;
+                        SendLogToPanel($"Updated contract {contractName} bytecode.");
+                    }
+                }
+
+                this.debugger.PrepareByteCode(address.byteCode);
+            }
+
             runForm.emulator = this.debugger;
 
             var result = runForm.ShowDialog();
@@ -878,7 +908,6 @@ namespace Neo.Debugger
                         RemoveCurrentHighlight();
                         var val = debugger.GetOutput();
 
-                        StorageSave();
                         BlockchainSave();
 
                         var gasStr = string.Format("{0:N4}", debugger.GetUsedGas()); 
@@ -960,6 +989,11 @@ namespace Neo.Debugger
 
         private void RunDebugger()
         {
+            if (this.debugger == null)
+            {
+                shouldReset = true;
+            }
+
             if (shouldReset)
             {
                 if (!this.ResetDebugger())
@@ -1133,6 +1167,8 @@ namespace Neo.Debugger
         #endregion
 
         #region BLOCKCHAIN API
+        private Blockchain blockchain;
+
         public string BlockchainPath()
         {
             if (string.IsNullOrEmpty(targetAVMPath))
@@ -1140,56 +1176,22 @@ namespace Neo.Debugger
                 return null;
             }
 
-            return targetAVMPath.Replace(".avm", ".chain");
+            return Directory.GetCurrentDirectory() + "/virtual.chain";
+            //return targetAVMPath.Replace(".avm", ".chain");
         }
 
-        public void BlockchainLoad()
+       public void BlockchainLoad()
         {
             var path = BlockchainPath();
-            Blockchain.Load(path);
+            blockchain = new Blockchain();
+            blockchain.Load(path);
         }
 
         public void BlockchainSave()
         {
             var path = BlockchainPath();
-            Blockchain.Save(path);
+            blockchain.Save(path);
         }
-        #endregion
-
-        #region STORAGE API
-        public string StoragePath()
-        {
-            if (string.IsNullOrEmpty(targetAVMPath))
-            {
-                return null;
-            }
-
-            return targetAVMPath.Replace(".avm", ".store");
-        }
-
-        public void StorageLoad()
-        {
-            var path = StoragePath();
-            if (string.IsNullOrEmpty(path) || !File.Exists(path))
-            {
-                Storage.entries.Clear();
-                return;
-            }
-
-            Storage.Load(path);
-        }
-
-        public void StorageSave()
-        {
-            var path = StoragePath();
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            Storage.Save(path);
-        }
-
         #endregion
 
     }

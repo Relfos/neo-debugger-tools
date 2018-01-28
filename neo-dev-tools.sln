@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-Compiler", "NEO-Compiler\NEO-Compiler.csproj", "{36E1CCD1-3C95-459D-88D1-6F14E07EAEC9}"
 EndProject
@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICO-Unit-Tests", "ICO-Unit-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEO-Compiler-Lib", "NEO-Compiler-Lib\NEO-Compiler-Lib.csproj", "{DD92BC77-E062-4E9E-A5F2-D8BDD1689848}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-Ide", "NEO-Ide\NEO-Ide.csproj", "{8059A07E-609F-4950-872E-F904BCEEB73F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NEO-IDE", "NEO-Ide\NEO-IDE.csproj", "{8059A07E-609F-4950-872E-F904BCEEB73F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
