@@ -6,6 +6,8 @@ using Mono.Cecil;
 using SynkServer.HTTP;
 using SynkServer.Templates;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace NEO.Ide
 {
@@ -13,17 +15,6 @@ namespace NEO.Ide
     {
         static void Main(string[] args)
         {
-            var code = @"
-        public class HelloWorld : SmartContract
-        {
-            public static string Main()
-            {
-                return 'Hello World';
-            }
-        }
-".Replace("'", "\"");
-
-
             // initialize a logger
             var log = new SynkServer.Core.Logger();
 
@@ -37,34 +28,66 @@ namespace NEO.Ide
             // instantiate a new site, the second argument is the file path where the public site contents will be found
             var site = new Site(server, "../public");
 
+            var base_code = File.ReadAllText(settings.path + "/../DefaultContract.cs");        
+
             site.Get("/", (request) =>
             {
                 var context = new Dictionary<string, object>();
-                context["code"] = code;
+                context["code"] = request.session.Get<string>("code", base_code);
 
                 return templateEngine.Render(site, context, new string[] { "index" });
+            });
+
+            site.Post("/compile", (request) =>
+            {
+                var code = request.args["code"];
+                request.session.Set("code", code);
+
+                if (Compile(settings, code))
+                {
+                    return "OK";
+                }
+
+                return "FAIL";
             });
 
             server.Run();
         }
 
-        private static void Compile(string code)
+        public static bool Compile(ServerSettings settings, string code)
         {
+            var MaxLanguageVersion = Enum
+            .GetValues(typeof(LanguageVersion))
+            .Cast<LanguageVersion>()
+            .Max();
 
-            CreateAssemblyDefinition(code);
-        }
+            var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
+            SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(code, options);
 
-
-        public static void CreateAssemblyDefinition(string code)
-        {
-
-            var sourceLanguage = new CSharpLanguage();
-            SyntaxTree syntaxTree = sourceLanguage.ParseText(code, SourceCodeKind.Regular);
             
-            Compilation compilation = sourceLanguage
-                  .CreateLibraryCompilation(assemblyName: "InMemoryAssembly", enableOptimisations: false)
-              //    .AddReferences(_references)
-                  .AddSyntaxTrees(syntaxTree);
+            var trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
+            var neededAssemblies = new[]
+            {
+            "mscorlib",
+            "System.Runtime",
+            "System.Core",
+            "System.Numerics",
+            "Neo.SmartContract.Framework",
+            };
+
+            var references = trustedAssembliesPaths
+                .Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
+                .Select(p => MetadataReference.CreateFromFile(p))
+                .ToList();
+
+            var assemblyName = "Test.dll";
+
+            var compileOptions = new CSharpCompilationOptions(
+                           OutputKind.DynamicallyLinkedLibrary,
+                           optimizationLevel: OptimizationLevel.Debug,
+                           allowUnsafe: true);
+
+            Compilation compilation = CSharpCompilation.Create(assemblyName, options: compileOptions, references: references, syntaxTrees: new [] { syntaxTree});
 
             var stream = new MemoryStream();
             var emitResult = compilation.Emit(stream);
@@ -73,6 +96,17 @@ namespace NEO.Ide
             {
                 stream.Seek(0, SeekOrigin.Begin);
                 AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(stream);
+                return true;
+            }
+            else
+            {
+                foreach (var d in emitResult.Diagnostics)
+                {
+                    var lineSpan = d.Location.GetLineSpan();
+                    var startLine = lineSpan.StartLinePosition.Line;
+                    Console.WriteLine("Line {0}: {1}", startLine, d.GetMessage());
+                }
+                return false;
             }
         }
 
