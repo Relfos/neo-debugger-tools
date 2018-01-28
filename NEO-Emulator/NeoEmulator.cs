@@ -32,6 +32,29 @@ namespace Neo.Emulator
         }
     }
 
+    public static class NeoEmulatorExtensions
+    {
+        public static Address GetAddress(this ExecutionEngine engine)
+        {
+            var emulator = (NeoEmulator)engine.ScriptContainer;
+            return null;
+        }
+
+        public static Blockchain GetBlockchain(this ExecutionEngine engine)
+        {
+            var emulator = (NeoEmulator)engine.ScriptContainer;
+            return emulator.blockchain;
+        }
+
+        public static Storage GetStorage(this ExecutionEngine engine)
+        {
+            var emulator = (NeoEmulator)engine.ScriptContainer;
+            return null;
+        }
+
+    }
+
+
     public class NeoEmulator : IScriptContainer
     {
         private ExecutionEngine engine;
@@ -42,6 +65,8 @@ namespace Neo.Emulator
         private HashSet<int> _breakpoints = new HashSet<int>();
         public IEnumerable<int> Breakpoints { get { return _breakpoints; } }
 
+        public Blockchain blockchain { get; private set; }
+
         private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
 
         private double _usedGas;
@@ -51,9 +76,14 @@ namespace Neo.Emulator
             return null;
         }
 
-        public NeoEmulator(byte[] contractBytes)
+        public NeoEmulator(Blockchain blockchain)
         {
+            this.blockchain = blockchain;
             this.interop = new InteropService();
+        }
+
+        public void PrepareByteCode(byte[] contractBytes)
+        {
             this.contractBytes = contractBytes;
 
             var assembly = typeof(Neo.Emulator.Helper).Assembly;
@@ -225,7 +255,7 @@ namespace Neo.Emulator
 
                                 if (engine.lastSysCall.EndsWith("Storage.Put"))
                                 {
-                                    opCost *= (Emulator.API.Storage.lastStorageLength / 1024.0);
+                                    opCost *= (Storage.lastStorageLength / 1024.0);
                                 }
                                 break;
                             }
@@ -319,7 +349,8 @@ namespace Neo.Emulator
 
             var block = new Block();
             block.transactions.Add(tx);
-            Blockchain.blocks[Blockchain.currentHeight+1] = block;
+           
+            blockchain.blocks[blockchain.currentHeight+1] = block;
         }
         #endregion
 

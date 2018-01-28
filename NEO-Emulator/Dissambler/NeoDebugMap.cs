@@ -25,6 +25,8 @@ namespace Neo.Emulator.Dissambler
         private List<DebugMapEntry> _entries = new List<DebugMapEntry>();
         public IEnumerable<DebugMapEntry> Entries { get { return _entries; } }
 
+        public string contractName { get; private set; }
+
         public void LoadFromFile(string path, byte[] bytes)
         {
             if (!File.Exists(path))
@@ -45,6 +47,12 @@ namespace Neo.Emulator.Dissambler
                 {
                     throw new Exception("Hash mismatch, please recompile the code to get line number info");
                 }
+
+                this.contractName = avmInfo.GetString("name");
+            }
+            else
+            {
+                this.contractName = Path.GetFileNameWithoutExtension(path);
             }
 
             var files = new Dictionary<int, string>();

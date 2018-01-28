@@ -1,4 +1,5 @@
-﻿using Neo.VM;
+﻿using LunarParser;
+using Neo.VM;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,18 +8,113 @@ using System.Text;
 
 namespace Neo.Emulator.API
 {
-    public static class Storage
+    public class Storage : IInteropInterface
     {
-        public static Dictionary<byte[], byte[]> entries = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
-        public static int sizeInBytes { get; private set; }
+        public static int lastStorageLength; // this is an hack for now...
 
-        public static int lastStorageLength;
+        public Dictionary<byte[], byte[]> entries = new Dictionary<byte[], byte[]>(new ByteArrayComparer());
+        public int sizeInBytes { get; private set; }
+
+        public void Write(byte[] key, byte[] data)
+        {
+            if (entries.ContainsKey(key))
+            {
+                var oldEntry = entries[key];
+                if (oldEntry != null)
+                {
+                    sizeInBytes -= oldEntry.Length;
+                }
+            }
+
+            entries[key] = data;
+
+            if (data != null)
+            {
+                sizeInBytes += data.Length;
+            }
+
+            lastStorageLength = data != null ? data.Length : 0;
+        }
+
+        public byte[] Read(byte[] key)
+        {
+            byte[] data = null;
+            if (entries.ContainsKey(key))
+            {
+                data = entries[key];
+            }
+
+            if (data == null)
+            {
+                data = new byte[0];
+            }
+
+            return data;
+        }
+
+        public void Remove(byte[] key)
+        {
+            if (entries.ContainsKey(key))
+            {
+                var oldEntry = entries[key];
+                if (oldEntry != null)
+                {
+                    sizeInBytes -= oldEntry.Length;
+                }
+
+                entries.Remove(key);
+            }
+        }
+
+        internal bool Load(DataNode root)
+        {
+            sizeInBytes = 0;
+            entries.Clear();
+
+            foreach (var child in root.Children)
+            {
+                if (child.Name == "entry")
+                {
+                    var key = Convert.FromBase64String(child.GetString("key"));
+                    var data = Convert.FromBase64String(child.GetString("data"));
+
+                    sizeInBytes += data.Length;
+
+                    entries[key] = data;
+                }
+
+            }
+
+            return true;
+        }
+
+        public DataNode Save()
+        {
+            var result = DataNode.CreateObject("storage");
+
+            foreach (var entry in entries)
+            {
+                var key = Convert.ToBase64String(entry.Key);
+                var data = Convert.ToBase64String(entry.Value);
+
+                var child = DataNode.CreateObject("entry");
+                child.AddField("key", key);
+                child.AddField("data", data);
+            }
+
+            return result;
+        }
+
+        #region SMART CONTRACT API
 
         [Syscall("Neo.Storage.GetContext")]
         public static bool GetCurrentContext(ExecutionEngine engine)
         {
-            var context = new Neo.VM.Types.Integer(0);
+            var storage = engine.GetStorage();
+
+            var context = new Neo.VM.Types.InteropInterface(storage);
             engine.EvaluationStack.Push(context);
+
             //returns StorageContext 
             return true;
         }
@@ -37,16 +133,8 @@ namespace Neo.Emulator.API
 
             var key = item.GetByteArray();
 
-            byte[] data = null;
-            if (entries.ContainsKey(key))
-            {
-                data = entries[key];
-            }
-
-            if (data == null)
-            {
-                data = new byte[0];
-            }
+            var storage = context.GetInterface<Storage>();
+            var data = storage.Read(key);
 
             var result = new VM.Types.ByteArray(data);
             engine.EvaluationStack.Push(result);
@@ -77,23 +165,8 @@ namespace Neo.Emulator.API
             var key = keyItem.GetByteArray();
             var data = dataItem.GetByteArray();
 
-            if (entries.ContainsKey(key))
-            {
-                var oldEntry = entries[key];
-                if (oldEntry != null)
-                {
-                    sizeInBytes -= oldEntry.Length;
-                }
-            }
-
-            entries[key] = data;
-
-            if (data != null)
-            {
-                sizeInBytes += data.Length;
-            }
-
-            lastStorageLength = data != null ? data.Length : 0;
+            var storage = context.GetInterface<Storage>();
+            storage.Write(key, data);
 
             return true;
         }
@@ -110,49 +183,12 @@ namespace Neo.Emulator.API
 
             var key = keyItem.GetByteArray();
 
-            if (entries.ContainsKey(key))
-            {
-                var oldEntry = entries[key];
-                if (oldEntry != null)
-                {
-                    sizeInBytes -= oldEntry.Length;
-                }
-
-                entries.Remove(key);
-            }
+            var storage = engine.GetStorage();
+            storage.Remove(key);
 
             return true;
         }
 
-        public static void Load(string path)
-        {
-            var lines = File.ReadAllLines(path);
-            sizeInBytes = 0;
-            entries.Clear();
-            foreach (var line in lines)
-            {
-                var temp = line.Split(',');
-                var key = Convert.FromBase64String(temp[0]);
-                var data = Convert.FromBase64String(temp[1]);
-
-                sizeInBytes += data.Length;
-
-                entries[key] = data;
-            }
-        }
-
-        public static void Save(string path)
-        {
-            var sb = new StringBuilder();
-            foreach (var entry in entries)
-            {
-                var key = Convert.ToBase64String(entry.Key);
-                var data = Convert.ToBase64String(entry.Value);
-                sb.Append(key);
-                sb.Append(',');
-                sb.AppendLine(data);
-            }
-            File.WriteAllText(path, sb.ToString());
-        }
+        #endregion
     }
 }

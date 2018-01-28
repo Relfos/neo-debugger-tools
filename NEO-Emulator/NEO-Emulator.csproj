@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\Address.cs" />
     <Compile Include="Cryptography\Base58.cs" />
     <Compile Include="Cryptography\BloomFilter.cs" />
     <Compile Include="Cryptography\Crypto.cs" />

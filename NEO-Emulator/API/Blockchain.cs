@@ -1,18 +1,25 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
 using Neo.VM;
+using NeoLux;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Neo.Emulator.API
 {
-    public static class Blockchain
+    public class Blockchain
     {
-        public static uint currentHeight { get { return (uint)blocks.Count; } }
-        public static Dictionary<uint, Block> blocks = new Dictionary<uint, Block>();
+        public uint currentHeight { get { return (uint)blocks.Count; } }
+        public Dictionary<uint, Block> blocks = new Dictionary<uint, Block>();
+        public List<Address> addresses = new List<Address>();
 
-        public static bool Load(string fileName)
+        public Blockchain()
+        {
+
+        }
+
+        public bool Load(string fileName)
         {
             if (!File.Exists(fileName))
             {
@@ -34,12 +41,20 @@ namespace Neo.Emulator.API
                         blocks[index] = block;
                     }
                 }
+                if (child.Name.Equals("address"))
+                {
+                    var address = new Address();
+                    if (address.Load(child))
+                    {
+                        addresses.Add(address);
+                    }
+                }
             }
 
             return true;
         }
 
-        public static void Save(string fileName)
+        public void Save(string fileName)
         {
             var result = DataNode.CreateObject("blockchain");
             for (uint i=1; i<=blocks.Count; i++)
@@ -48,14 +63,44 @@ namespace Neo.Emulator.API
                 result.AddNode(block.Save());
             }
 
+            foreach (var address in addresses)
+            {
+                result.AddNode(address.Save());
+            }
+
             var json = JSONWriter.WriteToString(result);
             File.WriteAllText(fileName, json);
+        }
+
+        private Address GenerateAddress(string name)
+        {
+            byte[] array = new byte[32];
+            var random = new Random();
+            random.NextBytes(array);
+
+            var keys = new KeyPair(array);
+
+            var address = new Address();
+            address.name = name;
+            address.keys = keys;
+
+            this.addresses.Add(address);
+
+            return address;
+        }
+
+        public Address DeployContract(string name, byte[] byteCode)
+        {
+            var address = GenerateAddress(name);
+            address.byteCode = byteCode;
+            return address;
         }
 
         [Syscall("Neo.Blockchain.GetHeight")]
         public static bool GetHeight(ExecutionEngine engine)
         {
-            engine.EvaluationStack.Push(currentHeight);
+            var blockchain = engine.GetBlockchain();
+            engine.EvaluationStack.Push(blockchain.currentHeight);
 
             return true;
         }
@@ -74,22 +119,24 @@ namespace Neo.Emulator.API
                 throw new NotImplementedException();
             }
 
+            var blockchain = engine.GetBlockchain();
+
             if (hash.Length == 1)
             { 
                 var temp = obj.GetBigInteger();
 
                 var height = (uint)temp;
 
-                if (blocks.ContainsKey(height))
+                if (blockchain.blocks.ContainsKey(height))
                 {
-                    block = blocks[height];
+                    block = blockchain.blocks[height];
                 }
                 else
-                if (height<=currentHeight)
+                if (height <= blockchain.currentHeight)
                 {
                     block = new Block();
                     block.timestamp = 1506787300;
-                    blocks[height] = block;
+                    blockchain.blocks[height] = block;
                 }
             }
 
@@ -100,6 +147,19 @@ namespace Neo.Emulator.API
             engine.EvaluationStack.Push(new VM.Types.InteropInterface(block));
             return true;
             // returns Header
+        }
+
+        public Address FindAddressByName(string name)
+        {
+            foreach (var addr in addresses)
+            {
+                if (addr.name.Equals(name))
+                {
+                    return addr;
+                }
+            }
+
+            return null;
         }
 
         [Syscall("Neo.Blockchain.GetBlock", 0.2)]

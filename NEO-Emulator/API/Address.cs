@@ -1,0 +1,65 @@
+﻿using LunarParser;
+using Neo.VM;
+using Neo.Emulator.Utils;
+using System.Collections.Generic;
+using NeoLux;
+
+namespace Neo.Emulator.API
+{
+    public class Address
+    {
+        public string name;
+        public KeyPair keys;
+
+        public byte[] byteCode;
+
+        public Storage storage = new Storage();
+
+        public Dictionary<string, decimal> balances = new Dictionary<string, decimal>();
+
+        internal bool Load(DataNode root)
+        {
+            this.name = root.GetString("name");
+            this.byteCode = root.GetString("code").HexToByte();
+
+            var privKey = root.GetString("key").HexToByte();
+            this.keys = new KeyPair(privKey);
+
+            var storageNode = root.GetNode("storage");
+
+            this.storage.Load(storageNode);
+
+            this.balances.Clear();
+            var balanceNode = root.GetNode("balance");
+            if (balanceNode != null)
+            {
+                foreach (var child in balanceNode.Children)
+                {
+                    if (child.Name == "entry")
+                    {
+                        var symbol = child.GetString("symbol");
+                        var amount = child.GetDecimal("amount");
+
+                        balances[symbol] = amount;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        public DataNode Save()
+        {
+            var result = DataNode.CreateObject("address");
+
+            result.AddField("name", this.name);
+            result.AddField("hash", this.keys.PrivateKey.ByteToHex());
+            result.AddField("code", this.byteCode.ByteToHex());
+
+            result.AddNode(this.storage.Save());
+
+            return result;
+        }
+    }
+
+}
