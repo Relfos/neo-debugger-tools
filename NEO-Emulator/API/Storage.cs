@@ -100,6 +100,8 @@ namespace Neo.Emulator.API
                 var child = DataNode.CreateObject("entry");
                 child.AddField("key", key);
                 child.AddField("data", data);
+
+                result.AddNode(child);
             }
 
             return result;

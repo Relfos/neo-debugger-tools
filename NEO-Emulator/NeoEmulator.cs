@@ -37,7 +37,7 @@ namespace Neo.Emulator
         public static Address GetAddress(this ExecutionEngine engine)
         {
             var emulator = (NeoEmulator)engine.ScriptContainer;
-            return null;
+            return emulator.currentAddress;
         }
 
         public static Blockchain GetBlockchain(this ExecutionEngine engine)
@@ -49,7 +49,7 @@ namespace Neo.Emulator
         public static Storage GetStorage(this ExecutionEngine engine)
         {
             var emulator = (NeoEmulator)engine.ScriptContainer;
-            return null;
+            return emulator.currentAddress.storage;
         }
 
     }
@@ -69,6 +69,8 @@ namespace Neo.Emulator
 
         private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
 
+        public Address currentAddress;
+
         private double _usedGas;
 
         byte[] IScriptContainer.GetMessage()
@@ -82,9 +84,10 @@ namespace Neo.Emulator
             this.interop = new InteropService();
         }
 
-        public void PrepareByteCode(byte[] contractBytes)
+        public void SetExecutingAddress(Address address)
         {
-            this.contractBytes = contractBytes;
+            this.currentAddress = address;
+            this.contractBytes = address.byteCode;
 
             var assembly = typeof(Neo.Emulator.Helper).Assembly;
             var methods = assembly.GetTypes()

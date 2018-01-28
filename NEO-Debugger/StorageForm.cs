@@ -1,10 +1,14 @@
-﻿using System;
+﻿using Neo.Emulator;
+using Neo.Emulator.Utils;
+using System;
 using System.Windows.Forms;
 
 namespace Neo.Debugger
 {
     public partial class StorageForm : Form
     {
+        public NeoEmulator debugger;
+
         public StorageForm()
         {
             InitializeComponent();
@@ -27,11 +31,11 @@ namespace Neo.Debugger
             dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dataGridView1.Columns[1].FillWeight = 4;
 
-            throw new NotImplementedException();
-            /*foreach (var entry in Storage.entries)
+            var storage = debugger.currentAddress.storage;
+            foreach (var entry in storage.entries)
             {
                 dataGridView1.Rows.Add(FormattingUtils.OutputData(entry.Key, false), FormattingUtils.OutputData(entry.Value, false));
-            }*/
+            }
         }
     }
 }

@@ -781,7 +781,7 @@ namespace Neo.Debugger
                     }
                 }
 
-                this.debugger.PrepareByteCode(address.byteCode);
+                this.debugger.SetExecutingAddress(address);
             }
 
             runForm.emulator = this.debugger;
@@ -1070,7 +1070,14 @@ namespace Neo.Debugger
 
         private void OpenStorage()
         {
+            if (this.debugger == null || this.debugger.currentAddress == null)
+            {
+                MessageBox.Show("Please deploy the smart contract first!");
+                return;
+            }
+
             var form = new StorageForm();
+            form.debugger = this.debugger;
             form.ShowDialog();
         }
         #endregion
@@ -1176,8 +1183,8 @@ namespace Neo.Debugger
                 return null;
             }
 
-            return Directory.GetCurrentDirectory() + "/virtual.chain";
-            //return targetAVMPath.Replace(".avm", ".chain");
+            //return Directory.GetCurrentDirectory() + "/virtual.chain";
+            return targetAVMPath.Replace(".avm", ".chain");
         }
 
        public void BlockchainLoad()

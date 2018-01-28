@@ -29,6 +29,8 @@ namespace Neo.Emulator.API
             var json = File.ReadAllText(fileName);
             var root = JSONReader.ReadFromString(json);
 
+            root = root["blockchain"];
+
             blocks.Clear();
             foreach (var child in root.Children)
             {

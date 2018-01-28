@@ -23,6 +23,12 @@ namespace Neo.Emulator.API
             this.byteCode = root.GetString("code").HexToByte();
 
             var privKey = root.GetString("key").HexToByte();
+
+            if (privKey.Length != 32)
+            {
+                return false;
+            }
+
             this.keys = new KeyPair(privKey);
 
             var storageNode = root.GetNode("storage");
@@ -54,6 +60,7 @@ namespace Neo.Emulator.API
 
             result.AddField("name", this.name);
             result.AddField("hash", this.keys.PrivateKey.ByteToHex());
+            result.AddField("key", this.keys.PrivateKey.ByteToHex());
             result.AddField("code", this.byteCode.ByteToHex());
 
             result.AddNode(this.storage.Save());
