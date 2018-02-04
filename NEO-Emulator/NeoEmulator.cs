@@ -34,28 +34,32 @@ namespace Neo.Emulator
 
     public static class NeoEmulatorExtensions
     {
+        public static NeoEmulator GetEmulator(this ExecutionEngine engine)
+        {
+            var tx  = (Transaction)engine.ScriptContainer;
+            return tx.emulator;
+        }
+
         public static Address GetAddress(this ExecutionEngine engine)
         {
-            var emulator = (NeoEmulator)engine.ScriptContainer;
+            var emulator = engine.GetEmulator();
             return emulator.currentAddress;
         }
 
         public static Blockchain GetBlockchain(this ExecutionEngine engine)
         {
-            var emulator = (NeoEmulator)engine.ScriptContainer;
+            var emulator = engine.GetEmulator();
             return emulator.blockchain;
         }
 
         public static Storage GetStorage(this ExecutionEngine engine)
         {
-            var emulator = (NeoEmulator)engine.ScriptContainer;
+            var emulator = engine.GetEmulator();
             return emulator.currentAddress.storage;
         }
-
     }
 
-
-    public class NeoEmulator : IScriptContainer
+    public class NeoEmulator 
     {
         private ExecutionEngine engine;
         private byte[] contractBytes;
@@ -69,14 +73,10 @@ namespace Neo.Emulator
 
         private DebuggerState lastState = new DebuggerState(DebuggerState.State.Invalid, -1);
 
-        public Address currentAddress;
+        public Address currentAddress { get; private set; }
+        public Transaction currentTransaction { get; private set; }
 
         private double _usedGas;
-
-        byte[] IScriptContainer.GetMessage()
-        {
-            return null;
-        }
 
         public NeoEmulator(Blockchain blockchain)
         {
@@ -160,9 +160,15 @@ namespace Neo.Emulator
                 return;
             }
 
+            if (currentTransaction == null)
+            {
+                throw new Exception("Transaction not set");
+            }
+
             _usedGas = 0;
 
-            engine = new ExecutionEngine(this, Crypto.Default, null, interop);
+            currentTransaction.emulator = this;
+            engine = new ExecutionEngine(currentTransaction, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
 
             using (ScriptBuilder sb = new ScriptBuilder())
@@ -195,6 +201,7 @@ namespace Neo.Emulator
             engine.Reset();
 
             lastState = new DebuggerState(DebuggerState.State.Reset, 0);
+            currentTransaction = null;
         }
 
         public void SetBreakpointState(int ofs, bool enabled)
@@ -337,7 +344,7 @@ namespace Neo.Emulator
         }
 
         #region TRANSACTIONS
-        public void AddTransaction(byte[] id, BigInteger ammount)
+        public void SetTransaction(byte[] id, BigInteger ammount)
         {
             var key = Runtime.invokerKeys;
 
@@ -354,6 +361,8 @@ namespace Neo.Emulator
             block.transactions.Add(tx);
            
             blockchain.blocks[blockchain.currentHeight+1] = block;
+
+            this.currentTransaction = tx;
         }
         #endregion
 

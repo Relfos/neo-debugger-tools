@@ -74,8 +74,6 @@ namespace Neo.Debugger
 
             var items = node.GetNode("params");
 
-            emulator.Reset(items);
-
             if (assetListBox.SelectedIndex > 0)
             {
                 foreach (var entry in Asset.Entries)
@@ -88,7 +86,7 @@ namespace Neo.Debugger
 
                         if (ammount > 0)
                         {
-                            emulator.AddTransaction(entry.id, ammount);
+                            emulator.SetTransaction(entry.id, ammount);
                         }
                         else
                         {
@@ -100,6 +98,8 @@ namespace Neo.Debugger
                     }
                 }
             }
+
+            emulator.Reset(items);
 
             return true;
         }

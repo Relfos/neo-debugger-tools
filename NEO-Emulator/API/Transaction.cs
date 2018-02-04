@@ -6,10 +6,17 @@ using LunarParser;
 
 namespace Neo.Emulator.API
 {
-    public class Transaction : IInteropInterface
+    public class Transaction : IInteropInterface, IScriptContainer
     {
+        public NeoEmulator emulator; // temporary HACK 
+
         public List<TransactionInput> inputs = new List<TransactionInput>();
         public List<TransactionOutput> outputs = new List<TransactionOutput>();
+
+        byte[] IScriptContainer.GetMessage()
+        {
+            throw new NotImplementedException();
+        }
 
         [Syscall("Neo.Transaction.GetHash")]
         public static bool GetHash(ExecutionEngine engine)
