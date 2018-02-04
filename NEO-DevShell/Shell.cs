@@ -2,6 +2,7 @@
 using LunarParser.JSON;
 using Neo.Emulator;
 using Neo.Emulator.API;
+using Neo.Emulator.Dissambler;
 using Neo.Emulator.Utils;
 using System;
 using System.Collections.Generic;
@@ -25,20 +26,22 @@ namespace NEO_DevShell
     public class Shell
     {
         public List<Command> commands = new List<Command>();
+        public Blockchain blockchain { get; private set; }
         public NeoEmulator debugger;
 
         public string avmPath;
-        public string storagePath;
         public string blockchainPath;
 
 
         public Shell()
         {
-            this.debugger = null;
+            this.blockchain = new Blockchain();
+            this.debugger = new NeoEmulator(blockchain);
 
             AddCommand(new HelpCommand());
             AddCommand(new ExitCommand());
             AddCommand(new LoadCommand());
+            AddCommand(new DeployCommand());
             AddCommand(new CallCommand());
             AddCommand(new StorageCommand());
         }
@@ -161,7 +164,8 @@ namespace NEO_DevShell
 
         public override void Execute(string[] args)
         {
-            foreach (var entry in Storage.entries)
+            var storage = Shell.debugger.currentAddress.storage;
+            foreach (var entry in storage.entries)
             {
                 Shell.Write(FormattingUtils.OutputData(entry.Key, false) + " => "+ FormattingUtils.OutputData(entry.Value, false, true));
             }
@@ -193,10 +197,10 @@ namespace NEO_DevShell
         }
     }
 
-    internal class LoadCommand : Command
+    internal class DeployCommand : Command
     {
-        public override string Name => "load";
-        public override string Help => "Loads a NEO smart contract from a file";
+        public override string Name => "deploy";
+        public override string Help => "Deploys a NEO smart contract from a file";
 
         public override void Execute(string[] args)
         {
@@ -209,26 +213,65 @@ namespace NEO_DevShell
                 Shell.avmPath = filePath;
 
                 var bytes = File.ReadAllBytes(filePath);
-                Shell.debugger = new NeoEmulator(bytes);
 
                 var avmName = Path.GetFileName(filePath);
                 Shell.Write($"Loaded {avmName} ({bytes.Length} bytes)");
 
-                Shell.storagePath = filePath.Replace(".avm", ".store");
-                if (File.Exists(Shell.storagePath))
+                string contractName;
+
+                var mapFile = avmName.Replace(".avm", ".debug.json");
+                if (File.Exists(mapFile))
                 {
-                    Storage.Load(Shell.storagePath);
-                    Shell.Write($"Loaded storage ({Storage.sizeInBytes} bytes, {Storage.entries.Count} entries)");
+                    var map = new NeoMapFile();
+                    map.LoadFromFile(mapFile, bytes);
+
+                    contractName = map.contractName;
+                }
+                else
+                {
+                    contractName = avmName.Replace(".avm", "");
                 }
 
-                Shell.blockchainPath = filePath.Replace(".avm", ".chain");
-                if (File.Exists(Shell.blockchainPath))
+                var address = Shell.blockchain.FindAddressByName(contractName);
+
+                if (address == null)
                 {
-                    Blockchain.Load(Shell.blockchainPath);
-                    Shell.Write($"Loaded blockchain ({bytes.Length} bytes, {Storage.entries.Count} entries)");
+                    address = Shell.blockchain.DeployContract(contractName, bytes);
+                    Shell.Write($"Deployed {contractName} at address {address.keys.address}");
+                }
+                else
+                {
+                    Shell.Write($"Updated {contractName} at address {address.keys.address}");
                 }
 
-                Runtime.OnLogMessage = (x=> Shell.Write(x));
+                Runtime.OnLogMessage = (x => Shell.Write(x));
+            }
+            else
+            {
+                Shell.Write("File not found.");
+            }
+
+        }
+
+    }
+
+    internal class LoadCommand : Command
+    {
+        public override string Name => "load";
+        public override string Help => "Loads a virtual blockchain from a file";
+
+        public override void Execute(string[] args)
+        {
+            if (args.Length < 2) return;
+
+            var filePath = args[1];
+
+            if (File.Exists(filePath))
+            {
+                Shell.blockchainPath = filePath;
+
+                Shell.blockchain.Load(Shell.blockchainPath);
+                Shell.Write($"Loaded blockchain ({Shell.blockchain.blocks.Count} bytes, {Shell.blockchain.addresses.Count} addresses)");
             }
             else
             {
@@ -281,7 +324,7 @@ namespace NEO_DevShell
                             if (entry.name == assetName)
                             {
                                 Shell.Write($"Attaching {assetAmount} {assetName} to transaction");
-                                Shell.debugger.AddTransaction(entry.id, assetAmount);
+                                Shell.debugger.SetTransaction(entry.id, assetAmount);
                                 break;
                             }
                         }
@@ -303,9 +346,7 @@ namespace NEO_DevShell
 
                 var val = Shell.debugger.GetOutput();
 
-                Storage.Save(Shell.storagePath);
-
-                Blockchain.Save(Shell.blockchainPath);
+                Shell.blockchain.Save(Shell.blockchainPath);
 
                 Shell.Write("Result: " + FormattingUtils.StackItemAsString(val));
                 Shell.Write("GAS used: " + Shell.debugger.GetUsedGas());
