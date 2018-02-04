@@ -126,6 +126,7 @@
     <Compile Include="RunForm.Designer.cs">
       <DependentUpon>RunForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="StorageForm.cs">
       <SubType>Form</SubType>
     </Compile>

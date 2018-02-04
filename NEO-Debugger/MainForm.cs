@@ -41,6 +41,8 @@ namespace Neo.Debugger
 
         public static string targetAVMPath;
 
+        private Settings settings;
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             // CREATE CONTROL
@@ -71,7 +73,14 @@ namespace Neo.Debugger
             // DRAG DROP
             InitDragDropFile();
 
+            settings = new Settings(Application.UserAppDataPath);
+
             // DEFAULT FILE
+            if (string.IsNullOrEmpty(targetAVMPath))
+            {
+                targetAVMPath = settings.lastOpenedFile;
+            }
+
             LoadDataFromFile(targetAVMPath);
 
             // INIT HOTKEYS
@@ -427,6 +436,9 @@ namespace Neo.Debugger
                 UpdateSourceViewMenus();
 
                 shouldReset = true;
+
+                settings.lastOpenedFile = path;
+                settings.Save();
             }
         }
 
