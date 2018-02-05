@@ -16,7 +16,8 @@ namespace Neo.Emulator.API
         [Syscall("Neo.Runtime.GetTrigger")]
         public static bool GetTrigger(ExecutionEngine engine)
         {
-            TriggerType result = TriggerType.Application;
+            //TriggerType result = TriggerType.Application;
+            TriggerType result = TriggerType.Verification;
 
             engine.EvaluationStack.Push((int)result);
             return true;
@@ -34,7 +35,15 @@ namespace Neo.Emulator.API
             if (hashOrPubkey.Length == 20) // script hash
             {
                 matchType = "Script Hash";
-                result = true;
+
+                if (invokerKeys != null)
+                {
+                    result = invokerKeys.signatureHash.ToArray().ByteMatch(hashOrPubkey);
+                }
+                else
+                {
+                    result = false;
+                }
             }
             else if (hashOrPubkey.Length == 33) // public key
             {

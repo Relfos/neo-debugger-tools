@@ -162,7 +162,8 @@ namespace Neo.Emulator
 
             if (currentTransaction == null)
             {
-                throw new Exception("Transaction not set");
+                //throw new Exception("Transaction not set");
+                currentTransaction = new Transaction();
             }
 
             _usedGas = 0;
