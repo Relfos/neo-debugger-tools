@@ -41,6 +41,8 @@ namespace Neo.Debugger
 
         public static string targetAVMPath;
 
+        public static ABI abi;
+
         private Settings settings;
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -398,8 +400,18 @@ namespace Neo.Debugger
                     map = null;
                 }
 
-                this.debugger = null;
+                string abiFilename = path.Replace(".avm", ".abi.json");
+                if (File.Exists(abiFilename))
+                {
+                    abi = new ABI(abiFilename);
+                }
+                else
+                {
+                    MessageBox.Show($"Error: {abiFilename} was not found. Please recompile your AVM with the latest compiler.");
+                    return;
+                }
 
+                this.debugger = null;
                 this.avm_asm = NeoDisassembler.Disassemble(contractBytecode);
 
                 if (map != null && map.Entries.Any())
@@ -797,6 +809,7 @@ namespace Neo.Debugger
             }
 
             runForm.emulator = this.debugger;
+            runForm.abi = abi;
 
             var result = runForm.ShowDialog();
 

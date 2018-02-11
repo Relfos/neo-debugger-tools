@@ -15,6 +15,7 @@ namespace Neo.Debugger
     public partial class RunForm : Form
     {
         public NeoEmulator emulator;
+        public ABI abi;
 
         private string lastParams = null;
 
@@ -31,28 +32,84 @@ namespace Neo.Debugger
             assetListBox.SelectedIndex = 0;
         }
 
-        private void LoadInvokeTemplate(string key)
-        {
-            if (_paramMap.ContainsKey(key))
-            {
-                var node = _paramMap[key];
+        private Dictionary<string, string> _lastParams = new Dictionary<string, string>();
 
-                var json = JSONWriter.WriteToString(node);
-                contractInputField.Text = json;
+        private void LoadFunction(string key)
+        {
+            if (abi.functions.ContainsKey(key))
+            {
+                var f = abi.functions[key];
+
+                inputGrid.Rows.Clear();
+
+                if (f.inputs != null)
+                {
+                    foreach (var p in f.inputs)
+                    {
+                        var temp = (key + "_" + f.name).ToLower();
+                        string val = "";
+
+                        if (_lastParams.ContainsKey(temp))
+                        {
+                            val = _lastParams[temp];
+                        }
+
+                        inputGrid.Rows.Add(new object[] { p.name, val});
+                    }
+                }
 
                 lastParams = key;
+
+                button1.Enabled = true;
             }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var key = paramsList.Text;
-            LoadInvokeTemplate(key);
+            LoadFunction(key);
         }
 
         private bool InitInvoke()
         {
-            var json = contractInputField.Text;
+
+            var key = paramsList.Text;
+            var f = abi.functions[key];
+
+            var argList = "\""+key+"\"";
+
+            if (f.inputs != null)
+            {
+                argList += ", [";
+
+                int index = 0;
+                foreach (var p in f.inputs)
+                {
+                    var temp = (key + "_" + f.name).ToLower();
+                    var val = inputGrid.Rows[index].Cells[1].Value;
+
+                    if (index>0)
+                    {
+                        argList += ",";
+                    }
+
+                    switch (p.type.ToLower())
+                    {
+                        case "string": val = "\""+val+"\""; break;
+                    }
+
+                    argList += val;
+                    index++;
+                }
+
+                argList += "]";
+            }
+            else
+            {
+                argList += ", [null]";
+            }
+
+            string json = "{\"params\": ["+ argList + "]}";
 
             if (string.IsNullOrEmpty(json))
             {
@@ -112,11 +169,11 @@ namespace Neo.Debugger
             }
         }
 
-        private static Dictionary<string, DataNode> _paramMap = null;
-
         private void RunForm_Shown(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.None;
+
+            inputGrid.AllowUserToAddRows = false;
 
             assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
 
@@ -138,41 +195,14 @@ namespace Neo.Debugger
                 addressLabel.Text = "(No key loaded)";
             }
 
-            if (!string.IsNullOrEmpty(MainForm.targetAVMPath))
-            {
-                var fileName = MainForm.targetAVMPath.Replace(".avm", ".json");
-                if (File.Exists(fileName))
-                {
-                    try
-                    {
-                        _paramMap = new Dictionary<string, DataNode>();
-
-                        var contents = File.ReadAllText(fileName);
-
-                        var contractInfo = JSONReader.ReadFromString(contents);
-
-                        var contractNode = contractInfo["contract"];
-                        var inputs = contractNode["inputs"];
-
-                        paramsList.Items.Clear();
-                        foreach (var node in inputs.Children)
-                        {
-                            var name = node.GetString("name");
-                            var data = node.GetNode("params");
-                            _paramMap[name] = data;
-                        }
-                    }
-                    finally
-                    {
-                        
-                    }                                    
-                }
-            }
-
-            button1.Enabled = _paramMap != null && _paramMap.Count > 0 ;
             paramsList.Items.Clear();
 
-            if (_paramMap != null)
+            foreach (var f in abi.functions.Values)
+            {
+                paramsList.Items.Add(f.name);
+            }
+
+            /*if (_paramMap != null)
             {
                 foreach (var entry in _paramMap)
                 {
@@ -189,8 +219,7 @@ namespace Neo.Debugger
                     paramsList.SelectedIndex = 0;
                 }
 
-            }
-
+            }*/
         }
 
         private void button3_Click(object sender, EventArgs e)
