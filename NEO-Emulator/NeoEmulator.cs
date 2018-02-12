@@ -105,6 +105,8 @@ namespace Neo.Emulator
 
         private int lastOffset = -1;
 
+        public TriggerType currentTrigger = TriggerType.Application;
+
         private static void EmitObject(ScriptBuilder sb, object item)
         {
             if (item is List<object>)

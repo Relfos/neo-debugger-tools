@@ -16,8 +16,8 @@ namespace Neo.Emulator.API
         [Syscall("Neo.Runtime.GetTrigger")]
         public static bool GetTrigger(ExecutionEngine engine)
         {
-            //TriggerType result = TriggerType.Application;
-            TriggerType result = TriggerType.Verification;
+            var emulator = engine.GetEmulator();
+            TriggerType result = emulator.currentTrigger;
 
             engine.EvaluationStack.Push((int)result);
             return true;
