@@ -237,3 +237,4 @@ ModelManifest.xml
 
 # Paket dependency manager
 .paket/paket.exe
+/NEO-IDE/Output/Site/netcoreapp2.0
