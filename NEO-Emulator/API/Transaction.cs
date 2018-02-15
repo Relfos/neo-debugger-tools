@@ -142,5 +142,12 @@ namespace Neo.Emulator.API
 
             return true;
         }
+
+        [Syscall("Neo.Transaction.GetUnspentCoins")]
+        //returns TransactionOutput[]
+        public static bool GetUnspentCoins()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
