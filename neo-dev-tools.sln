@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-Compiler", "NEO-Compiler\NEO-Compiler.csproj", "{36E1CCD1-3C95-459D-88D1-6F14E07EAEC9}"
 EndProject
@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-CLI-Disassembler", "NEO-CLI-Disassembler\NEO-CLI-Disassembler.csproj", "{4AB8DA86-649F-4F8C-A448-B3F10B8D3350}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICO-Template", "ICO-Template\ICO-Template.csproj", "{ACD39528-CE59-4A17-B6ED-9C237D2A0E82}"
+	ProjectSection(ProjectDependencies) = postProject
+		{36E1CCD1-3C95-459D-88D1-6F14E07EAEC9} = {36E1CCD1-3C95-459D-88D1-6F14E07EAEC9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NEO-Emulator", "NEO-Emulator\NEO-Emulator.csproj", "{372429C2-71BE-41C2-92D0-5A9187BC238A}"
 EndProject

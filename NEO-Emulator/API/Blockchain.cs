@@ -138,7 +138,7 @@ namespace Neo.Emulator.API
                 {
                     block = new Block();
                     block.timestamp = 1506787300;
-                    blockchain.blocks[height] = block;
+                    blockchain.blocks[height+1] = block;
                 }
             }
 
