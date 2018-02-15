@@ -36,7 +36,7 @@ Includes a cli disassembler and a GUI debugger. A helper library that helps load
 
 ### Setup 
 1. Get this code and open the solution in Visual Studio.
-2. Compile the solution and find the compiled NEON.exe path (should be a sub folder bin/debug under the solution folder).
+2. Compile the solution and find the compiled NEON.exe path (should be in $(SolutionPath)\NEO-Compiler\bin\Debug).
 3. Replace the path of your old NEON compiler to the new compiler path. 
 4. When you compile a smart contract, it will accordingly use the debugger compiler and produce (next to the`.avm`) the map file which you need to step through the code.
 
