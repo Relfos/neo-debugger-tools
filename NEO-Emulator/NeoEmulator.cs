@@ -7,6 +7,7 @@ using System.Numerics;
 using Neo.Emulator.API;
 using LunarParser;
 using Neo.Emulator.Utils;
+using System.Diagnostics;
 
 namespace Neo.Emulator
 {
@@ -84,6 +85,11 @@ namespace Neo.Emulator
             this.interop = new InteropService();
         }
 
+        public int GetInstructionPtr()
+        {
+            return engine.CurrentContext.InstructionPointer;
+        }
+
         public void SetExecutingAddress(Address address)
         {
             this.currentAddress = address;
@@ -100,6 +106,7 @@ namespace Neo.Emulator
                 var attr = (SyscallAttribute)method.GetCustomAttributes(typeof(SyscallAttribute), false).FirstOrDefault();
 
                 interop.Register(attr.Method, (engine) => { return (bool)method.Invoke(null, new object[] { engine }); }, attr.gasCost);
+                Debug.WriteLine("interopRegister:\t" + attr.Method);
             }
         }
 
