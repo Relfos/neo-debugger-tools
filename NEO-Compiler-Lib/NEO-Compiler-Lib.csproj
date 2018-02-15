@@ -17,4 +17,8 @@
     <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.1" />
+  </ItemGroup>
+
 </Project>

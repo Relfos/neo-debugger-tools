@@ -370,7 +370,11 @@ namespace Neo.Debugger
                 return;
             }
 
-            if (File.Exists(path))
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("Can't find '" + (String.IsNullOrEmpty(path) ? "(null)" : path + "'"), this.Text + " - " + Environment.CurrentDirectory);
+            }
+            else
             {
                 MainForm.targetAVMPath = path;
 
