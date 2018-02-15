@@ -85,6 +85,11 @@ namespace Neo.Emulator
             this.interop = new InteropService();
         }
 
+        public int GetInstructionPtr()
+        {
+            return engine.CurrentContext.InstructionPointer;
+        }
+
         public void SetExecutingAddress(Address address)
         {
             this.currentAddress = address;
