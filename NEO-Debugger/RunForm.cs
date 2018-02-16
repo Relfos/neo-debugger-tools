@@ -83,7 +83,7 @@ namespace Neo.Debugger
                 int index = 0;
                 foreach (var p in f.inputs)
                 {
-                    var temp = (key + "_" + f.name).ToLower();
+                    var temp = ($"{key}_{f.name}").ToLower();
                     var val = inputGrid.Rows[index].Cells[1].Value;
 
                     if (index>0)
@@ -93,16 +93,21 @@ namespace Neo.Debugger
 
                     switch (p.type.ToLower())
                     {
-                        case "string": val = "\""+val+"\""; break;
+                        case "string": val = $"\"{val}\""; break;
                     }
 
                     argList += val;
                     index++;
                 }
             }
-            else
+
+            if (key != abi.entryPoint.name)
             {
-                argList += ", [null]";
+                if (f.inputs == null || f.inputs.Length == 0)
+                {
+                    argList = "[null]";
+                }
+                argList = $"\"{key.ToLowerInvariant()}\", {argList}";
             }
 
             string json = "{\"params\": ["+ argList + "]}";
