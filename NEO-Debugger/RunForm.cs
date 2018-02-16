@@ -76,12 +76,10 @@ namespace Neo.Debugger
             var key = paramsList.Text;
             var f = abi.functions[key];
 
-            var argList = "\""+key+"\"";
+            var argList = "";
 
             if (f.inputs != null)
             {
-                argList += ", [";
-
                 int index = 0;
                 foreach (var p in f.inputs)
                 {
@@ -101,8 +99,6 @@ namespace Neo.Debugger
                     argList += val;
                     index++;
                 }
-
-                argList += "]";
             }
             else
             {
