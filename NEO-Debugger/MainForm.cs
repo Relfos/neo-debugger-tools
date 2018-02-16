@@ -949,7 +949,7 @@ namespace Neo.Debugger
                 case DebuggerState.State.Exception:
                     {
                         shouldReset = true;
-                        MessageBox.Show("Execution failed with an exception at address " + debugger.GetInstructionPtr().ToString());
+                        MessageBox.Show("Execution failed with an exception at address " + debugger.GetInstructionPtr().ToString() + " lastOffset: " + debugState.offset.ToString());
                         JumpToLine(currentLine);
                         break;
                     }
