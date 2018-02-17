@@ -31,6 +31,8 @@ namespace Neo.Compiler
 
 
             string filename = args[0];
+            log.Log("Trying to compile " + filename);
+
             var extension = Path.GetExtension(filename);
             string filepdb = filename.Replace(extension, ".pdb");
 

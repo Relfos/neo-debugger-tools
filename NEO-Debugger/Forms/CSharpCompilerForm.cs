@@ -48,7 +48,8 @@ namespace Neo.Debugger.Forms
 
             listBox1.Items.Clear();
 
-            var path = Directory.GetCurrentDirectory();
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Neo Contracts";
+            Directory.CreateDirectory(path);
 
             var fileName = path + @"\"+outputNameText.Text+".cs";
             targetAVMpath = fileName.Replace(".cs", ".avm");
@@ -56,7 +57,7 @@ namespace Neo.Debugger.Forms
 
             var proc = new Process();
             proc.StartInfo.FileName = "neon.exe";
-            proc.StartInfo.Arguments = fileName;
+            proc.StartInfo.Arguments = "\""+fileName+"\"";
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.RedirectStandardInput = false;
             proc.StartInfo.RedirectStandardOutput = true;
