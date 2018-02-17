@@ -49,6 +49,12 @@ namespace Neo.Compiler
                 }
             }
 
+            if (!File.Exists(filename))
+            {
+                log.Log("Could not find file: " + filename);
+                Environment.Exit(-1);
+            }
+
             switch (extension)
             {
                 case ".dll":
