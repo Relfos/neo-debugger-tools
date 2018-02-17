@@ -2,7 +2,7 @@
 using Neo.Emulator.API;
 using System.Windows.Forms;
 
-namespace Neo.Debugger
+namespace Neo.Debugger.Forms
 {
     public partial class BlockchainForm : Form
     {

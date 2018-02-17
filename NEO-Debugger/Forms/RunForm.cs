@@ -10,7 +10,7 @@ using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
 
-namespace Neo.Debugger
+namespace Neo.Debugger.Forms
 {
     public partial class RunForm : Form
     {

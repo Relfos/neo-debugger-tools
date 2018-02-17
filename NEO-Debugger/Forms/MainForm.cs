@@ -12,7 +12,7 @@ using Neo.Emulator.Utils;
 using Neo.Emulator.Dissambler;
 using Neo.Emulator;
 
-namespace Neo.Debugger
+namespace Neo.Debugger.Forms
 {
     public partial class MainForm : Form
     {
@@ -1240,6 +1240,12 @@ namespace Neo.Debugger
 
             var form = new BlockchainForm();
             form.debugger = this.debugger;
+            form.ShowDialog();
+        }
+
+        private void cCompilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new CSharpCompilerForm();
             form.ShowDialog();
         }
     }

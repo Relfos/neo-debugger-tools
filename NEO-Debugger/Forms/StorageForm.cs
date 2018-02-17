@@ -3,7 +3,7 @@ using Neo.Emulator.Utils;
 using System;
 using System.Windows.Forms;
 
-namespace Neo.Debugger
+namespace Neo.Debugger.Forms
 {
     public partial class StorageForm : Form
     {

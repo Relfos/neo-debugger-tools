@@ -1,10 +1,8 @@
 ﻿using Neo.Compiler.MSIL;
 using System;
-using System.IO;
-using System.Reflection;
 using System.Text;
 
-namespace Neo.Compiler
+namespace Neo.Compiler.AVM
 {
     public class AVMCompiler
     {
@@ -65,7 +63,7 @@ namespace Neo.Compiler
 
                 try
                 {
-                    var outjson = vmtool.FuncExport.Export(am, bytes);
+                    var outjson = FuncExport.Export(am, bytes);
                     StringBuilder sb = new StringBuilder();
                     outjson.ConvertToStringWithFormat(sb, 0);
                     jsonstr = sb.ToString();

@@ -1,4 +1,5 @@
-﻿using Neo.Compiler.MSIL;
+﻿using Neo.Compiler.AVM;
+using Neo.Compiler.MSIL;
 using System;
 using System.IO;
 using System.Reflection;
@@ -30,7 +31,8 @@ namespace Neo.Compiler
 
 
             string filename = args[0];
-            string filepdb = filename.Replace(".dll", ".pdb");
+            var extension = Path.GetExtension(filename);
+            string filepdb = filename.Replace(extension, ".pdb");
 
             // fix necessary when debugging the compiler via VS
             var path = Path.GetDirectoryName(filename);
@@ -47,10 +49,36 @@ namespace Neo.Compiler
                 }
             }
 
-            if (AVMCompiler.Execute(filename, filepdb, log))
+            switch (extension)
             {
-                log.Log("SUCC");
+                case ".dll":
+                    {
+                        if (AVMCompiler.Execute(filename, filepdb, log))
+                        {
+                            log.Log("SUCC");
+                        }
+
+                        break;
+                    }
+
+                case ".cs":
+                    {
+                        if (CSharpCompiler.Execute(filename, log))
+                        {
+                            log.Log("SUCC");
+                        }
+
+                        break;
+                    }
+
+                default:
+                    {
+                        log.Log("Invalid extension: " + extension);
+                        Environment.Exit(-1);
+                        break;
+                    }
             }
+
         }
     }
 }
