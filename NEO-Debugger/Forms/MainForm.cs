@@ -363,7 +363,7 @@ namespace Neo.Debugger.Forms
         private byte[] contractBytecode;
         private string contractName;
 
-        private void LoadDataFromFile(string path)
+        public void LoadDataFromFile(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -1246,6 +1246,7 @@ namespace Neo.Debugger.Forms
         private void cCompilerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var form = new CSharpCompilerForm();
+            form.mainForm = this;
             form.ShowDialog();
         }
     }
