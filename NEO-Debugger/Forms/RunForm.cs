@@ -107,7 +107,8 @@ namespace Neo.Debugger.Forms
                 {
                     argList = "[null]";
                 }
-                argList = $"\"{key.ToLowerInvariant()}\", {argList}";
+                var operation = Char.ToLowerInvariant(key[0]) + key.Substring(1);
+                argList = $"\"{operation}\", {argList}";
             }
 
             string json = "{\"params\": ["+ argList + "]}";
