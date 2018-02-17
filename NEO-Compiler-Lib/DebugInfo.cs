@@ -1,5 +1,4 @@
 ﻿using Neo.Emulator.Dissambler;
-using NEO.AllianceOfThinWallet.Cryptography;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
