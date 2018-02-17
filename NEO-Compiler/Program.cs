@@ -47,7 +47,7 @@ namespace Neo.Compiler
                 }
             }
 
-            if (Compiler.Execute(filename, filepdb, log))
+            if (AVMCompiler.Execute(filename, filepdb, log))
             {
                 log.Log("SUCC");
             }

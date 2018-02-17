@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Neo.Compiler
 {
-    public class Compiler
+    public class AVMCompiler
     {
         //Console.WriteLine("helo ha:"+args[0]); //普通输出
         //Console.WriteLine("<WARN> 这是一个严重的问题。");//警告输出，黄字
