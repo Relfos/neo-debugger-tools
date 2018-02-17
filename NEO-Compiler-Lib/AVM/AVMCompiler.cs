@@ -1,5 +1,6 @@
 ﻿using Neo.Compiler.MSIL;
 using System;
+using System.IO;
 using System.Text;
 
 namespace Neo.Compiler.AVM
@@ -37,11 +38,16 @@ namespace Neo.Compiler.AVM
                 log.Log("Open File Error:" + err.ToString());
                 return false;
             }
+
+            var exePath = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var curPath = Directory.GetCurrentDirectory();
+            Directory.SetCurrentDirectory(exePath);
+
             //load module
             try
             {
                 mod.LoadModule(fs, fspdb);
-            }
+           }
             catch (Exception err)
             {
                 log.Log("LoadModule Error:" + err.ToString());
@@ -57,6 +63,9 @@ namespace Neo.Compiler.AVM
                 var conv = new ModuleConverter(log);
 
                 NeoModule am = conv.Convert(mod);
+
+                Directory.SetCurrentDirectory(curPath);
+
                 bytes = am.Build();
                 log.Log("convert succ");
 
