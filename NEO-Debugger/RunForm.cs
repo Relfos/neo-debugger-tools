@@ -202,6 +202,7 @@ namespace Neo.Debugger
             {
                 paramsList.Items.Add(f.name);
             }
+
             int mainItem = paramsList.FindString("Main");
             if (mainItem >= 0) paramsList.SetSelected(mainItem, true);
 

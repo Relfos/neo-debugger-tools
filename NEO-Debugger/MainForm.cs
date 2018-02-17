@@ -1230,5 +1230,17 @@ namespace Neo.Debugger
         }
         #endregion
 
+        private void blockchainToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.debugger == null || this.debugger.blockchain == null)
+            {
+                MessageBox.Show("Please deploy the smart contract first!");
+                return;
+            }
+
+            var form = new BlockchainForm();
+            form.debugger = this.debugger;
+            form.ShowDialog();
+        }
     }
 }

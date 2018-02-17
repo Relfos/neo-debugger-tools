@@ -116,6 +116,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockchainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlockchainForm.Designer.cs">
+      <DependentUpon>BlockchainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguageSupport.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -141,6 +147,9 @@
     <Compile Include="Utils\HotKeyManager.cs" />
     <Compile Include="Utils\InputBox.cs" />
     <Compile Include="Utils\SearchManager.cs" />
+    <EmbeddedResource Include="BlockchainForm.resx">
+      <DependentUpon>BlockchainForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

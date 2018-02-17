@@ -70,6 +70,7 @@
             this.stackPanel = new System.Windows.Forms.RichTextBox();
             this.stackLabel = new System.Windows.Forms.Label();
             this.gasCostLabel = new System.Windows.Forms.Label();
+            this.blockchainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
@@ -269,7 +270,8 @@
             this.stepToolStripMenuItem,
             this.resetToolStripMenuItem,
             this.sourceToolStripMenuItem,
-            this.toolStripMenuItem2});
+            this.toolStripMenuItem2,
+            this.blockchainToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(62, 23);
             this.debugToolStripMenuItem.Text = "Debug";
@@ -278,7 +280,7 @@
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.ShortcutKeyDisplayString = "F5";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
             // 
@@ -286,14 +288,14 @@
             // 
             this.stepToolStripMenuItem.Name = "stepToolStripMenuItem";
             this.stepToolStripMenuItem.ShortcutKeyDisplayString = "F10";
-            this.stepToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.stepToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
             this.stepToolStripMenuItem.Text = "Step";
             this.stepToolStripMenuItem.Click += new System.EventHandler(this.stepToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
@@ -304,20 +306,20 @@
             this.assemblyToolStripMenuItem});
             this.sourceToolStripMenuItem.Name = "sourceToolStripMenuItem";
             this.sourceToolStripMenuItem.ShortcutKeyDisplayString = "F12";
-            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.sourceToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
             this.sourceToolStripMenuItem.Text = "Source";
             // 
             // originalToolStripMenuItem
             // 
             this.originalToolStripMenuItem.Name = "originalToolStripMenuItem";
-            this.originalToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.originalToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
             this.originalToolStripMenuItem.Text = "Original";
             this.originalToolStripMenuItem.Click += new System.EventHandler(this.originalToolStripMenuItem_Click);
             // 
             // assemblyToolStripMenuItem
             // 
             this.assemblyToolStripMenuItem.Name = "assemblyToolStripMenuItem";
-            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
+            this.assemblyToolStripMenuItem.Size = new System.Drawing.Size(136, 24);
             this.assemblyToolStripMenuItem.Text = "Assembly";
             this.assemblyToolStripMenuItem.Click += new System.EventHandler(this.assemblyToolStripMenuItem_Click);
             // 
@@ -325,7 +327,7 @@
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.ShortcutKeyDisplayString = "F6";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 24);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(166, 24);
             this.toolStripMenuItem2.Text = "Storage";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
@@ -457,6 +459,14 @@
             this.gasCostLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.gasCostLabel.Visible = false;
             // 
+            // blockchainToolStripMenuItem
+            // 
+            this.blockchainToolStripMenuItem.Name = "blockchainToolStripMenuItem";
+            this.blockchainToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+            this.blockchainToolStripMenuItem.Size = new System.Drawing.Size(166, 24);
+            this.blockchainToolStripMenuItem.Text = "Blockchain";
+            this.blockchainToolStripMenuItem.Click += new System.EventHandler(this.blockchainToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -534,6 +544,7 @@
         private System.Windows.Forms.ToolStripMenuItem assemblyToolStripMenuItem;
         private System.Windows.Forms.Label gasCostLabel;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem blockchainToolStripMenuItem;
     }
 }
 

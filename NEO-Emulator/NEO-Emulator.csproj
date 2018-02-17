@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="ABI.cs" />
     <Compile Include="API\Address.cs" />
+    <Compile Include="API\TransactionType.cs" />
     <Compile Include="Cryptography\Base58.cs" />
     <Compile Include="Cryptography\BloomFilter.cs" />
     <Compile Include="Cryptography\Crypto.cs" />
