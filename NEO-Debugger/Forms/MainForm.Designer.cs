@@ -60,6 +60,8 @@
             this.assemblyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.blockchainToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PanelSearch = new System.Windows.Forms.Panel();
             this.BtnNextSearch = new System.Windows.Forms.Button();
             this.BtnPrevSearch = new System.Windows.Forms.Button();
@@ -71,16 +73,15 @@
             this.stackPanel = new System.Windows.Forms.RichTextBox();
             this.stackLabel = new System.Windows.Forms.Label();
             this.gasCostLabel = new System.Windows.Forms.Label();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cCompilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyDecoderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.PanelSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // TextPanel
             // 
-            this.TextPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.TextPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextPanel.Location = new System.Drawing.Point(8, 95);
             this.TextPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -342,6 +343,22 @@
             this.blockchainToolStripMenuItem.Text = "Blockchain";
             this.blockchainToolStripMenuItem.Click += new System.EventHandler(this.blockchainToolStripMenuItem_Click);
             // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cCompilerToolStripMenuItem,
+            this.keyDecoderToolStripMenuItem});
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(52, 23);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // cCompilerToolStripMenuItem
+            // 
+            this.cCompilerToolStripMenuItem.Name = "cCompilerToolStripMenuItem";
+            this.cCompilerToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
+            this.cCompilerToolStripMenuItem.Text = "C# Compiler";
+            this.cCompilerToolStripMenuItem.Click += new System.EventHandler(this.cCompilerToolStripMenuItem_Click);
+            // 
             // PanelSearch
             // 
             this.PanelSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -404,7 +421,7 @@
             // 
             // TxtSearch
             // 
-            this.TxtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.TxtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TxtSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TxtSearch.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -470,20 +487,12 @@
             this.gasCostLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.gasCostLabel.Visible = false;
             // 
-            // toolsToolStripMenuItem
+            // keyDecoderToolStripMenuItem
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cCompilerToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(52, 23);
-            this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // cCompilerToolStripMenuItem
-            // 
-            this.cCompilerToolStripMenuItem.Name = "cCompilerToolStripMenuItem";
-            this.cCompilerToolStripMenuItem.Size = new System.Drawing.Size(154, 24);
-            this.cCompilerToolStripMenuItem.Text = "C# Compiler";
-            this.cCompilerToolStripMenuItem.Click += new System.EventHandler(this.cCompilerToolStripMenuItem_Click);
+            this.keyDecoderToolStripMenuItem.Name = "keyDecoderToolStripMenuItem";
+            this.keyDecoderToolStripMenuItem.Size = new System.Drawing.Size(155, 24);
+            this.keyDecoderToolStripMenuItem.Text = "Key Decoder";
+            this.keyDecoderToolStripMenuItem.Click += new System.EventHandler(this.keyDecoderToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -565,6 +574,7 @@
         private System.Windows.Forms.ToolStripMenuItem blockchainToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cCompilerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyDecoderToolStripMenuItem;
     }
 }
 

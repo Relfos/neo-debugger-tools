@@ -1249,5 +1249,11 @@ namespace Neo.Debugger.Forms
             form.mainForm = this;
             form.ShowDialog();
         }
+
+        private void keyDecoderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new KeyToolForm();
+            form.ShowDialog();
+        }
     }
 }

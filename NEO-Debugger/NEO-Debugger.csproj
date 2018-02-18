@@ -128,6 +128,12 @@
     <Compile Include="Forms\CSharpCompilerForm.Designer.cs">
       <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\KeyToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KeyToolForm.Designer.cs">
+      <DependentUpon>KeyToolForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguageSupport.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -158,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CSharpCompilerForm.resx">
       <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KeyToolForm.resx">
+      <DependentUpon>KeyToolForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
