@@ -21,8 +21,6 @@ namespace Neo.Debugger.Forms
         public NeoEmulator emulator;
         public ABI abi;
 
-        private string lastParams = null;
-
         public RunForm()
         {
             InitializeComponent();
@@ -39,8 +37,6 @@ namespace Neo.Debugger.Forms
             witnessComboBox.SelectedIndex = 0;
         }
 
-        private Dictionary<string, object> _lastParams = new Dictionary<string, object>();
-
         private AVMFunction currentMethod;
 
         private void LoadFunction(string key)
@@ -55,26 +51,27 @@ namespace Neo.Debugger.Forms
                 {
                     foreach (var p in currentMethod.inputs)
                     {
-                        var param_key = (currentMethod.name + "_" + p.name).ToLower();
+                        var param_key = (currentContractName + "_" + currentMethod.name + "_" + p.name).ToLower();
                         object val = "";
 
-                        if (_lastParams.ContainsKey(param_key))
+                        bool isEmpty = true;
+
+                        if (mainForm.settings.lastParams.ContainsKey(param_key))
                         {
-                            val = _lastParams[param_key];
+                            val = mainForm.settings.lastParams[param_key];
+                            isEmpty = false;
                         }
 
                         inputGrid.Rows.Add(new object[] { p.name, val });
 
                         int rowIndex = inputGrid.Rows.Count - 1;
 
-                        if (!_lastParams.ContainsKey(param_key))
+                        if (isEmpty)
                         {
                             EnablePlaceholderText(rowIndex, 1, p);
                         }
                     }
                 }
-
-                lastParams = key;
 
                 button1.Enabled = true;
             }
@@ -173,8 +170,8 @@ namespace Neo.Debugger.Forms
 
                     if (val != null && !val.Equals(""))
                     {
-                        var param_key = (f.name + "_" + p.name).ToLower();
-                        _lastParams[param_key] = val;
+                        var param_key = (currentContractName + "_" + f.name + "_" + p.name).ToLower();
+                        mainForm.settings.lastParams[param_key] = val.ToString();
                     }
 
                     if (index > 0)
@@ -319,6 +316,8 @@ namespace Neo.Debugger.Forms
 
             emulator.Reset(items);
 
+            mainForm.settings.Save();
+
             return true;
         }
 
@@ -330,16 +329,17 @@ namespace Neo.Debugger.Forms
             }
         }
 
-        private string currentContractName = "";
+        public string currentContractName = "";
+        private string lastContractName = "";
 
         private void ReloadContract()
         {
-            if (currentContractName == abi.fileName)
+            if (currentContractName == lastContractName)
             {
                 return;
             }
 
-            currentContractName = abi.fileName;
+            lastContractName = currentContractName;
 
             paramsList.Items.Clear();
 

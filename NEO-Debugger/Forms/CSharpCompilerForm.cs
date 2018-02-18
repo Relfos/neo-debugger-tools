@@ -48,7 +48,7 @@ namespace Neo.Debugger.Forms
 
             listBox1.Items.Clear();
 
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Neo Contracts";
+            var path = mainForm.settings.path;
             Directory.CreateDirectory(path);
 
             var fileName = path + @"\"+outputNameText.Text+".cs";

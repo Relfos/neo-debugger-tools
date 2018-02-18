@@ -75,7 +75,7 @@ namespace Neo.Debugger.Forms
             // DRAG DROP
             InitDragDropFile();
 
-            settings = new Settings(Application.UserAppDataPath);
+            settings = new Settings();
 
             // DEFAULT FILE
             if (string.IsNullOrEmpty(targetAVMPath))
@@ -813,6 +813,7 @@ namespace Neo.Debugger.Forms
             }
 
             runForm.mainForm = this;
+            runForm.currentContractName = contractName;
             runForm.emulator = this.debugger;
             runForm.abi = abi;
 
