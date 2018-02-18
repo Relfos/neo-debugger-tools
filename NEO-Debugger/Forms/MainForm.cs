@@ -43,7 +43,7 @@ namespace Neo.Debugger.Forms
 
         public static ABI abi;
 
-        private Settings settings;
+        public Settings settings { get; private set; }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -812,6 +812,7 @@ namespace Neo.Debugger.Forms
                 this.debugger.SetExecutingAddress(address);
             }
 
+            runForm.mainForm = this;
             runForm.emulator = this.debugger;
             runForm.abi = abi;
 

@@ -1,9 +1,11 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
+using Neo.Cryptography;
 using Neo.Debugger.Utils;
 using Neo.Emulator;
 using Neo.Emulator.API;
 using Neo.Emulator.Utils;
+using NeoLux;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,6 +17,7 @@ namespace Neo.Debugger.Forms
 {
     public partial class RunForm : Form
     {
+        public MainForm mainForm;
         public NeoEmulator emulator;
         public ABI abi;
 
@@ -24,13 +27,16 @@ namespace Neo.Debugger.Forms
         {
             InitializeComponent();
 
-            assetListBox.Items.Clear();
-            assetListBox.Items.Add("None");
+            assetComboBox.Items.Clear();
+            assetComboBox.Items.Add("None");
             foreach (var entry in Asset.Entries)
             {
-                assetListBox.Items.Add(entry.name);
+                assetComboBox.Items.Add(entry.name);
             }
-            assetListBox.SelectedIndex = 0;
+            assetComboBox.SelectedIndex = 0;
+
+            triggerComboBox.SelectedIndex = 0;
+            witnessComboBox.SelectedIndex = 0;
         }
 
         private Dictionary<string, object> _lastParams = new Dictionary<string, object>();
@@ -57,14 +63,14 @@ namespace Neo.Debugger.Forms
                             val = _lastParams[param_key];
                         }
 
-                        inputGrid.Rows.Add(new object[] { p.name, val});
+                        inputGrid.Rows.Add(new object[] { p.name, val });
 
                         int rowIndex = inputGrid.Rows.Count - 1;
 
                         if (!_lastParams.ContainsKey(param_key))
                         {
                             EnablePlaceholderText(rowIndex, 1, p);
-                        }                        
+                        }
                     }
                 }
 
@@ -80,11 +86,28 @@ namespace Neo.Debugger.Forms
             LoadFunction(key);
         }
 
+        private void ResetTabs()
+        {
+            this.runTabs.SelectedTab = methodTab;
+        }
+
         private bool InitInvoke()
         {
 
             var key = paramsList.Text;
             var f = abi.functions[key];
+
+            var ws = witnessComboBox.SelectedItem.ToString().Replace(" ", "");
+            if (!Enum.TryParse<CheckWitnessMode>(ws, out emulator.checkWitnessMode))
+            {
+                return false;
+            }
+
+            var ts = triggerComboBox.SelectedItem.ToString().Replace(" ", "");
+            if (!Enum.TryParse<TriggerType>(ts, out emulator.currentTrigger))
+            {
+                return false;
+            }
 
             var argList = "";
 
@@ -97,11 +120,11 @@ namespace Neo.Debugger.Forms
                     var name = inputGrid.Rows[index].Cells[0].Value;
 
                     object val;
-                    
+
                     // detect placeholder
                     if (inputGrid.Rows[index].Cells[1].Style.ForeColor == Color.Gray)
                     {
-                        val = ""; 
+                        val = "";
                     }
                     else
                     {
@@ -119,7 +142,7 @@ namespace Neo.Debugger.Forms
                         _lastParams[param_key] = val;
                     }
 
-                    if (index>0)
+                    if (index > 0)
                     {
                         argList += ",";
                     }
@@ -130,41 +153,44 @@ namespace Neo.Debugger.Forms
                         if (!s.StartsWith("[") || !s.EndsWith("]"))
                         {
                             MessageBox.Show($"Invalid array format for argument #{index}");
+                            ResetTabs();
                             return false;
                         }
                     }
                     else
-                    switch (p.type.ToLower())
-                    {
-                        case "string": val = $"\"{val}\""; break;
+                        switch (p.type.ToLower())
+                        {
+                            case "string": val = $"\"{val}\""; break;
 
-                        case "integer":
-                            {
-                                BigInteger n;
-                                if (!BigInteger.TryParse(val.ToString(), out n))
+                            case "integer":
                                 {
-                                    MessageBox.Show($"Invalid array format for argument #{index}");
-                                    return false;
+                                    BigInteger n;
+                                    if (!BigInteger.TryParse(val.ToString(), out n))
+                                    {
+                                        MessageBox.Show($"Invalid array format for argument #{index}");
+                                        ResetTabs();
+                                        return false;
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
 
-                        case "boolean":
-                            {
-                                switch (val.ToString().ToLower())
+                            case "boolean":
                                 {
-                                    case "true": val = true; break;
-                                    case "false": val = false; break;
-                                    default:
-                                        {
-                                            MessageBox.Show($"Invalid array format for argument #{index}");
-                                            return false;
-                                        }
+                                    switch (val.ToString().ToLower())
+                                    {
+                                        case "true": val = true; break;
+                                        case "false": val = false; break;
+                                        default:
+                                            {
+                                                MessageBox.Show($"Invalid array format for argument #{index}");
+                                                ResetTabs();
+                                                return false;
+                                            }
 
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                    }
+                        }
 
                     argList += val;
                     index++;
@@ -181,7 +207,7 @@ namespace Neo.Debugger.Forms
                 argList = $"\"{operation}\", {argList}";
             }
 
-            string json = "{\"params\": ["+ argList + "]}";
+            string json = "{\"params\": [" + argList + "]}";
 
             if (string.IsNullOrEmpty(json))
             {
@@ -198,20 +224,21 @@ namespace Neo.Debugger.Forms
             catch
             {
                 MessageBox.Show("Error parsing input!");
+                ResetTabs();
                 return false;
             }
 
             var items = node.GetNode("params");
 
-            if (assetListBox.SelectedIndex > 0)
+            if (assetComboBox.SelectedIndex > 0)
             {
                 foreach (var entry in Asset.Entries)
                 {
-                    if (entry.name == assetListBox.SelectedItem.ToString())
+                    if (entry.name == assetComboBox.SelectedItem.ToString())
                     {
                         BigInteger ammount;
 
-                        BigInteger.TryParse(assetAmmount.Text, out ammount);
+                        BigInteger.TryParse(assetAmount.Text, out ammount);
 
                         if (ammount > 0)
                         {
@@ -219,7 +246,7 @@ namespace Neo.Debugger.Forms
                         }
                         else
                         {
-                            MessageBox.Show(entry.name + " ammount must be greater than zero");
+                            MessageBox.Show(entry.name + " amount must be greater than zero");
                             return false;
                         }
 
@@ -241,13 +268,35 @@ namespace Neo.Debugger.Forms
             }
         }
 
+        private string currentContractName = "";
+
+        private void ReloadContract()
+        {
+            if (currentContractName == abi.fileName)
+            {
+                return;
+            }
+
+            currentContractName = abi.fileName;
+
+            paramsList.Items.Clear();
+
+            foreach (var f in abi.functions.Values)
+            {
+                paramsList.Items.Add(f.name);
+            }
+
+            int mainItem = paramsList.FindString(abi.entryPoint.name);
+            if (mainItem >= 0) paramsList.SetSelected(mainItem, true);
+        }
+
         private void RunForm_Shown(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.None;
 
             inputGrid.AllowUserToAddRows = false;
 
-            assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
+            assetAmount.Enabled = assetComboBox.SelectedIndex > 0;
 
             if (Runtime.invokerKeys == null && File.Exists("last.key"))
             {
@@ -267,59 +316,14 @@ namespace Neo.Debugger.Forms
                 addressLabel.Text = "(No key loaded)";
             }
 
-            paramsList.Items.Clear();
+            privateKeyInput.Text = mainForm.settings.lastPrivateKey;
 
-            foreach (var f in abi.functions.Values)
-            {
-                paramsList.Items.Add(f.name);
-            }
-
-            int mainItem = paramsList.FindString("Main");
-            if (mainItem >= 0) paramsList.SetSelected(mainItem, true);
-
-            /*if (_paramMap != null)
-            {
-                foreach (var entry in _paramMap)
-                {
-                    paramsList.Items.Add(entry.Key);
-
-                    if (lastParams != null && entry.Key.Equals(lastParams))
-                    {
-                        paramsList.SelectedIndex = paramsList.Items.Count - 1;
-                    }
-                }
-
-                if (paramsList.SelectedIndex<0 && paramsList.Items.Count > 0)
-                {
-                    paramsList.SelectedIndex = 0;
-                }
-
-            }*/
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            string input = "";
-            if (InputUtils.ShowInputDialog("Enter private key", ref input) == DialogResult.OK)
-            {
-                var privKey = input.HexToByte();
-                if (privKey.Length == 32)
-                {
-                    Runtime.invokerKeys = new NeoLux.KeyPair(privKey);
-                    addressLabel.Text = Runtime.invokerKeys.address;
-
-                    File.WriteAllBytes("last.key", privKey);
-                }
-                else
-                {
-                    MessageBox.Show("Invalid private key, length should be 32");
-                }
-            }
+            ReloadContract();
         }
 
         private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            assetAmmount.Enabled = assetListBox.SelectedIndex > 0;
+            assetAmount.Enabled = assetComboBox.SelectedIndex > 0;
         }
 
         private void paramsList_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -406,6 +410,41 @@ namespace Neo.Debugger.Forms
         {
             editMode = false;
             VerifyPlaceholderAt(e.RowIndex, e.ColumnIndex);
+        }
+
+        private static KeyPair GetKeyFromString(string key)
+        {
+            if (key.Length == 52)
+            {
+                return KeyPair.FromWIF(key);
+            }
+            else
+            if (key.Length == 64)
+            {
+                var keyBytes = key.HexToBytes();
+                return new KeyPair(keyBytes);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            var keyPair = GetKeyFromString(privateKeyInput.Text);
+            if (keyPair != null)
+            {
+                Runtime.invokerKeys = keyPair;
+                addressLabel.Text = Runtime.invokerKeys.address;
+
+                mainForm.settings.lastPrivateKey = privateKeyInput.Text;
+                mainForm.settings.Save();
+            }
+            else
+            {
+                MessageBox.Show("Invalid private key, length should be 52 or 64");
+            }
         }
     }
 }

@@ -11,6 +11,13 @@ using System.Diagnostics;
 
 namespace Neo.Emulator
 {
+    public enum CheckWitnessMode
+    {
+        Default,
+        AlwaysTrue,
+        AlwaysFalse
+    }
+
     public struct DebuggerState
     {
         public enum State
@@ -77,6 +84,9 @@ namespace Neo.Emulator
         public Address currentAddress { get; private set; }
         public Transaction currentTransaction { get; private set; }
 
+        public CheckWitnessMode checkWitnessMode = CheckWitnessMode.Default;
+        public TriggerType currentTrigger = TriggerType.Application;
+
         private double _usedGas;
 
         public NeoEmulator(Blockchain blockchain)
@@ -111,8 +121,6 @@ namespace Neo.Emulator
         }
 
         private int lastOffset = -1;
-
-        public TriggerType currentTrigger = TriggerType.Application;
 
         private static void EmitObject(ScriptBuilder sb, object item)
         {

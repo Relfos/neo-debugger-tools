@@ -63,15 +63,15 @@ namespace Neo.Debugger.Forms
         private void button1_Click(object sender, EventArgs e)
         {
             KeyPair keyPair;
-
-            var keyBytes = keyBox.Text.HexToBytes();
+            
             if (keyBox.Text.Length == 52)
             {
                 keyPair = KeyPair.FromWIF(keyBox.Text);
             }
             else
-            if (keyBytes.Length == 32)
+            if (keyBox.Text.Length == 64)
             {
+                var keyBytes = keyBox.Text.HexToBytes();
                 keyPair = new KeyPair(keyBytes);
             }
             else

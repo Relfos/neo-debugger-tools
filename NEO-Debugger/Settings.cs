@@ -10,6 +10,8 @@ namespace Neo.Debugger
     {
         public string lastOpenedFile;
 
+        public string lastPrivateKey;
+
         private string fileName;
         private string path;
 
@@ -26,6 +28,7 @@ namespace Neo.Debugger
                 root = root["settings"];
 
                 this.lastOpenedFile = root.GetString("lastfile");
+                this.lastPrivateKey = root.GetString("lastkey", "L1nqvvVGGesAQ5vLyyR21Q2gVt4ifw8ZrKGJa58tv9xP7hGa2SMx");
             }
         }
 
@@ -33,6 +36,7 @@ namespace Neo.Debugger
         {
             var root = DataNode.CreateObject("settings");
             root.AddField("lastfile", this.lastOpenedFile);
+            root.AddField("lastkey", this.lastPrivateKey);
 
             var json = JSONWriter.WriteToString(root);
 

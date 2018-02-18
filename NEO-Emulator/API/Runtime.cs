@@ -32,6 +32,8 @@ namespace Neo.Emulator.API
 
             string matchType;
 
+            var emulator = engine.GetEmulator();
+
             if (hashOrPubkey.Length == 20) // script hash
             {
                 matchType = "Script Hash";
@@ -62,6 +64,21 @@ namespace Neo.Emulator.API
             {
                 matchType = "Unknown";
                 result = false;
+            }
+
+            if (emulator.checkWitnessMode != CheckWitnessMode.Default)
+            {
+                if (emulator.checkWitnessMode == CheckWitnessMode.AlwaysFalse)
+                {
+                    result = false;
+                }
+                else
+                if (emulator.checkWitnessMode == CheckWitnessMode.AlwaysTrue)
+                {
+                    result = true;
+                }
+
+                matchType += " / Forced";
             }
 
             DoLog($"Checking Witness [{matchType}]: {hashOrPubkey.ByteToHex()} => {result}");
