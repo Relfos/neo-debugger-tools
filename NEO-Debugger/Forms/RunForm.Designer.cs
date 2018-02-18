@@ -129,6 +129,7 @@
             this.inputGrid.Size = new System.Drawing.Size(433, 125);
             this.inputGrid.TabIndex = 16;
             this.inputGrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.inputGrid_CellBeginEdit);
+            this.inputGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellClick);
             this.inputGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellEndEdit);
             this.inputGrid.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellEnter);
             this.inputGrid.CellLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellLeave);

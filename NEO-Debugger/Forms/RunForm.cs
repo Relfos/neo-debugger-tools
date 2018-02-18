@@ -91,6 +91,41 @@ namespace Neo.Debugger.Forms
             this.runTabs.SelectedTab = methodTab;
         }
 
+        private bool IsHex(string chars)
+        {
+            if (string.IsNullOrEmpty(chars)) return false;
+            if (chars.Length % 2 != 0) return false;
+
+            bool isHex;
+            foreach (var c in chars)
+            {
+                isHex = ((c >= '0' && c <= '9') ||
+                         (c >= 'a' && c <= 'f') ||
+                         (c >= 'A' && c <= 'F'));
+
+                if (!isHex)
+                    return false;
+            }
+            return true;
+        }
+
+        private void ShowArgumentError(AVMFunction f, int index, object val)
+        {
+            string error;
+
+            if (val == null || string.IsNullOrEmpty(val.ToString()))
+            {
+                error = "Missing";
+            }
+            else
+            {
+                error = "Invalid format in ";
+            }
+
+            MessageBox.Show($"{error} argument #{index+1} (\"{f.inputs[index].name}\") of {f.name} method");
+            ResetTabs();
+        }
+
         private bool InitInvoke()
         {
 
@@ -150,24 +185,51 @@ namespace Neo.Debugger.Forms
                     if (p.type.Contains("Array"))
                     {
                         var s = val.ToString();
-                        if (!s.StartsWith("[") || !s.EndsWith("]"))
+
+                        if (s.StartsWith("[") && s.EndsWith("]"))
                         {
-                            MessageBox.Show($"Invalid array format for argument #{index}");
-                            ResetTabs();
+                            val = s;
+                        }
+                        else
+                        if (IsHex(s))
+                        {
+                            var bytes = s.HexToBytes();
+                            s = "";
+                            foreach (var b in bytes)
+                            {
+                                if (s.Length > 0) s += ",";
+                                s += b.ToString();
+                            }
+                            s = $"[{s}]";
+                        }
+                        else
+                        {
+                            ShowArgumentError(f, index, val);
                             return false;
                         }
                     }
                     else
                         switch (p.type.ToLower())
                         {
-                            case "string": val = $"\"{val}\""; break;
+                            case "string":
+                                {
+                                    var s = val.ToString();
+                                    if (!s.StartsWith("\"") || !s.EndsWith("\""))
+                                    {
+                                        ShowArgumentError(f, index, val);
+                                        return false;
+                                    }
+
+                                    break;
+                                }
 
                             case "integer":
                                 {
                                     BigInteger n;
-                                    if (!BigInteger.TryParse(val.ToString(), out n))
+                                    var s = val.ToString();
+                                    if (string.IsNullOrEmpty(s) || !BigInteger.TryParse(s, out n))
                                     {
-                                        MessageBox.Show($"Invalid array format for argument #{index}");
+                                        ShowArgumentError(f, index, val);
                                         ResetTabs();
                                         return false;
                                     }
@@ -182,7 +244,7 @@ namespace Neo.Debugger.Forms
                                         case "false": val = false; break;
                                         default:
                                             {
-                                                MessageBox.Show($"Invalid array format for argument #{index}");
+                                                ShowArgumentError(f, index, val);
                                                 ResetTabs();
                                                 return false;
                                             }
@@ -375,6 +437,10 @@ namespace Neo.Debugger.Forms
                     var p = currentMethod.inputs[row];
                     EnablePlaceholderText(row, col, p);
                 }
+                else
+                {
+                    inputGrid.Rows[row].Cells[col].Style.ForeColor = Color.Black;
+                }
             }
 
         }
@@ -400,10 +466,12 @@ namespace Neo.Debugger.Forms
         }
 
         private bool editMode = false;
+        private int editRow;
 
         private void inputGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             editMode = true;
+            editRow = e.RowIndex;
         }
 
         private void inputGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -445,6 +513,16 @@ namespace Neo.Debugger.Forms
             {
                 MessageBox.Show("Invalid private key, length should be 52 or 64");
             }
+        }
+
+        private void inputGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (editMode)
+            {
+                editMode = false;            
+                VerifyPlaceholderAt(editRow, 1);
+            }
+
         }
     }
 }
