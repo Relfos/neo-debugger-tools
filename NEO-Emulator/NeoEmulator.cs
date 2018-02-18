@@ -413,6 +413,11 @@ namespace Neo.Emulator
                 return null;
             }
             else
+            if (item.Value == null)
+            {
+                return null;
+            }
+            else
             if (item.Value.StartsWith("0x"))
             {
                 return item.Value.Substring(2).HexToByte();

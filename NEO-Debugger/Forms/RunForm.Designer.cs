@@ -37,11 +37,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.assetAmmount = new System.Windows.Forms.TextBox();
             this.inputGrid = new System.Windows.Forms.DataGridView();
+            this.Parameter = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button3 = new System.Windows.Forms.Button();
             this.addressLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.Parameter = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.inputGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -124,6 +124,7 @@
             // 
             this.inputGrid.AllowUserToAddRows = false;
             this.inputGrid.AllowUserToDeleteRows = false;
+            this.inputGrid.AllowUserToResizeRows = false;
             this.inputGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.inputGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Parameter,
@@ -133,6 +134,24 @@
             this.inputGrid.RowHeadersVisible = false;
             this.inputGrid.Size = new System.Drawing.Size(455, 125);
             this.inputGrid.TabIndex = 16;
+            this.inputGrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.inputGrid_CellBeginEdit);
+            this.inputGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellEndEdit);
+            this.inputGrid.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellEnter);
+            this.inputGrid.CellLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.inputGrid_CellLeave);
+            // 
+            // Parameter
+            // 
+            this.Parameter.HeaderText = "Parameter";
+            this.Parameter.Name = "Parameter";
+            this.Parameter.ReadOnly = true;
+            this.Parameter.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            // 
+            // Value
+            // 
+            this.Value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Value.HeaderText = "Value";
+            this.Value.Name = "Value";
+            this.Value.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // button3
             // 
@@ -161,20 +180,6 @@
             this.label2.Size = new System.Drawing.Size(84, 13);
             this.label2.TabIndex = 17;
             this.label2.Text = "Invoker Address";
-            // 
-            // Parameter
-            // 
-            this.Parameter.HeaderText = "Parameter";
-            this.Parameter.Name = "Parameter";
-            this.Parameter.ReadOnly = true;
-            this.Parameter.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            // 
-            // Value
-            // 
-            this.Value.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Value.HeaderText = "Value";
-            this.Value.Name = "Value";
-            this.Value.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // RunForm
             // 

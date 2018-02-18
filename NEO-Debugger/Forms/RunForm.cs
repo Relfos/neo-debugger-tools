@@ -6,6 +6,7 @@ using Neo.Emulator.API;
 using Neo.Emulator.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Windows.Forms;
@@ -32,29 +33,38 @@ namespace Neo.Debugger.Forms
             assetListBox.SelectedIndex = 0;
         }
 
-        private Dictionary<string, string> _lastParams = new Dictionary<string, string>();
+        private Dictionary<string, object> _lastParams = new Dictionary<string, object>();
+
+        private AVMFunction currentMethod;
 
         private void LoadFunction(string key)
         {
             if (abi.functions.ContainsKey(key))
             {
-                var f = abi.functions[key];
+                currentMethod = abi.functions[key];
 
                 inputGrid.Rows.Clear();
 
-                if (f.inputs != null)
+                if (currentMethod.inputs != null)
                 {
-                    foreach (var p in f.inputs)
+                    foreach (var p in currentMethod.inputs)
                     {
-                        var temp = (key + "_" + f.name).ToLower();
-                        string val = "";
+                        var param_key = (currentMethod.name + "_" + p.name).ToLower();
+                        object val = "";
 
-                        if (_lastParams.ContainsKey(temp))
+                        if (_lastParams.ContainsKey(param_key))
                         {
-                            val = _lastParams[temp];
+                            val = _lastParams[param_key];
                         }
 
                         inputGrid.Rows.Add(new object[] { p.name, val});
+
+                        int rowIndex = inputGrid.Rows.Count - 1;
+
+                        if (!_lastParams.ContainsKey(param_key))
+                        {
+                            EnablePlaceholderText(rowIndex, 1, p);
+                        }                        
                     }
                 }
 
@@ -84,16 +94,76 @@ namespace Neo.Debugger.Forms
                 foreach (var p in f.inputs)
                 {
                     var temp = ($"{key}_{f.name}").ToLower();
-                    var val = inputGrid.Rows[index].Cells[1].Value;
+                    var name = inputGrid.Rows[index].Cells[0].Value;
+
+                    object val;
+                    
+                    // detect placeholder
+                    if (inputGrid.Rows[index].Cells[1].Style.ForeColor == Color.Gray)
+                    {
+                        val = ""; 
+                    }
+                    else
+                    {
+                        val = ReadCellVal(index, 1);
+                    }
+
+                    if (val == null)
+                    {
+                        val = ""; // temporary hack, necessary to avoid VM crash
+                    }
+
+                    if (val != null && !val.Equals(""))
+                    {
+                        var param_key = (f.name + "_" + p.name).ToLower();
+                        _lastParams[param_key] = val;
+                    }
 
                     if (index>0)
                     {
                         argList += ",";
                     }
 
+                    if (p.type.Contains("Array"))
+                    {
+                        var s = val.ToString();
+                        if (!s.StartsWith("[") || !s.EndsWith("]"))
+                        {
+                            MessageBox.Show($"Invalid array format for argument #{index}");
+                            return false;
+                        }
+                    }
+                    else
                     switch (p.type.ToLower())
                     {
                         case "string": val = $"\"{val}\""; break;
+
+                        case "integer":
+                            {
+                                BigInteger n;
+                                if (!BigInteger.TryParse(val.ToString(), out n))
+                                {
+                                    MessageBox.Show($"Invalid array format for argument #{index}");
+                                    return false;
+                                }
+                                break;
+                            }
+
+                        case "boolean":
+                            {
+                                switch (val.ToString().ToLower())
+                                {
+                                    case "true": val = true; break;
+                                    case "false": val = false; break;
+                                    default:
+                                        {
+                                            MessageBox.Show($"Invalid array format for argument #{index}");
+                                            return false;
+                                        }
+
+                                }
+                                break;
+                            }
                     }
 
                     argList += val;
@@ -255,6 +325,87 @@ namespace Neo.Debugger.Forms
         private void paramsList_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             button1_Click(null, null);
+        }
+
+        private string ReadCellVal(int row, int col)
+        {
+            var temp = inputGrid.Rows[row].Cells[col].Value;
+            var val = temp != null ? temp.ToString() : null;
+            return val;
+        }
+
+        private void EnablePlaceholderText(int row, int col, AVMInput p)
+        {
+            var s = p.type;
+
+            if (p.type.Contains("Array"))
+            {
+                s += " (Eg: [1, 2, \"something\"]";
+            }
+
+            var curContent = ReadCellVal(row, col);
+
+            if (curContent != s && !string.IsNullOrEmpty(curContent))
+            {
+                return;
+            }
+
+            inputGrid.Rows[row].Cells[col].Style.ForeColor = Color.Gray;
+            inputGrid.Rows[row].Cells[col].Value = s;
+        }
+
+        private void DisablePlaceholderText(int row, int col)
+        {
+            inputGrid.Rows[row].Cells[col].Style.ForeColor = Color.Black;
+            inputGrid.Rows[row].Cells[col].Value = "";
+        }
+
+        private void VerifyPlaceholderAt(int row, int col)
+        {
+            if (col == 1 && currentMethod != null && !editMode)
+            {
+                var val = ReadCellVal(row, col);
+
+                if (string.IsNullOrEmpty(val))
+                {
+                    var p = currentMethod.inputs[row];
+                    EnablePlaceholderText(row, col, p);
+                }
+            }
+
+        }
+
+        private void inputGrid_CellLeave(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!editMode)
+            {
+                VerifyPlaceholderAt(e.RowIndex, e.ColumnIndex);
+            }
+        }
+
+        private void inputGrid_CellEnter(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 1 && currentMethod != null)
+            {
+                var col = inputGrid.Rows[e.RowIndex].Cells[e.ColumnIndex].Style.ForeColor;
+                if (col == Color.Gray)
+                {
+                    DisablePlaceholderText(e.RowIndex, e.ColumnIndex);
+                }
+            }
+        }
+
+        private bool editMode = false;
+
+        private void inputGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+        {
+            editMode = true;
+        }
+
+        private void inputGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            editMode = false;
+            VerifyPlaceholderAt(e.RowIndex, e.ColumnIndex);
         }
     }
 }
