@@ -382,8 +382,8 @@ namespace Neo.Debugger.Forms
 
             ReloadContract();
         }
-
-        private void listBox1_SelectedIndexChanged_1(object sender, EventArgs e)
+        
+        private void assetComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             assetAmount.Enabled = assetComboBox.SelectedIndex > 0;
         }
