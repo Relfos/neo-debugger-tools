@@ -3,7 +3,7 @@ using Neo.Emulator.Utils;
 using System;
 using System.Diagnostics;
 using System.Text;
-using NeoLux;
+using Neo.Cryptography;
 
 namespace Neo.Emulator.API
 {

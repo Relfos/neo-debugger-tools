@@ -1,13 +1,5 @@
 ﻿using Neo.Cryptography;
-using NeoLux;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Neo.Debugger.Forms
@@ -36,7 +28,6 @@ namespace Neo.Debugger.Forms
 
         private void KeyToolForm_Shown(object sender, EventArgs e)
         {
-
         }
 
         public static string reverseHex(string hex)
@@ -55,8 +46,10 @@ namespace Neo.Debugger.Forms
             var output = "";
             foreach (var item in bytes)
             {
-                output += $"0x{item.ToString("X2")}, ";
+                if (output.Length > 0) output += ",";
+                output += $"{item.ToString().PadLeft(3)}";
             }
+            output = $"[{output}]";
             return output;
         }
 
@@ -83,6 +76,8 @@ namespace Neo.Debugger.Forms
             keyDataGrid.Rows.Clear();
 
             keyDataGrid.Rows.Add(new object[] { "Address", keyPair.address });
+            keyDataGrid.Rows.Add(new object[] { "Script Hash (RAW, hex) ", keyPair.signatureHash.ToArray().ToHexString() });
+            keyDataGrid.Rows.Add(new object[] { "Script Hash (RAW, bytes) ", ToByteArray(keyPair.signatureHash.ToArray()) });
             keyDataGrid.Rows.Add(new object[] { "Public Key (RAW, hex)", keyPair.PublicKey.ToHexString() });
             keyDataGrid.Rows.Add(new object[] { "Private Key (RAW, hex)", keyPair.PrivateKey.ToHexString() });
             keyDataGrid.Rows.Add(new object[] { "Private Key (WIF, hex)", keyPair.WIF });

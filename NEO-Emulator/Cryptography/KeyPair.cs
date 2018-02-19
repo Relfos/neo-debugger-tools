@@ -4,7 +4,7 @@ using Neo.Emulator.Utils;
 using System;
 using System.Linq;
 
-namespace NeoLux
+namespace Neo.Cryptography
 {
     public class KeyPair 
     {

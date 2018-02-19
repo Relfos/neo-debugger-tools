@@ -41,12 +41,12 @@
             this.textBox1.Location = new System.Drawing.Point(12, 12);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(944, 334);
+            this.textBox1.Size = new System.Drawing.Size(944, 415);
             this.textBox1.TabIndex = 0;
             // 
             // compileBtn
             // 
-            this.compileBtn.Location = new System.Drawing.Point(318, 352);
+            this.compileBtn.Location = new System.Drawing.Point(318, 433);
             this.compileBtn.Name = "compileBtn";
             this.compileBtn.Size = new System.Drawing.Size(122, 39);
             this.compileBtn.TabIndex = 2;
@@ -56,7 +56,7 @@
             // 
             // debugBtn
             // 
-            this.debugBtn.Location = new System.Drawing.Point(446, 352);
+            this.debugBtn.Location = new System.Drawing.Point(446, 433);
             this.debugBtn.Name = "debugBtn";
             this.debugBtn.Size = new System.Drawing.Size(122, 39);
             this.debugBtn.TabIndex = 3;
@@ -67,7 +67,7 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 397);
+            this.listBox1.Location = new System.Drawing.Point(15, 475);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(944, 134);
             this.listBox1.TabIndex = 4;
@@ -75,7 +75,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 352);
+            this.label1.Location = new System.Drawing.Point(12, 433);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 5;
@@ -83,7 +83,7 @@
             // 
             // outputNameText
             // 
-            this.outputNameText.Location = new System.Drawing.Point(15, 368);
+            this.outputNameText.Location = new System.Drawing.Point(15, 449);
             this.outputNameText.Name = "outputNameText";
             this.outputNameText.Size = new System.Drawing.Size(196, 20);
             this.outputNameText.TabIndex = 6;
@@ -93,7 +93,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(968, 541);
+            this.ClientSize = new System.Drawing.Size(969, 621);
             this.Controls.Add(this.outputNameText);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox1);
@@ -104,6 +104,7 @@
             this.MinimizeBox = false;
             this.Name = "CSharpCompilerForm";
             this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "C# Compiler";
             this.Load += new System.EventHandler(this.CSharpCompilerForm_Load);
             this.Shown += new System.EventHandler(this.CSharpCompilerForm_Shown);

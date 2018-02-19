@@ -1,8 +1,7 @@
 ﻿using LunarParser;
-using Neo.VM;
+using Neo.Cryptography;
 using Neo.Emulator.Utils;
 using System.Collections.Generic;
-using NeoLux;
 
 namespace Neo.Emulator.API
 {

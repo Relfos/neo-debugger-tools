@@ -1,7 +1,7 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
+using Neo.Cryptography;
 using Neo.VM;
-using NeoLux;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,13 +1,9 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
 using Neo.Cryptography;
-using Neo.Debugger.Utils;
 using Neo.Emulator;
 using Neo.Emulator.API;
-using Neo.Emulator.Utils;
-using NeoLux;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -88,6 +84,25 @@ namespace Neo.Debugger.Forms
             this.runTabs.SelectedTab = methodTab;
         }
 
+        public static bool IsValidWallet(string address)
+        {
+            if (string.IsNullOrEmpty(address) || address[0]!='A')
+            {
+                return false;
+            }
+
+            try
+            {
+                var buffer = address.Base58CheckDecode();
+                return buffer != null && buffer.Length > 0;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
         private bool IsHex(string chars)
         {
             if (string.IsNullOrEmpty(chars)) return false;
@@ -121,6 +136,18 @@ namespace Neo.Debugger.Forms
 
             MessageBox.Show($"{error} argument #{index+1} (\"{f.inputs[index].name}\") of {f.name} method");
             ResetTabs();
+        }
+
+        private string BytesToString(byte[] bytes)
+        {
+            var s = "";
+            foreach (var b in bytes)
+            {
+                if (s.Length > 0) s += ",";
+                s += b.ToString();
+            }
+            s = $"[{s}]";
+            return s;
         }
 
         private bool InitInvoke()
@@ -191,13 +218,15 @@ namespace Neo.Debugger.Forms
                         if (IsHex(s))
                         {
                             var bytes = s.HexToBytes();
-                            s = "";
-                            foreach (var b in bytes)
-                            {
-                                if (s.Length > 0) s += ",";
-                                s += b.ToString();
-                            }
-                            s = $"[{s}]";
+                            s = BytesToString(bytes);
+                        }
+                        else
+                        if (IsValidWallet(s))
+                        {
+                            var bytes = s.Base58CheckDecode();
+                            var scriptHash = Crypto.Default.ToScriptHash(bytes);
+                            bytes = scriptHash.ToArray();
+                            s = BytesToString(bytes);
                         }
                         else
                         {
@@ -365,7 +394,7 @@ namespace Neo.Debugger.Forms
                 var privKey = File.ReadAllBytes("last.key");
                 if (privKey.Length == 32)
                 {
-                    Runtime.invokerKeys = new NeoLux.KeyPair(privKey);
+                    Runtime.invokerKeys = new KeyPair(privKey);
                 }
             }
 

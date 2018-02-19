@@ -53,6 +53,9 @@
             // 
             // keyDataGrid
             // 
+            this.keyDataGrid.AllowUserToAddRows = false;
+            this.keyDataGrid.AllowUserToDeleteRows = false;
+            this.keyDataGrid.AllowUserToResizeRows = false;
             this.keyDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.keyDataGrid.Location = new System.Drawing.Point(15, 51);
             this.keyDataGrid.Name = "keyDataGrid";
