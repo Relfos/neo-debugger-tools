@@ -226,6 +226,7 @@
             this.assetComboBox.Name = "assetComboBox";
             this.assetComboBox.Size = new System.Drawing.Size(106, 21);
             this.assetComboBox.TabIndex = 20;
+            this.assetComboBox.SelectedIndexChanged += assetComboBox_SelectedIndexChanged;
             // 
             // privateKeyInput
             // 
