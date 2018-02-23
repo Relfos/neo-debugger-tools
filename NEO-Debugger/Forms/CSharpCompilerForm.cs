@@ -53,7 +53,7 @@ namespace Neo.Debugger.Forms
 
             var fileName = path + @"\"+outputNameText.Text+".cs";
             targetAVMpath = fileName.Replace(".cs", ".avm");
-            File.WriteAllText(fileName, textBox1.Text);
+            File.WriteAllText(fileName, sourceCodeText.Text);
 
             var proc = new Process();
             proc.StartInfo.FileName = "neon.exe";
