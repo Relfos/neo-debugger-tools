@@ -10,13 +10,15 @@ namespace Neo.Emulator.API
         public uint height;
         public List<Transaction> transactions = new List<Transaction>();
 
-        public Block(uint height)
+        public Block(uint height, uint timestamp) : base(timestamp)
         {
             this.height = height;
         }
 
         internal bool Load(DataNode root)
         {
+            this.timestamp = root.GetUInt32("timestamp");
+
             this.transactions.Clear();
 
             foreach (var child in root.Children)
@@ -39,6 +41,9 @@ namespace Neo.Emulator.API
             {
                 result.AddNode(tx.Save());
             }
+
+            result.AddField("timestamp", timestamp);
+
             return result;
         }
 

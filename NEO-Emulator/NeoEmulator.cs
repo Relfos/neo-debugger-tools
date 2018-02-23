@@ -376,7 +376,7 @@ namespace Neo.Emulator
             tx.outputs.Add(output);
 
             uint index = blockchain.currentHeight + 1;
-            var block = new Block(index);
+            var block = new Block(index, DateTime.Now.ToTimestamp());
             block.transactions.Add(tx);
            
             blockchain.blocks[index] = block;
