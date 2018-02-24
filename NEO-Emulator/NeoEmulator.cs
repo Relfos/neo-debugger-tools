@@ -362,15 +362,14 @@ namespace Neo.Emulator
         }
 
         #region TRANSACTIONS
-        public void SetTransaction(byte[] id, BigInteger ammount)
+        public void SetTransaction(byte[] assetID, BigInteger amount)
         {
             var key = Runtime.invokerKeys;
 
-            var output = new TransactionOutput();
-            output.ammount = ammount;
-            output.id = id;
-            output.hash = key != null?  key.CompressedPublicKey: new byte[0];
+            var hash = key != null ? key.PublicKeyHash : new UInt160(new byte[20]);
 
+            var output = new TransactionOutput(assetID, amount, hash);
+            
             var tx = new Transaction(blockchain.currentBlock);
             tx.outputs = new List<TransactionOutput>();
             tx.outputs.Add(output);

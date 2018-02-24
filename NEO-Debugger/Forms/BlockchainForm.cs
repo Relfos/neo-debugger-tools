@@ -121,7 +121,7 @@ namespace Neo.Debugger.Forms
             index = 0;
             foreach (var output in tx.outputs)
             {
-                dataGridView1.Rows.Add("Output #" + index, output.hash.ToHexString());
+                dataGridView1.Rows.Add("Output #" + index, output.hash.ToString());
                 index++;
             }
         }

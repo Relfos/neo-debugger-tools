@@ -992,14 +992,17 @@ namespace Neo.Debugger.Forms
 
             ReloadTextArea();
 
-            foreach (var ofs in debugger.Breakpoints)
+            if (debugger != null)
             {
-                var line = ResolveLine(ofs);
-
-                if (line >= 0)
+                foreach (var ofs in debugger.Breakpoints)
                 {
-                    TextArea.Lines[line].MarkerAdd(BREAKPOINT_BG);
-                    TextArea.Lines[line].MarkerAdd(BREAKPOINT_MARKER);
+                    var line = ResolveLine(ofs);
+
+                    if (line >= 0)
+                    {
+                        TextArea.Lines[line].MarkerAdd(BREAKPOINT_BG);
+                        TextArea.Lines[line].MarkerAdd(BREAKPOINT_MARKER);
+                    }
                 }
             }
 
