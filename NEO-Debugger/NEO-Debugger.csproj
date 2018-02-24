@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -36,11 +38,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LunarParser, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LunarParser.1.0.8\lib\netstandard1.3\LunarParser.dll</HintPath>
+    <Reference Include="LunarParser, Version=1.0.28.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LunarParser.1.0.29\lib\net45\LunarParser.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Neo.SmartContract.Framework, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Neo.SmartContract.Framework.2.5.4\lib\net40\Neo.SmartContract.Framework.dll</HintPath>
     </Reference>
     <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
@@ -54,8 +59,8 @@
       <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.3.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.2.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.4.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
@@ -74,8 +79,8 @@
     <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
+    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Sockets, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Net.Sockets.4.3.0\lib\net46\System.Net.Sockets.dll</HintPath>
@@ -87,7 +92,7 @@
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
@@ -95,8 +100,8 @@
     <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -107,70 +112,63 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
+      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.1\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cryptography\Base58.cs" />
-    <Compile Include="Cryptography\BloomFilter.cs" />
-    <Compile Include="Cryptography\Crypto.cs" />
-    <Compile Include="Cryptography\ECC\ECCurve.cs" />
-    <Compile Include="Cryptography\ECC\ECDsa.cs" />
-    <Compile Include="Cryptography\ECC\ECFieldElement.cs" />
-    <Compile Include="Cryptography\ECC\ECPoint.cs" />
-    <Compile Include="Cryptography\Fixed8.cs" />
-    <Compile Include="Cryptography\Helper.cs" />
-    <Compile Include="Cryptography\ISerializable.cs" />
-    <Compile Include="Cryptography\MerkleTree.cs" />
-    <Compile Include="Cryptography\MerkleTreeNode.cs" />
-    <Compile Include="Cryptography\Murmur3.cs" />
-    <Compile Include="Cryptography\ProtectedMemoryContext.cs" />
-    <Compile Include="Cryptography\RIPEMD160Managed.cs" />
-    <Compile Include="Cryptography\SCrypt.cs" />
-    <Compile Include="Cryptography\UInt160.cs" />
-    <Compile Include="Cryptography\UInt256.cs" />
-    <Compile Include="Cryptography\UIntBase.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\BlockchainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\BlockchainForm.Designer.cs">
+      <DependentUpon>BlockchainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CSharpCompilerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CSharpCompilerForm.Designer.cs">
+      <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KeyToolForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KeyToolForm.Designer.cs">
+      <DependentUpon>KeyToolForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LanguageSupport.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Emulator\Attributes\AppcallAttribute.cs" />
-    <Compile Include="Emulator\Helper.cs" />
-    <Compile Include="Emulator\IApiInterface.cs" />
-    <Compile Include="Emulator\IScriptContainer.cs" />
-    <Compile Include="Emulator\Attributes\NonemitAttribute.cs" />
-    <Compile Include="Emulator\Attributes\OpCodeAttribute.cs" />
-    <Compile Include="Emulator\API\Account.cs" />
-    <Compile Include="Emulator\API\Asset.cs" />
-    <Compile Include="Emulator\API\Block.cs" />
-    <Compile Include="Emulator\API\Blockchain.cs" />
-    <Compile Include="Emulator\API\Contract.cs" />
-    <Compile Include="Emulator\API\Header.cs" />
-    <Compile Include="Emulator\API\Runtime.cs" />
-    <Compile Include="Emulator\API\Storage.cs" />
-    <Compile Include="Emulator\StorageContext.cs" />
-    <Compile Include="Emulator\API\Transaction.cs" />
-    <Compile Include="Emulator\API\TransactionAttribute.cs" />
-    <Compile Include="Emulator\API\TransactionInput.cs" />
-    <Compile Include="Emulator\API\TransactionOutput.cs" />
-    <Compile Include="Emulator\TriggerType.cs" />
-    <Compile Include="Emulator\API\Validator.cs" />
-    <Compile Include="Emulator\API\SmartContract.cs" />
-    <Compile Include="Emulator\Attributes\SyscallAttribute.cs" />
-    <Compile Include="NeoDebugger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunForm.cs">
+    <Compile Include="Forms\RunForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RunForm.Designer.cs">
+    <Compile Include="Forms\RunForm.Designer.cs">
       <DependentUpon>RunForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Forms\StorageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StorageForm.Designer.cs">
+      <DependentUpon>StorageForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\HotKeyManager.cs" />
+    <Compile Include="Utils\InputBox.cs" />
     <Compile Include="Utils\SearchManager.cs" />
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\BlockchainForm.resx">
+      <DependentUpon>BlockchainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CSharpCompilerForm.resx">
+      <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KeyToolForm.resx">
+      <DependentUpon>KeyToolForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -183,13 +181,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="RunForm.resx">
+    <EmbeddedResource Include="Forms\RunForm.resx">
       <DependentUpon>RunForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StorageForm.resx">
+      <DependentUpon>StorageForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="contract.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -202,16 +200,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NEO-AVMLib\NEO-AVMLib.csproj">
-      <Project>{0ee11865-5308-4b46-ab78-94fadb6e3462}</Project>
-      <Name>NEO-AVMLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NEO-VM\NEO-VM.csproj">
-      <Project>{6e380d57-508d-4e99-9ab6-ac264d8e44d0}</Project>
-      <Name>NEO-VM</Name>
+    <ProjectReference Include="..\NEO-Emulator\NEO-Emulator.csproj">
+      <Project>{372429c2-71be-41c2-92d0-5a9187bc238a}</Project>
+      <Name>NEO-Emulator</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

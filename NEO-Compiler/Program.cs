@@ -1,7 +1,9 @@
-﻿using Neo.Compiler.MSIL;
+﻿using Neo.Compiler.AVM;
+using Neo.Compiler.MSIL;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace Neo.Compiler
 {
@@ -20,99 +22,71 @@ namespace Neo.Compiler
             //set console
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var log = new DefLogger();
-            log.Log("Neo.Compiler.MSIL console app v" + Assembly.GetEntryAssembly().GetName().Version+ " [DEBUGGER SUPPORT]");
+            log.Log("Neo.Compiler.MSIL console app v" + Assembly.GetEntryAssembly().GetName().Version + " [DEBUGGER SUPPORT]");
             if (args.Length == 0)
             {
                 log.Log("need one param for DLL filename.");
                 return;
             }
+
+
             string filename = args[0];
-            string onlyname = System.IO.Path.GetFileNameWithoutExtension(filename);
-            string filepdb = filename.Replace(".dll", ".pdb");
+            log.Log("Trying to compile " + filename);
+
+            var extension = Path.GetExtension(filename);
+            string filepdb = filename.Replace(extension, ".pdb");
 
             // fix necessary when debugging the compiler via VS
             var path = Path.GetDirectoryName(filename);
-            if (!string.IsNullOrEmpty(path)) {
-                Directory.SetCurrentDirectory(path);
-            }            
-
-            ILModule mod = new ILModule();
-            System.IO.Stream fs = null;
-            System.IO.Stream fspdb = null;
-
-            //open file
-            try
+            if (!string.IsNullOrEmpty(path))
             {
-                fs = System.IO.File.OpenRead(filename);
-
-                if (System.IO.File.Exists(filepdb))
+                try
                 {
-                    fspdb = System.IO.File.OpenRead(filepdb);
+                    Directory.SetCurrentDirectory(path);
                 }
-
-            }
-            catch (Exception err)
-            {
-                log.Log("Open File Error:" + err.ToString());
-                return;
-            }
-            //load module
-            try
-            {
-                mod.LoadModule(fs, fspdb);
-            }
-            catch (Exception err)
-            {
-                log.Log("LoadModule Error:" + err.ToString());
-                return;
-            }
-            byte[] bytes = null;
-            bool bSucc = false;
-            //convert and build
-            try
-            {
-                var conv = new ModuleConverter(log);
-
-                AntsModule am = conv.Convert(mod);
-                bytes = am.Build(filename);
-                log.Log("convert succ");
-            }
-            catch (Exception err)
-            {
-                log.Log("Convert Error:" + err.ToString());
-                return;
-            }
-            //write bytes
-            try
-            {
-
-                string bytesname = onlyname + ".avm";
-
-                System.IO.File.Delete(bytesname);
-                System.IO.File.WriteAllBytes(bytesname, bytes);
-                log.Log("write:" + bytesname);
-                bSucc = true;
-            }
-            catch (Exception err)
-            {
-                log.Log("Write Bytes Error:" + err.ToString());
-                return;
-            }
-            try
-            {
-                fs.Dispose();
-                if (fspdb != null)
-                    fspdb.Dispose();
-            }
-            catch
-            {
-
+                catch
+                {
+                    log.Log("Could not find path: " + path);
+                    Environment.Exit(-1);
+                }
             }
 
-            if (bSucc)
+            if (!File.Exists(filename))
             {
-                log.Log("SUCC");
+                log.Log("Could not find file: " + filename);
+                Environment.Exit(-1);
             }
+
+            switch (extension)
+            {
+                case ".dll":
+                    {
+                        if (AVMCompiler.Execute(filename, filepdb, log))
+                        {
+                            log.Log("SUCC");
+                        }
+
+                        break;
+                    }
+
+                case ".cs":
+                    {
+                        if (CSharpCompiler.Execute(filename, log))
+                        {
+                            log.Log("SUCC");
+                        }
+
+                        break;
+                    }
+
+                default:
+                    {
+                        log.Log("Invalid extension: " + extension);
+                        Environment.Exit(-1);
+                        break;
+                    }
+            }
+
         }
     }
 }

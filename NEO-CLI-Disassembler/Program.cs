@@ -1,10 +1,6 @@
-﻿using Neo.Tools.AVM;
+﻿using Neo.Emulator.Dissambler;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NEO_CLI_Disassembler
 {

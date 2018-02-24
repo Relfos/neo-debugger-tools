@@ -69,8 +69,13 @@ namespace Neo.VM
             while (ExecuteSingleStep()) ;
         }
 
+        public string lastSysCall { get; private set; }
+        public OpCode lastOpcode { get; private set; }
+
         private void ExecuteOp(OpCode opcode, ExecutionContext context)
         {
+            lastOpcode = opcode;
+
             if (opcode > OpCode.PUSH16 && opcode != OpCode.RET && context.PushOnly)
             {
                 State |= VMState.FAULT;
@@ -170,9 +175,10 @@ namespace Neo.VM
                         }
                         break;
                     case OpCode.SYSCALL:
-                        if (!service.Invoke(Encoding.ASCII.GetString(context.OpReader.ReadVarBytes(252)), this))
-                            State |= VMState.FAULT;
-                        break;
+                            lastSysCall = Encoding.ASCII.GetString(context.OpReader.ReadVarBytes(252));
+                            if (!service.Invoke(lastSysCall, this))
+                                State |= VMState.FAULT;
+                            break;
 
                     // Stack ops
                     case OpCode.DUPFROMALTSTACK:
@@ -595,7 +601,10 @@ namespace Neo.VM
                             byte[] signature = EvaluationStack.Pop().GetByteArray();
                             try
                             {
-                                EvaluationStack.Push(Crypto.VerifySignature(ScriptContainer.GetMessage(), signature, pubkey));
+                                var msg = ScriptContainer.GetMessage();
+                                var verification = Crypto.VerifySignature(msg, signature, pubkey);
+                                //var verification = true;
+                                EvaluationStack.Push(verification);
                             }
                             catch (ArgumentException)
                             {
