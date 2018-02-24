@@ -34,7 +34,7 @@ namespace Neo.Debugger.Forms
             var storage = debugger.currentAddress.storage;
             foreach (var entry in storage.entries)
             {
-                dataGridView1.Rows.Add(FormattingUtils.OutputData(entry.Key, false), FormattingUtils.OutputData(entry.Value, false));
+                dataGridView1.Rows.Add(FormattingUtils.OutputData(entry.Key, false), FormattingUtils.OutputData(entry.Value, false, true));
             }
         }
     }
