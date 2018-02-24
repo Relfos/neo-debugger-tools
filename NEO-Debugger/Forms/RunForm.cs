@@ -379,6 +379,12 @@ namespace Neo.Debugger.Forms
 
             int mainItem = paramsList.FindString(abi.entryPoint.name);
             if (mainItem >= 0) paramsList.SetSelected(mainItem, true);
+
+            testCasesList.Items.Clear();
+            foreach (var entry in mainForm.testSuite.cases.Keys)
+            {
+                testCasesList.Items.Add(entry);
+            }
         }
 
         private void RunForm_Shown(object sender, EventArgs e)
@@ -552,6 +558,82 @@ namespace Neo.Debugger.Forms
                 VerifyPlaceholderAt(editRow, 1);
             }
 
+        }
+
+
+        private string ParseNode(DataNode node, int index)
+        {
+            string val;
+
+            if (node.ChildCount > 0)
+            {
+                val = "";
+
+                foreach (var child in node.Children)
+                {
+                    if (val.Length > 0) val += ", ";
+
+                    val += ParseNode(child, -1);
+                }
+                val = $"[{val}]";
+            }
+            else
+            if (node.Kind == NodeKind.Null)
+            {
+                val = "[]";
+            }
+            else
+            if (node.Kind == NodeKind.Numeric || node.Kind == NodeKind.Boolean)
+            {
+                val = node.Value;
+            }
+            else
+            if (node.Kind == NodeKind.String)
+            {
+                val = $"\"{node.Value}\"";
+
+            }
+            else
+            {
+                val = node.Value;
+            }
+
+            return val;
+        }
+
+        private void testCasesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var key = testCasesList.Text;
+            var testCase = mainForm.testSuite.cases[key];
+
+            var methodName = testCase.method != null ? testCase.method : abi.entryPoint.name;
+
+            for (int i=0; i<paramsList.Items.Count; i++)
+            {
+                if (paramsList.Items[i].ToString() == methodName)
+                {
+                    paramsList.SelectedIndex = i;
+
+                    for (int j=0; j<inputGrid.RowCount; j++)
+                    {
+                        string val;
+
+                        if (testCase.args != null && j < testCase.args.ChildCount)
+                        {                            
+                            var node = testCase.args[j];
+                            val = ParseNode(node, j);
+                        }
+                        else
+                        {
+                            val = "";
+                        }
+
+                        inputGrid.Rows[j].Cells[1].Value = val;
+                    }
+
+                    break;
+                }
+            }
         }
     }
 }

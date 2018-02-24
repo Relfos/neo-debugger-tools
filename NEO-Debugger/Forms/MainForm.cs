@@ -31,6 +31,7 @@ namespace Neo.Debugger.Forms
 
         private NeoEmulator debugger;
         private AVMDisassemble avm_asm;
+        public TestSuite testSuite;
         private int currentLine = -1;
         private NeoMapFile map = null;
         private bool shouldReset = true;
@@ -403,6 +404,8 @@ namespace Neo.Debugger.Forms
                     }
                     map = null;
                 }
+
+                testSuite = new TestSuite(path);
 
                 string abiFilename = path.Replace(".avm", ".abi.json");
                 if (File.Exists(abiFilename))
