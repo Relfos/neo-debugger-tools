@@ -40,14 +40,19 @@ namespace Neo.Emulator
         {
             fileName = fileName.Replace(".avm", ".test.json");
 
-            var json = File.ReadAllText(fileName);
-            var root = JSONReader.ReadFromString(json);
+            if (File.Exists(fileName))
+            {
+                var json = File.ReadAllText(fileName);
+                var root = JSONReader.ReadFromString(json);
 
-            var casesNode = root["cases"];
-            foreach (var node in casesNode.Children) {
-                var entry = TestCase.FromNode(node);
-                cases[entry.name] = entry;
+                var casesNode = root["cases"];
+                foreach (var node in casesNode.Children)
+                {
+                    var entry = TestCase.FromNode(node);
+                    cases[entry.name] = entry;
+                }
             }
+
         }
     }
 }
