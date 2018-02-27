@@ -418,7 +418,6 @@ namespace Neo.Debugger.Forms
                     return;
                 }
 
-                this.debugger = null;
                 this.avm_asm = NeoDisassembler.Disassemble(contractBytecode);
 
                 if (map != null && map.Entries.Any())
@@ -455,6 +454,26 @@ namespace Neo.Debugger.Forms
                 UpdateSourceViewMenus();
 
                 shouldReset = true;
+
+                this.debugger = new NeoEmulator(blockchain);
+
+                var address = blockchain.FindAddressByName(this.contractName);
+
+                if (address == null)
+                {
+                    address = blockchain.DeployContract(this.contractName, this.contractBytecode);
+                    SendLogToPanel($"Deployed contract {contractName} on virtual blockchain.");
+                }
+                else
+                {
+                    if (!address.byteCode.SequenceEqual(this.contractBytecode))
+                    {
+                        address.byteCode = this.contractBytecode;
+                        SendLogToPanel($"Updated contract {contractName} bytecode.");
+                    }
+                }
+
+                this.debugger.SetExecutingAddress(address);
 
                 settings.lastOpenedFile = path;
                 settings.Save();
@@ -790,29 +809,6 @@ namespace Neo.Debugger.Forms
             {
                 MessageBox.Show("Please load an .avm file first!");
                 return false;
-            }
-
-            if (this.debugger == null)
-            {
-                this.debugger = new NeoEmulator(blockchain);
-
-                var address = blockchain.FindAddressByName(this.contractName);
-
-                if (address == null)
-                {
-                    address = blockchain.DeployContract(this.contractName, this.contractBytecode);
-                    SendLogToPanel($"Deployed contract {contractName} on virtual blockchain.");
-                }
-                else
-                {
-                    if (!address.byteCode.SequenceEqual(this.contractBytecode))
-                    {
-                        address.byteCode = this.contractBytecode;
-                        SendLogToPanel($"Updated contract {contractName} bytecode.");
-                    }
-                }
-
-                this.debugger.SetExecutingAddress(address);
             }
 
             runForm.mainForm = this;
