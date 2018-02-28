@@ -21,7 +21,6 @@ namespace Neo.Debugger.Forms
         private string _sourceAvmPath;
         private Settings _settings;
         private DebugManager _debugger;
-        private int _currentLine = -1;
 
         private Scintilla TextArea;
 
@@ -33,6 +32,8 @@ namespace Neo.Debugger.Forms
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _settings = new Settings();
+
             //Init the UI controls
             InitUI();
 
@@ -40,9 +41,7 @@ namespace Neo.Debugger.Forms
             Emulator.API.Runtime.OnLogMessage = SendLogToPanel;
 
             //Init the debugger
-            _debugger = new DebugManager(_settings);
-            _debugger.SendToLog += _debugger_SendToLog;
-            LoadDebugFile(_sourceAvmPath);
+            InitDebugger();
         }
 
         private void InitUI()
@@ -79,9 +78,20 @@ namespace Neo.Debugger.Forms
             InitHotkeys();
         }
 
+        private void InitDebugger()
+        {
+            _debugger = new DebugManager(_settings);
+            _debugger.SendToLog += _debugger_SendToLog;
+            //Load if we had a file on the command line or a previously opened
+            LoadDebugFile(_sourceAvmPath);
+        }
+
         private bool LoadDebugFile(string path)
         {
             if (!_debugger.LoadAvmFile(path))
+                return false;
+
+            if (!_debugger.LoadEmulator())
                 return false;
 
             if (!_debugger.LoadContract())

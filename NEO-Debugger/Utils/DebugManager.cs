@@ -234,46 +234,6 @@ namespace Neo.Debugger.Utils
         public DebugManager(Settings settings)
         {
             _settings = settings;
-            
-
-            //Create load the emulator
-            Blockchain blockchain = new Blockchain();
-            blockchain.Load(_blockchainFilePath);
-            _emulator = new NeoEmulator(blockchain);
-
-            //Force a reset now that we're loaded
-            _resetFlag = true;
-        }
-
-        public bool LoadTests()
-        {
-            _tests = new TestSuite(_avmFilePath);
-            return true;
-        }
-
-        public bool LoadContract()
-        {
-            if (_contractAddress != null)
-                return true;
-
-            if (String.IsNullOrEmpty(_contractName) || _contractByteCode == null || _contractByteCode.Length == 0)
-            {
-                return false;
-            }
-                
-            
-            var address = Blockchain.DeployContract(_contractName, _contractByteCode);
-            Log($"Deployed contract {_contractName} on virtual blockchain.");
-            if (!address.byteCode.SequenceEqual(_contractByteCode))
-            {
-                address.byteCode = _contractByteCode;
-                Log($"Deployed contract {_contractName} on virtual blockchain and updated bytecode.");
-            }
-
-            //Set the executing address for the emulator
-            _emulator.SetExecutingAddress(_contractAddress);
-
-            return true;
         }
 
         public bool LoadAvmFile(string avmPath)
@@ -327,6 +287,50 @@ namespace Neo.Debugger.Utils
             _settings.lastOpenedFile = avmPath;
             _settings.Save();
             _avmFileLoaded = true;
+
+            //Force a reset now that we're loaded
+            _resetFlag = true;
+
+            return true;
+        }
+
+        public bool LoadEmulator()
+        {
+            //Create load the emulator
+            Blockchain blockchain = new Blockchain();
+            blockchain.Load(_blockchainFilePath);
+            _emulator = new NeoEmulator(blockchain);
+
+            return true;
+        }
+
+        public bool LoadContract()
+        {
+            if (_contractAddress != null)
+                return true;
+
+            if (String.IsNullOrEmpty(_contractName) || _contractByteCode == null || _contractByteCode.Length == 0)
+            {
+                return false;
+            }
+
+            var address = _emulator.blockchain.DeployContract(_contractName, _contractByteCode);
+            Log($"Deployed contract {_contractName} on virtual blockchain.");
+            if (!address.byteCode.SequenceEqual(_contractByteCode))
+            {
+                address.byteCode = _contractByteCode;
+                Log($"Deployed contract {_contractName} on virtual blockchain and updated bytecode.");
+            }
+
+            //Set the executing address for the emulator
+            _emulator.SetExecutingAddress(_contractAddress);
+
+            return true;
+        }
+
+        public bool LoadTests()
+        {
+            _tests = new TestSuite(_avmFilePath);
             return true;
         }
 
