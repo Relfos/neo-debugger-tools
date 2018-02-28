@@ -692,6 +692,9 @@ namespace Neo.Debugger.Forms
 
         private void RunDebugger()
         {
+            if (!ResetDebugger())
+                return;
+
             _debugger.Run();
             UpdateDebuggerStateUI();
         }

@@ -112,6 +112,13 @@ namespace Neo.Debugger.Utils
                 return _aBI;
             }
         }
+        public string ContractName
+        {
+            get
+            {
+                return _contractName;
+            }
+        }
 
         //Public Load state properties
         public bool AvmFileLoaded
@@ -259,7 +266,7 @@ namespace Neo.Debugger.Utils
             _debugContent = new Dictionary<DebugMode, string>();
             _mode = DebugMode.Assembly;
             _language = SourceLanguage.Other;
-            _contractName = Path.GetFileNameWithoutExtension(avmPath);
+            _contractName = Path.GetFileNameWithoutExtension(_avmFilePath);
             _contractByteCode = File.ReadAllBytes(_avmFilePath);
             _map = new NeoMapFile();
             _avmAsm = NeoDisassembler.Disassemble(_contractByteCode);
@@ -307,7 +314,12 @@ namespace Neo.Debugger.Utils
         public bool LoadContract()
         {
             if (_contractAddress != null)
+            {
+                //Set the executing address for the emulator
+                _emulator.SetExecutingAddress(_contractAddress);
                 return true;
+            }
+                
 
             if (String.IsNullOrEmpty(_contractName) || _contractByteCode == null || _contractByteCode.Length == 0)
             {
@@ -322,9 +334,8 @@ namespace Neo.Debugger.Utils
                 Log($"Deployed contract {_contractName} on virtual blockchain and updated bytecode.");
             }
 
-            //Set the executing address for the emulator
-            _emulator.SetExecutingAddress(_contractAddress);
 
+            _emulator.SetExecutingAddress(_contractAddress);
             return true;
         }
 

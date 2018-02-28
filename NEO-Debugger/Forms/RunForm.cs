@@ -18,8 +18,11 @@ namespace Neo.Debugger.Forms
         private NeoEmulator _emulator;
         private ABI _abi;
         private TestSuite _testSuite;
-        
-        
+        private string currentContractName = "";
+        private string lastContractName = "";
+        private bool editMode = false;
+        private int editRow;
+
 
         public RunForm(Settings settings, DebugManager debugger)
         {
@@ -28,6 +31,7 @@ namespace Neo.Debugger.Forms
             _testSuite = debugger.Tests;
             _emulator = debugger.Emulator;
             _abi = debugger.ABI;
+            currentContractName = debugger.ContractName;
 
             assetComboBox.Items.Clear();
             assetComboBox.Items.Add("None");
@@ -38,7 +42,7 @@ namespace Neo.Debugger.Forms
             assetComboBox.SelectedIndex = 0;
 
             triggerComboBox.SelectedIndex = 0;
-            witnessComboBox.SelectedIndex = 0;
+            witnessComboBox.SelectedIndex = 0; 
         }
 
         private AVMFunction currentMethod;
@@ -365,9 +369,6 @@ namespace Neo.Debugger.Forms
             }
         }
 
-        public string currentContractName = "";
-        private string lastContractName = "";
-
         private void ReloadContract()
         {
             if (currentContractName == lastContractName)
@@ -507,9 +508,6 @@ namespace Neo.Debugger.Forms
             }
         }
 
-        private bool editMode = false;
-        private int editRow;
-
         private void inputGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             editMode = true;
@@ -566,7 +564,6 @@ namespace Neo.Debugger.Forms
             }
 
         }
-
 
         private string ParseNode(DataNode node, int index)
         {
