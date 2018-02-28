@@ -44,6 +44,7 @@ namespace Neo.Debugger.Forms
             InitDebugger();
         }
 
+        #region Initializers
         private void InitUI()
         {
             // CREATE CONTROL
@@ -105,6 +106,100 @@ namespace Neo.Debugger.Forms
             ReloadTextArea();
             return true;
         }
+
+        #endregion
+
+        #region Debugger Actions
+
+        private void RunDebugger()
+        {
+            if (!ResetDebugger())
+                return;
+
+            _debugger.Run();
+            UpdateDebuggerStateUI();
+        }
+
+        private void StepDebugger()
+        {
+            if (!ResetDebugger())
+                return;
+
+            int oldLine = _debugger.CurrentLine;
+
+            do
+            {
+                _debugger.Step();
+
+                UpdateDebuggerStateUI();
+
+                if (_debugger.ResetFlag)
+                    return;
+
+            } while (_debugger.CurrentLine <= 0 || oldLine == _debugger.CurrentLine);
+
+            //Update UI
+            RemoveCurrentHighlight();
+            UpdateStackPanel();
+            UpdateGasCost(_debugger.Emulator.GetUsedGas());
+
+            var firstVisible = TextArea.FirstVisibleLine;
+            var lastVisible = firstVisible + TextArea.LinesOnScreen;
+            var targetLine = TextArea.Lines[_debugger.CurrentLine];
+            targetLine.EnsureVisible();
+            targetLine.MarkerAdd(STEP_BG);
+
+            if (lastVisible > TextArea.Lines.Count)
+                lastVisible = TextArea.Lines.Count;
+
+            if (oldLine >= 0 && _debugger.CurrentLine == (oldLine + 1))
+            {
+                if (_debugger.CurrentLine >= lastVisible)
+                    TextArea.LineScroll(1, 0);
+            }
+            else
+                targetLine.Goto();
+        }
+
+        private bool ResetDebugger()
+        {
+            //If we don't need to reset, we're fine
+            if (!_debugger.ResetFlag)
+                return true;
+
+            //We need to make sure there is a file loaded
+            if (!_debugger.AvmFileLoaded)
+            {
+                MessageBox.Show("Please load an .avm file first!");
+                return false;
+            }
+
+            //Get the parameters to execute the debugger
+            if (!GetDebugParameters())
+                return false;
+
+            //Reset the UI
+            RemoveCurrentHighlight();
+            logView.Clear();
+            stackPanel.Clear();
+            UpdateGasCost(_debugger.UsedGasCost);
+            return true;
+        }
+
+        private bool GetDebugParameters()
+        {
+            //Run form with defaults from settings if available
+            RunForm runForm = new RunForm(_debugger.ABI, _debugger.Tests, _debugger.ContractName, _settings.lastPrivateKey, _settings.lastParams);
+            var result = runForm.ShowDialog();
+            var debugParams = runForm.DebugParameters;
+            if (result != DialogResult.OK)
+                return false;
+
+            _debugger.SetDebugParameters(debugParams);
+            return true;
+        }
+
+        #endregion
 
         #region Numbers, Bookmarks, Code Folding
 
@@ -688,103 +783,7 @@ namespace Neo.Debugger.Forms
 
         #endregion
 
-        #region DEBUGGER
-
-        private void RunDebugger()
-        {
-            if (!ResetDebugger())
-                return;
-
-            _debugger.Run();
-            UpdateDebuggerStateUI();
-        }
-
-        private void StepDebugger()
-        {
-            if (!ResetDebugger())
-                return;
-
-            int oldLine = _debugger.CurrentLine;
-            
-            do
-            {
-                _debugger.Step();
-
-                UpdateDebuggerStateUI();
-
-                if (_debugger.ResetFlag)
-                    return;
-
-            } while (_debugger.CurrentLine <= 0 || oldLine == _debugger.CurrentLine);
-
-            //Update UI
-            RemoveCurrentHighlight();
-            UpdateStackPanel();
-            UpdateGasCost(_debugger.Emulator.GetUsedGas());
-
-            var firstVisible = TextArea.FirstVisibleLine;
-            var lastVisible = firstVisible + TextArea.LinesOnScreen;
-            var targetLine = TextArea.Lines[_debugger.CurrentLine];
-            targetLine.EnsureVisible();
-            targetLine.MarkerAdd(STEP_BG);
-
-            if (lastVisible > TextArea.Lines.Count)
-                lastVisible = TextArea.Lines.Count;
-
-            if (oldLine < 0)
-            {
-                targetLine.Goto();
-            }
-            else if (_debugger.CurrentLine == oldLine++)
-            {
-                if (_debugger.CurrentLine >= lastVisible)
-                {
-                    TextArea.LineScroll(1, 0);
-                }
-            }
-            else
-            {
-                targetLine.Goto();
-            }
-        }
-
-        private bool ResetDebugger()
-        {
-            //If we don't need to reset, we're fine
-            if (!_debugger.ResetFlag)
-                return true;
-
-            //We need to make sure there is a file loaded
-            if (!_debugger.AvmFileLoaded)
-            {
-                MessageBox.Show("Please load an .avm file first!");
-                return false;
-            }
-
-            //Get the parameters to execute the debugger
-            if (!GetDebugParameters())
-                return false;
-
-            //Reset the UI
-            RemoveCurrentHighlight();
-            logView.Clear();
-            stackPanel.Clear();
-            UpdateGasCost(_debugger.UsedGasCost);
-            return true;
-        }
-
-        private bool GetDebugParameters()
-        {
-            //Run form with defaults from settings if available
-            RunForm runForm = new RunForm(_debugger.ABI, _debugger.Tests, _debugger.ContractName, _settings.lastPrivateKey, _settings.lastParams);
-            var result = runForm.ShowDialog();
-            var debugParams = runForm.DebugParameters;
-            if (result != DialogResult.OK)
-                return false;
-
-            _debugger.SetDebugParameters(debugParams);
-            return true;
-        }
+        #region Debugger UI Helpers
 
         private void UpdateDebuggerStateUI()
         {
@@ -1024,9 +1023,13 @@ namespace Neo.Debugger.Forms
 
         #endregion
 
+        #region Helpers
+
         private void _debugger_SendToLog(object sender, DebugManagerLogEventArgs e)
         {
             SendLogToPanel(e.Message);
         }
+
+        #endregion
     }
 }

@@ -194,7 +194,6 @@ namespace Neo.Debugger.Utils
         private AVMDisassemble _avmAsm { get; set; }
 
         //Context
-
         private string _contractName { get; set; }
         private byte[] _contractByteCode { get; set; }
         private Address _contractAddress
@@ -257,14 +256,26 @@ namespace Neo.Debugger.Utils
 
             //Housekeeping - let's find out what files we have and make sure we're good
             if (!File.Exists(_avmFilePath))
+            {
                 Log("File not found. " + avmPath);
-            if (File.Exists(_oldMapFilePath))
+                return false;
+            }            
+            else if (File.Exists(_oldMapFilePath))
+            {
                 Log("Old map file format found.  Please recompile your avm with the latest compiler.");
-            if (!File.Exists(_mapFilePath))
+                return false;
+            }
+            else if (!File.Exists(_mapFilePath))
+            {
                 Log($"Could not find {_mapFilePath}");
-            if (!File.Exists(_abiFilePath))
+                return false;
+            }
+            else if (!File.Exists(_abiFilePath))
+            {
                 Log($"Error: {_abiFilePath} was not found. Please recompile your AVM with the latest compiler.");
-
+                return false;
+            }
+                
             _debugContent = new Dictionary<DebugMode, string>();
             _mode = DebugMode.Assembly;
             _language = SourceLanguage.Other;
@@ -456,6 +467,7 @@ namespace Neo.Debugger.Utils
                 Reset();
 
             _state = _emulator.Run();
+            UpdateState();
         }
 
         public void Step()
