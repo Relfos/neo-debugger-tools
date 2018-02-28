@@ -1,6 +1,7 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
 using Neo.Cryptography;
+using Neo.Debugger.Models;
 using Neo.Debugger.Utils;
 using Neo.Emulator;
 using Neo.Emulator.API;
@@ -13,21 +14,6 @@ using System.Windows.Forms;
 
 namespace Neo.Debugger.Forms
 {
-    public class RunDebugParameters
-    {
-        public CheckWitnessMode WitnessMode { get; set; }
-
-        public TriggerType TriggerType { get; set; }
-
-        public Dictionary<string, string> DefaultParams { get; set; }
-
-        public Dictionary<byte[], BigInteger> Transaction { get; set; }
-
-        public string PrivateKey { get; set; }
-
-        public DataNode ArgList { get; set; }
-    }
-
     public partial class RunForm : Form
     {
         private ABI _abi;
@@ -38,12 +24,12 @@ namespace Neo.Debugger.Forms
         private int editRow;
         private AVMFunction currentMethod;
 
-        private RunDebugParameters _runParameters;
-        public RunDebugParameters RunParameters
+        private DebugParameters _debugParameters;
+        public DebugParameters DebugParameters
         {
             get
             {
-                return _runParameters;
+                return _debugParameters;
             }
         }
 
@@ -80,10 +66,10 @@ namespace Neo.Debugger.Forms
             var key = paramsList.Text;
             var f = _abi.functions[key];
 
-            _runParameters = new RunDebugParameters();
+            _debugParameters = new DebugParameters();
 
             //Get the private key used
-            _runParameters.PrivateKey = privateKeyInput.Text;
+            _debugParameters.PrivateKey = privateKeyInput.Text;
 
             //Get the witness mode
             CheckWitnessMode witnessMode;
@@ -93,7 +79,7 @@ namespace Neo.Debugger.Forms
             {
                 return false;
             }
-            _runParameters.WitnessMode = witnessMode;
+            _debugParameters.WitnessMode = witnessMode;
 
             //Get the trigger type
             TriggerType type;
@@ -103,7 +89,7 @@ namespace Neo.Debugger.Forms
             {
                 return false;
             }
-            _runParameters.TriggerType = type;
+            _debugParameters.TriggerType = type;
             
             //Get the arguments list
             var argList = "";
@@ -136,7 +122,7 @@ namespace Neo.Debugger.Forms
                     {
                         var param_key = (currentContractName + "_" + f.name + "_" + p.name).ToLower();
                         //Add our default running parameters for next time
-                        _runParameters.DefaultParams[param_key] = val.ToString();
+                        _debugParameters.DefaultParams[param_key] = val.ToString();
                     }
 
                     if (index > 0)
@@ -233,7 +219,7 @@ namespace Neo.Debugger.Forms
             //Set the arguments list
             try
             {
-                _runParameters.ArgList = Util.GetArgsListAsNode(argList);
+                _debugParameters.ArgList = Util.GetArgsListAsNode(argList);
             }
             catch
             {
@@ -253,7 +239,7 @@ namespace Neo.Debugger.Forms
                         if (amount > 0)
                         {
                             //Add the transaction info
-                            _runParameters.Transaction.Add(entry.id, amount);
+                            _debugParameters.Transaction.Add(entry.id, amount);
                         }
                         else
                         {

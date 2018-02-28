@@ -1,4 +1,6 @@
 ﻿using Neo.Debugger.Data;
+using Neo.Debugger.Forms;
+using Neo.Debugger.Models;
 using Neo.Emulator;
 using Neo.Emulator.API;
 using Neo.Emulator.Dissambler;
@@ -496,6 +498,25 @@ namespace Neo.Debugger.Utils
                 Error = false,
                 Message = message
             });
+        }
+
+        public bool SetDebugParameters(DebugParameters debugParams)
+        {
+            //Save all the params for settings later
+            _settings.lastPrivateKey = debugParams.PrivateKey;
+            _settings.lastParams.Clear();
+            foreach (var param in debugParams.DefaultParams)
+                _settings.lastParams.Add(param.Key, param.Value);
+            _settings.Save();
+
+            //Set the emulator context
+            _emulator.checkWitnessMode = debugParams.WitnessMode;
+            _emulator.currentTrigger = debugParams.TriggerType;
+            _emulator.SetTransaction(debugParams.Transaction.First().Key, debugParams.Transaction.First().Value);
+            _emulator.Reset(debugParams.ArgList);
+
+            Reset();
+            return true;
         }
     }
 }

@@ -754,17 +754,16 @@ namespace Neo.Debugger.Forms
             if (!_debugger.ResetFlag)
                 return true;
 
+            //We need to make sure there is a file loaded
             if (!_debugger.AvmFileLoaded)
             {
                 MessageBox.Show("Please load an .avm file first!");
                 return false;
             }
 
+            //Get the parameters to execute the debugger
             if (!GetDebugParameters())
                 return false;
-
-            //Reset our debugger
-            _debugger.Reset();
 
             //Reset the UI
             RemoveCurrentHighlight();
@@ -779,22 +778,11 @@ namespace Neo.Debugger.Forms
             //Run form with defaults from settings if available
             RunForm runForm = new RunForm(_debugger.ABI, _debugger.Tests, _debugger.ContractName, _settings.lastPrivateKey, _settings.lastParams);
             var result = runForm.ShowDialog();
-            var runParams = runForm.RunParameters;
+            var debugParams = runForm.DebugParameters;
             if (result != DialogResult.OK)
                 return false;
 
-            //Save all the params for settings later
-            _settings.lastPrivateKey = runParams.PrivateKey;
-            _settings.lastParams.Clear();
-            foreach (var param in runParams.DefaultParams)
-                _settings.lastParams.Add(param.Key, param.Value);
-            _settings.Save();
-
-            _debugger.Emulator.checkWitnessMode = runParams.WitnessMode;
-            _debugger.Emulator.currentTrigger = runParams.TriggerType;
-            _debugger.Emulator.SetTransaction(runParams.Transaction.First().Key, runParams.Transaction.First().Value);
-            _debugger.Emulator.Reset(runParams.ArgList);
-
+            _debugger.SetDebugParameters(debugParams);
             return true;
         }
 
