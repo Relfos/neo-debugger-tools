@@ -276,15 +276,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Enums.cs" />
     <Compile Include="Forms\BlockchainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\BlockchainForm.Designer.cs">
       <DependentUpon>BlockchainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CSharpCompilerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\CSharpCompilerForm.cs" />
     <Compile Include="Forms\CSharpCompilerForm.Designer.cs">
       <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
     </Compile>
@@ -316,6 +315,8 @@
     <Compile Include="Forms\StorageForm.Designer.cs">
       <DependentUpon>StorageForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utils\ColorUtil.cs" />
+    <Compile Include="Utils\DebugManager.cs" />
     <Compile Include="Utils\HotKeyManager.cs" />
     <Compile Include="Utils\InputBox.cs" />
     <Compile Include="Utils\SearchManager.cs" />

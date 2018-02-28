@@ -75,7 +75,11 @@ namespace Neo.Emulator
         private InteropService interop;
 
         private HashSet<int> _breakpoints = new HashSet<int>();
-        public IEnumerable<int> Breakpoints { get { return _breakpoints; } }
+        public IEnumerable<int> Breakpoints {
+            get {
+                return _breakpoints;
+            }
+        }
 
         public Blockchain blockchain { get; private set; }
 

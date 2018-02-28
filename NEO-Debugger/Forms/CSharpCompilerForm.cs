@@ -12,13 +12,23 @@ using System.Windows.Forms;
 
 namespace Neo.Debugger.Forms
 {
+    public class LoadCompiledContractEventArgs : EventArgs
+    {
+        public string AvmPath { get; set; }
+    }
+
     public partial class CSharpCompilerForm : Form
     {
-        public MainForm mainForm;
+        private Settings _settings;
+        private string _avmPath;
 
-        public CSharpCompilerForm()
+        public event LoadCompiledContractEventHandler LoadCompiledContract;
+        public delegate void LoadCompiledContractEventHandler(object sender, LoadCompiledContractEventArgs e);
+
+        public CSharpCompilerForm(Settings settings)
         {
             InitializeComponent();
+            _settings = settings;
         }
 
         private void CSharpCompilerForm_Shown(object sender, EventArgs e)
@@ -31,9 +41,8 @@ namespace Neo.Debugger.Forms
 
         private void CSharpCompilerForm_Load(object sender, EventArgs e)
         {
-        }
 
-        private string targetAVMpath;
+        }
 
         private void compileBtn_Click(object sender, EventArgs e)
         {
@@ -48,11 +57,11 @@ namespace Neo.Debugger.Forms
 
             listBox1.Items.Clear();
 
-            var path = mainForm.settings.path;
+            var path = _settings.path;
             Directory.CreateDirectory(path);
 
             var fileName = path + @"\"+outputNameText.Text+".cs";
-            targetAVMpath = fileName.Replace(".cs", ".avm");
+            _avmPath = fileName.Replace(".cs", ".avm");
             File.WriteAllText(fileName, sourceCodeText.Text);
 
             var proc = new Process();
@@ -113,7 +122,12 @@ namespace Neo.Debugger.Forms
 
         private void debugBtn_Click(object sender, EventArgs e)
         {
-            mainForm.LoadDataFromFile(this.targetAVMpath);
+            //Invoke the event handler
+            LoadCompiledContract?.Invoke(this, new LoadCompiledContractEventArgs
+            {
+                AvmPath = _avmPath
+            });
+
             this.Close();
         }
     }

@@ -1,6 +1,7 @@
 ﻿using LunarParser;
 using LunarParser.JSON;
 using Neo.Cryptography;
+using Neo.Debugger.Utils;
 using Neo.Emulator;
 using Neo.Emulator.API;
 using System;
@@ -13,13 +14,20 @@ namespace Neo.Debugger.Forms
 {
     public partial class RunForm : Form
     {
-        public MainForm mainForm;
-        public NeoEmulator emulator;
-        public ABI abi;
+        private Settings _settings;
+        private NeoEmulator _emulator;
+        private ABI _abi;
+        private TestSuite _testSuite;
+        
+        
 
-        public RunForm()
+        public RunForm(Settings settings, DebugManager debugger)
         {
             InitializeComponent();
+            _settings = settings;
+            _testSuite = debugger.Tests;
+            _emulator = debugger.Emulator;
+            _abi = debugger.ABI;
 
             assetComboBox.Items.Clear();
             assetComboBox.Items.Add("None");
@@ -37,9 +45,9 @@ namespace Neo.Debugger.Forms
 
         private void LoadFunction(string key)
         {
-            if (abi.functions.ContainsKey(key))
+            if (_abi.functions.ContainsKey(key))
             {
-                currentMethod = abi.functions[key];
+                currentMethod = _abi.functions[key];
 
                 inputGrid.Rows.Clear();
 
@@ -52,9 +60,9 @@ namespace Neo.Debugger.Forms
 
                         bool isEmpty = true;
 
-                        if (mainForm.settings.lastParams.ContainsKey(param_key))
+                        if (_settings.lastParams.ContainsKey(param_key))
                         {
-                            val = mainForm.settings.lastParams[param_key];
+                            val = _settings.lastParams[param_key];
                             isEmpty = false;
                         }
 
@@ -154,16 +162,16 @@ namespace Neo.Debugger.Forms
         {
 
             var key = paramsList.Text;
-            var f = abi.functions[key];
+            var f = _abi.functions[key];
 
             var ws = witnessComboBox.SelectedItem.ToString().Replace(" ", "");
-            if (!Enum.TryParse<CheckWitnessMode>(ws, out emulator.checkWitnessMode))
+            if (!Enum.TryParse<CheckWitnessMode>(ws, out _emulator.checkWitnessMode))
             {
                 return false;
             }
 
             var ts = triggerComboBox.SelectedItem.ToString().Replace(" ", "");
-            if (!Enum.TryParse<TriggerType>(ts, out emulator.currentTrigger))
+            if (!Enum.TryParse<TriggerType>(ts, out _emulator.currentTrigger))
             {
                 return false;
             }
@@ -198,7 +206,7 @@ namespace Neo.Debugger.Forms
                     if (val != null && !val.Equals(""))
                     {
                         var param_key = (currentContractName + "_" + f.name + "_" + p.name).ToLower();
-                        mainForm.settings.lastParams[param_key] = val.ToString();
+                        _settings.lastParams[param_key] = val.ToString();
                     }
 
                     if (index > 0)
@@ -285,7 +293,7 @@ namespace Neo.Debugger.Forms
                 }
             }
 
-            if (key != abi.entryPoint.name)
+            if (key != _abi.entryPoint.name)
             {
                 if (f.inputs == null || f.inputs.Length == 0)
                 {
@@ -330,7 +338,7 @@ namespace Neo.Debugger.Forms
 
                         if (ammount > 0)
                         {
-                            emulator.SetTransaction(entry.id, ammount);
+                            _emulator.SetTransaction(entry.id, ammount);
                         }
                         else
                         {
@@ -343,9 +351,8 @@ namespace Neo.Debugger.Forms
                 }
             }
 
-            emulator.Reset(items);
-
-            mainForm.settings.Save();
+            _emulator.Reset(items);
+            _settings.Save();
 
             return true;
         }
@@ -372,16 +379,16 @@ namespace Neo.Debugger.Forms
 
             paramsList.Items.Clear();
 
-            foreach (var f in abi.functions.Values)
+            foreach (var f in _abi.functions.Values)
             {
                 paramsList.Items.Add(f.name);
             }
 
-            int mainItem = paramsList.FindString(abi.entryPoint.name);
+            int mainItem = paramsList.FindString(_abi.entryPoint.name);
             if (mainItem >= 0) paramsList.SetSelected(mainItem, true);
 
             testCasesList.Items.Clear();
-            foreach (var entry in mainForm.testSuite.cases.Keys)
+            foreach (var entry in _testSuite.cases.Keys)
             {
                 testCasesList.Items.Add(entry);
             }
@@ -413,7 +420,7 @@ namespace Neo.Debugger.Forms
                 addressLabel.Text = "(No key loaded)";
             }
 
-            privateKeyInput.Text = mainForm.settings.lastPrivateKey;
+            privateKeyInput.Text = _settings.lastPrivateKey;
 
             ReloadContract();
         }
@@ -541,8 +548,8 @@ namespace Neo.Debugger.Forms
                 Runtime.invokerKeys = keyPair;
                 addressLabel.Text = Runtime.invokerKeys.address;
 
-                mainForm.settings.lastPrivateKey = privateKeyInput.Text;
-                mainForm.settings.Save();
+                _settings.lastPrivateKey = privateKeyInput.Text;
+                _settings.Save();
             }
             else
             {
@@ -604,9 +611,8 @@ namespace Neo.Debugger.Forms
         private void testCasesList_SelectedIndexChanged(object sender, EventArgs e)
         {
             var key = testCasesList.Text;
-            var testCase = mainForm.testSuite.cases[key];
-
-            var methodName = testCase.method != null ? testCase.method : abi.entryPoint.name;
+            var testCase = _testSuite.cases[key];
+            var methodName = testCase.method != null ? testCase.method : _abi.entryPoint.name;
 
             for (int i=0; i<paramsList.Items.Count; i++)
             {
