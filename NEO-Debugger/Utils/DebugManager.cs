@@ -14,12 +14,6 @@ using static Neo.Debugger.Forms.MainForm;
 
 namespace Neo.Debugger.Utils
 {
-    public class DebugManagerLogEventArgs : EventArgs
-    {
-        public bool Error { get; set; }
-        public string Message { get; set; }
-    }
-
     public class DebugManager
     {
         #region Public Members

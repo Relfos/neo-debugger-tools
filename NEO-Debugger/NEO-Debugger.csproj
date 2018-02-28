@@ -283,7 +283,9 @@
     <Compile Include="Forms\BlockchainForm.Designer.cs">
       <DependentUpon>BlockchainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\CSharpCompilerForm.cs" />
+    <Compile Include="Forms\CSharpCompilerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\CSharpCompilerForm.Designer.cs">
       <DependentUpon>CSharpCompilerForm.cs</DependentUpon>
     </Compile>
@@ -293,6 +295,12 @@
     <Compile Include="Forms\KeyToolForm.Designer.cs">
       <DependentUpon>KeyToolForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\RunForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RunForm.Designer.cs">
+      <DependentUpon>RunForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LanguageSupport.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -301,12 +309,9 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\DebugParameters.cs" />
+    <Compile Include="Models\EventArgs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\RunForm.cs" />
-    <Compile Include="Forms\RunForm.Designer.cs">
-      <DependentUpon>RunForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Forms\StorageForm.cs">
       <SubType>Form</SubType>
@@ -334,6 +339,9 @@
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RunForm.resx">
+      <DependentUpon>RunForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -344,9 +352,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Forms\RunForm.resx">
-      <DependentUpon>RunForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\StorageForm.resx">
       <DependentUpon>StorageForm.cs</DependentUpon>
     </EmbeddedResource>

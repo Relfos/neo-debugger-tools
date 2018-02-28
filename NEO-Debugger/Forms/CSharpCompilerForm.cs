@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Neo.Debugger.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,11 +13,6 @@ using System.Windows.Forms;
 
 namespace Neo.Debugger.Forms
 {
-    public class LoadCompiledContractEventArgs : EventArgs
-    {
-        public string AvmPath { get; set; }
-    }
-
     public partial class CSharpCompilerForm : Form
     {
         private Settings _settings;

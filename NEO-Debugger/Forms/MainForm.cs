@@ -12,6 +12,7 @@ using Neo.Emulator.Utils;
 using Neo.Emulator.Dissambler;
 using Neo.Emulator;
 using Neo.Debugger.Data;
+using Neo.Debugger.Models;
 
 namespace Neo.Debugger.Forms
 {
