@@ -512,9 +512,12 @@ namespace Neo.Debugger.Utils
             //Set the emulator context
             _emulator.checkWitnessMode = debugParams.WitnessMode;
             _emulator.currentTrigger = debugParams.TriggerType;
-            _emulator.SetTransaction(debugParams.Transaction.First().Key, debugParams.Transaction.First().Value);
             _emulator.Reset(debugParams.ArgList);
-
+            if (debugParams.Transaction.Count > 0)
+            {
+                var transaction = debugParams.Transaction.First();
+                _emulator.SetTransaction(transaction.Key, transaction.Value);
+            }
             Reset();
             return true;
         }

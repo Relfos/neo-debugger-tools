@@ -11,6 +11,12 @@ namespace Neo.Debugger.Models
 {
     public class DebugParameters
     {
+        public DebugParameters()
+        {
+            DefaultParams = new Dictionary<string, string>();
+            Transaction = new Dictionary<byte[], BigInteger>();
+        }
+
         public CheckWitnessMode WitnessMode { get; set; }
 
         public TriggerType TriggerType { get; set; }
