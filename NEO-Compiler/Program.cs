@@ -86,6 +86,7 @@ namespace Neo.Compiler
                         break;
                     }
             }
+            
         }
     }
 }
