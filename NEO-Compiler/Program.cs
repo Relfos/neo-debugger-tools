@@ -86,8 +86,6 @@ namespace Neo.Compiler
                         break;
                     }
             }
-
-            Console.ReadLine();
         }
     }
 }
