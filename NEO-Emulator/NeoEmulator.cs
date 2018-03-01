@@ -75,11 +75,7 @@ namespace Neo.Emulator
         private InteropService interop;
 
         private HashSet<int> _breakpoints = new HashSet<int>();
-        public IEnumerable<int> Breakpoints {
-            get {
-                return _breakpoints;
-            }
-        }
+        public IEnumerable<int> Breakpoints { get { return _breakpoints; } }
 
         public Blockchain blockchain { get; private set; }
 
@@ -193,6 +189,11 @@ namespace Neo.Emulator
             engine = new ExecutionEngine(currentTransaction, Crypto.Default, null, interop);
             engine.LoadScript(contractBytes);
 
+            foreach (var pos in _breakpoints)
+            {
+                engine.AddBreakPoint((uint)pos);
+            }
+
             using (ScriptBuilder sb = new ScriptBuilder())
             {
                 var items = new Stack<object>();
@@ -215,11 +216,6 @@ namespace Neo.Emulator
                 engine.LoadScript(sb.ToArray());
             }
 
-            foreach (var pos in _breakpoints)
-            {
-                engine.AddBreakPoint((uint)pos);
-            }
-
             engine.Reset();
 
             lastState = new DebuggerState(DebuggerState.State.Reset, 0);
@@ -235,22 +231,6 @@ namespace Neo.Emulator
             else
             {
                 _breakpoints.Remove(ofs);
-            }
-
-            try
-            {
-                if (enabled)
-                {
-                    engine.AddBreakPoint((uint)ofs);
-                }
-                else
-                {
-                    engine.RemoveBreakPoint((uint)ofs);
-                }
-            }
-            catch
-            {
-                // ignore
             }
         }
 
@@ -323,6 +303,7 @@ namespace Neo.Emulator
             if (engine.State.HasFlag(VMState.BREAK))
             {
                 lastState = new DebuggerState(DebuggerState.State.Break, lastOffset);
+                engine.Reset();
                 return lastState;
             }
 

@@ -114,7 +114,14 @@ namespace Neo.Debugger.Forms
 
         private void RunDebugger()
         {
-            if (!ResetDebugger())
+            //We need to make sure there is a file loaded
+            if (!_debugger.AvmFileLoaded)
+            {
+                MessageBox.Show("Please load an .avm file first!");
+                return;
+            }
+
+            if (_debugger.ResetFlag && !ResetDebugger())
                 return;
 
             _debugger.Run();
@@ -123,11 +130,17 @@ namespace Neo.Debugger.Forms
 
         private void StepDebugger()
         {
-            if (!ResetDebugger())
+            //We need to make sure there is a file loaded
+            if (!_debugger.AvmFileLoaded)
+            {
+                MessageBox.Show("Please load an .avm file first!");
+                return;
+            }
+
+            if (_debugger.ResetFlag && !ResetDebugger())
                 return;
 
-            int oldLine = _debugger.CurrentLine;
-
+            Line previousLine = TextArea.Lines[_debugger.CurrentLine];
             do
             {
                 _debugger.Step();
@@ -137,37 +150,45 @@ namespace Neo.Debugger.Forms
                 if (_debugger.ResetFlag)
                     return;
 
-            } while (_debugger.CurrentLine <= 0 || oldLine == _debugger.CurrentLine);
+            } while (_debugger.CurrentLine <= 0 || previousLine.Index == _debugger.CurrentLine);
 
             //Update UI
             RemoveCurrentHighlight();
             UpdateStackPanel();
             UpdateGasCost(_debugger.Emulator.GetUsedGas());
 
-            var firstVisible = TextArea.FirstVisibleLine;
-            var lastVisible = firstVisible + TextArea.LinesOnScreen;
+
             var targetLine = TextArea.Lines[_debugger.CurrentLine];
-            targetLine.EnsureVisible();
+
+            //Remove the marker
+            TextArea.Lines[TextArea.CurrentLine].MarkerDelete(STEP_BG);
+
             targetLine.MarkerAdd(STEP_BG);
+            targetLine.EnsureVisible();
+            targetLine.Goto();
 
-            if (lastVisible > TextArea.Lines.Count)
-                lastVisible = TextArea.Lines.Count;
+            var totalLines = TextArea.Lines.Count();
+            var firstVisible = TextArea.FirstVisibleLine;
+            var lastVisible = TextArea.FirstVisibleLine + TextArea.LinesOnScreen;
+            var targetIndex = targetLine.Index;
+            var paddingLines = 10;
 
-            if (oldLine >= 0 && _debugger.CurrentLine == (oldLine + 1))
+            if (targetIndex < firstVisible)
             {
-                if (_debugger.CurrentLine >= lastVisible)
-                    TextArea.LineScroll(1, 0);
+                TextArea.LineScroll(firstVisible-targetIndex+paddingLines, 0);
             }
-            else
-                targetLine.Goto();
+            else if (targetIndex > (lastVisible - paddingLines) && lastVisible < (totalLines - paddingLines))
+            {
+                TextArea.LineScroll(lastVisible-targetIndex+paddingLines, 0);
+            }       
+            else if(targetIndex < (firstVisible + paddingLines) && targetIndex < (totalLines - paddingLines))
+            {
+                TextArea.LineScroll(targetIndex-firstVisible-paddingLines, 0);
+            }
         }
 
         private bool ResetDebugger()
         {
-            //If we don't need to reset, we're fine
-            if (!_debugger.ResetFlag)
-                return true;
-
             //We need to make sure there is a file loaded
             if (!_debugger.AvmFileLoaded)
             {
@@ -279,11 +300,11 @@ namespace Neo.Debugger.Forms
 
             marker = TextArea.Markers[BREAKPOINT_BG];
             marker.Symbol = MarkerSymbol.Background;
-            marker.SetBackColor(Color.Red);
+            marker.SetBackColor(ColorUtil.IntToColor(0x600000));
 
             marker = TextArea.Markers[STEP_BG];
             marker.Symbol = MarkerSymbol.Background;
-            marker.SetBackColor(ColorUtil.IntToColor(0xCC000));
+            marker.SetBackColor(ColorUtil.IntToColor(0x5a5a23));
         }
 
         private void InitCodeFolding()
@@ -941,26 +962,41 @@ namespace Neo.Debugger.Forms
 
         private void runToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_debugger.AvmFileLoaded)
+                return;
+
             RunDebugger();
         }
         
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
+            if (!_debugger.AvmFileLoaded)
+                return;
+
             OpenStorage();
         }
 
         private void stepToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(!_debugger.AvmFileLoaded)
+                return;
+
             StepDebugger();
         }
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_debugger.AvmFileLoaded)
+                return;
+
             ResetDebugger();
         }
 
         private void originalToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_debugger.AvmFileLoaded)
+                return;
+
             if (_debugger.Mode != DebugMode.Source)
             {
                 ToggleDebuggerSource();
@@ -969,6 +1005,9 @@ namespace Neo.Debugger.Forms
 
         private void assemblyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_debugger.AvmFileLoaded)
+                return;
+
             if (_debugger.Mode != DebugMode.Assembly)
             {
                 ToggleDebuggerSource();
