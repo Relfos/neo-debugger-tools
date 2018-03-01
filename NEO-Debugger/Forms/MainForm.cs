@@ -140,7 +140,7 @@ namespace Neo.Debugger.Forms
             if (_debugger.ResetFlag && !ResetDebugger())
                 return;
 
-            Line previousLine = TextArea.Lines[_debugger.CurrentLine];
+            Line previousLine = TextArea.Lines[TextArea.CurrentLine];
             do
             {
                 _debugger.Step();
@@ -153,38 +153,9 @@ namespace Neo.Debugger.Forms
             } while (_debugger.CurrentLine <= 0 || previousLine.Index == _debugger.CurrentLine);
 
             //Update UI
-            RemoveCurrentHighlight();
             UpdateStackPanel();
             UpdateGasCost(_debugger.Emulator.GetUsedGas());
-
-
-            var targetLine = TextArea.Lines[_debugger.CurrentLine];
-
-            //Remove the marker
-            TextArea.Lines[TextArea.CurrentLine].MarkerDelete(STEP_BG);
-
-            targetLine.MarkerAdd(STEP_BG);
-            targetLine.EnsureVisible();
-            targetLine.Goto();
-
-            var totalLines = TextArea.Lines.Count();
-            var firstVisible = TextArea.FirstVisibleLine;
-            var lastVisible = TextArea.FirstVisibleLine + TextArea.LinesOnScreen;
-            var targetIndex = targetLine.Index;
-            var paddingLines = 10;
-
-            if (targetIndex < firstVisible)
-            {
-                TextArea.LineScroll(firstVisible-targetIndex+paddingLines, 0);
-            }
-            else if (targetIndex > (lastVisible - paddingLines) && lastVisible < (totalLines - paddingLines))
-            {
-                TextArea.LineScroll(lastVisible-targetIndex+paddingLines, 0);
-            }       
-            else if(targetIndex < (firstVisible + paddingLines) && targetIndex < (totalLines - paddingLines))
-            {
-                TextArea.LineScroll(targetIndex-firstVisible-paddingLines, 0);
-            }
+            UpdateDebuggerStateUI();
         }
 
         private bool ResetDebugger()
@@ -463,7 +434,6 @@ namespace Neo.Debugger.Forms
 
                     // Remove existing from UI
                     line.MarkerDelete(BREAKPOINT_MARKER);
-                    line.MarkerDelete(BREAKPOINT_BG);
                 }
                 else
                 {
@@ -474,9 +444,7 @@ namespace Neo.Debugger.Forms
                     }
 
                     // Add breakpoint to UI
-                    line.MarkerAdd(BREAKPOINT_MARKER);
-                    line.MarkerAdd(BREAKPOINT_BG);
-                    
+                    line.MarkerAdd(BREAKPOINT_MARKER);                
                 }
             }
         }
@@ -809,12 +777,20 @@ namespace Neo.Debugger.Forms
 
         private void UpdateDebuggerStateUI()
         {
+            RemoveCurrentHighlight();
+
             //Update the UI to reflect the debugger state
             switch (_debugger.State)
             {
+                case DebuggerState.State.Running:
+                    {
+                        JumpToLine(_debugger.CurrentLine);
+                        TextArea.Lines[TextArea.CurrentLine].MarkerAdd(STEP_BG);
+                        break;
+                    }
+
                 case DebuggerState.State.Finished:
                     {
-                        RemoveCurrentHighlight();
                         var val = _debugger.Emulator.GetOutput();
                         var gasStr = string.Format("{0:N4}", _debugger.Emulator.GetUsedGas());
                         MessageBox.Show("Execution finished.\nGAS cost: " + gasStr + "\nResult: " + FormattingUtils.StackItemAsString(val));
@@ -825,27 +801,23 @@ namespace Neo.Debugger.Forms
                     {
                         MessageBox.Show("Execution failed with an exception at address " + _debugger.Emulator.GetInstructionPtr().ToString() + " lastOffset: " + _debugger.Offset.ToString());
                         JumpToLine(_debugger.CurrentLine);
+                        TextArea.Lines[TextArea.CurrentLine].MarkerAdd(BREAKPOINT_BG); //Highlight red
                         break;
                     }
 
                 case DebuggerState.State.Break:
                     {
-                        MessageBox.Show("Execution hit a breakpoint");
                         JumpToLine(_debugger.CurrentLine);
+                        TextArea.Lines[TextArea.CurrentLine].MarkerAdd(BREAKPOINT_BG);
                         break;
                     }
             }
         }
 
-        private bool RemoveCurrentHighlight()
+        private void RemoveCurrentHighlight()
         {
-            if (_debugger.CurrentLine > 0)
-            {
-                TextArea.Lines[TextArea.CurrentLine].MarkerDelete(STEP_BG);
-                return true;
-            }
-
-            return false;
+            TextArea.Lines[TextArea.CurrentLine].MarkerDelete(BREAKPOINT_BG);
+            TextArea.Lines[TextArea.CurrentLine].MarkerDelete(STEP_BG);
         }
 
         private void JumpToLine(int line)
@@ -855,11 +827,28 @@ namespace Neo.Debugger.Forms
                 return;
             }
 
-            var target = TextArea.Lines[line];
-            target.Goto();
-            target.EnsureVisible();
+            var targetLine = TextArea.Lines[line];
+            targetLine.EnsureVisible();
+            targetLine.Goto();
 
-            TextArea.FirstVisibleLine = line;
+            var totalLines = TextArea.Lines.Count();
+            var firstVisible = TextArea.FirstVisibleLine;
+            var lastVisible = TextArea.FirstVisibleLine + TextArea.LinesOnScreen;
+            var targetIndex = targetLine.Index;
+            var paddingLines = 10;
+
+            if (targetIndex < firstVisible)
+            {
+                TextArea.LineScroll(firstVisible - targetIndex + paddingLines, 0);
+            }
+            else if (targetIndex > (lastVisible - paddingLines) && lastVisible < (totalLines - paddingLines))
+            {
+                TextArea.LineScroll(lastVisible - targetIndex + paddingLines, 0);
+            }
+            else if (targetIndex < (firstVisible + paddingLines) && targetIndex < (totalLines - paddingLines))
+            {
+                TextArea.LineScroll(targetIndex - firstVisible - paddingLines, 0);
+            }
         }
 
         private void ReloadTextArea()
@@ -893,7 +882,6 @@ namespace Neo.Debugger.Forms
             var breakpointLines = _debugger.GetBreakPointLineNumbers();
             foreach(var line in breakpointLines)
             {
-                TextArea.Lines[line].MarkerAdd(BREAKPOINT_BG);
                 TextArea.Lines[line].MarkerAdd(BREAKPOINT_MARKER);
             }
 
