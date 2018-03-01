@@ -43,13 +43,15 @@
             this.runTabs = new System.Windows.Forms.TabControl();
             this.methodTab = new System.Windows.Forms.TabPage();
             this.transactionPage = new System.Windows.Forms.TabPage();
-            this.assetComboBox = new System.Windows.Forms.ComboBox();
             this.privateKeyInput = new System.Windows.Forms.TextBox();
+            this.assetComboBox = new System.Windows.Forms.ComboBox();
             this.optionsPage = new System.Windows.Forms.TabPage();
-            this.triggerComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.witnessComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.witnessComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.triggerComboBox = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.testCasesList = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.inputGrid)).BeginInit();
             this.runTabs.SuspendLayout();
             this.methodTab.SuspendLayout();
@@ -83,7 +85,7 @@
             this.paramsList.FormattingEnabled = true;
             this.paramsList.Location = new System.Drawing.Point(9, 28);
             this.paramsList.Name = "paramsList";
-            this.paramsList.Size = new System.Drawing.Size(433, 147);
+            this.paramsList.Size = new System.Drawing.Size(206, 147);
             this.paramsList.TabIndex = 2;
             this.paramsList.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             this.paramsList.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.paramsList_MouseDoubleClick);
@@ -190,6 +192,8 @@
             // 
             // methodTab
             // 
+            this.methodTab.Controls.Add(this.label6);
+            this.methodTab.Controls.Add(this.testCasesList);
             this.methodTab.Controls.Add(this.label4);
             this.methodTab.Controls.Add(this.paramsList);
             this.methodTab.Controls.Add(this.inputGrid);
@@ -218,6 +222,13 @@
             this.transactionPage.Text = "Transaction";
             this.transactionPage.UseVisualStyleBackColor = true;
             // 
+            // privateKeyInput
+            // 
+            this.privateKeyInput.Location = new System.Drawing.Point(9, 77);
+            this.privateKeyInput.Name = "privateKeyInput";
+            this.privateKeyInput.Size = new System.Drawing.Size(433, 20);
+            this.privateKeyInput.TabIndex = 21;
+            // 
             // assetComboBox
             // 
             this.assetComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -226,14 +237,6 @@
             this.assetComboBox.Name = "assetComboBox";
             this.assetComboBox.Size = new System.Drawing.Size(106, 21);
             this.assetComboBox.TabIndex = 20;
-            this.assetComboBox.SelectedIndexChanged += assetComboBox_SelectedIndexChanged;
-            // 
-            // privateKeyInput
-            // 
-            this.privateKeyInput.Location = new System.Drawing.Point(9, 77);
-            this.privateKeyInput.Name = "privateKeyInput";
-            this.privateKeyInput.Size = new System.Drawing.Size(433, 20);
-            this.privateKeyInput.TabIndex = 21;
             // 
             // optionsPage
             // 
@@ -249,26 +252,14 @@
             this.optionsPage.Text = "Options";
             this.optionsPage.UseVisualStyleBackColor = true;
             // 
-            // triggerComboBox
+            // label5
             // 
-            this.triggerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.triggerComboBox.FormattingEnabled = true;
-            this.triggerComboBox.Items.AddRange(new object[] {
-            "Application",
-            "Verification"});
-            this.triggerComboBox.Location = new System.Drawing.Point(99, 18);
-            this.triggerComboBox.Name = "triggerComboBox";
-            this.triggerComboBox.Size = new System.Drawing.Size(121, 21);
-            this.triggerComboBox.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 21);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Trigger";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 58);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(76, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "CheckWitness";
             // 
             // witnessComboBox
             // 
@@ -283,14 +274,44 @@
             this.witnessComboBox.Size = new System.Drawing.Size(121, 21);
             this.witnessComboBox.TabIndex = 2;
             // 
-            // label5
+            // label1
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 58);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(76, 13);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "CheckWitness";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 21);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(40, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Trigger";
+            // 
+            // triggerComboBox
+            // 
+            this.triggerComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.triggerComboBox.FormattingEnabled = true;
+            this.triggerComboBox.Items.AddRange(new object[] {
+            "Application",
+            "Verification"});
+            this.triggerComboBox.Location = new System.Drawing.Point(99, 18);
+            this.triggerComboBox.Name = "triggerComboBox";
+            this.triggerComboBox.Size = new System.Drawing.Size(121, 21);
+            this.triggerComboBox.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(218, 12);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 13);
+            this.label6.TabIndex = 18;
+            this.label6.Text = "Test cases";
+            // 
+            // testCasesList
+            // 
+            this.testCasesList.FormattingEnabled = true;
+            this.testCasesList.Location = new System.Drawing.Point(221, 28);
+            this.testCasesList.Name = "testCasesList";
+            this.testCasesList.Size = new System.Drawing.Size(221, 147);
+            this.testCasesList.TabIndex = 17;
+            this.testCasesList.SelectedIndexChanged += new System.EventHandler(this.testCasesList_SelectedIndexChanged);
             // 
             // RunForm
             // 
@@ -342,5 +363,7 @@
         private System.Windows.Forms.ComboBox witnessComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox triggerComboBox;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ListBox testCasesList;
     }
 }

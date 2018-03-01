@@ -159,15 +159,13 @@ namespace Neo.Emulator.API
             {
                 if (child.Name == "input")
                 {
-                    var input = new TransactionInput();
-                    input.Load(child);
+                    var input = TransactionInput.FromNode(child);
                     inputs.Add(input);
                 }
 
                 if (child.Name == "output")
                 {
-                    var output = new TransactionOutput();
-                    output.Load(child);
+                    var output = TransactionOutput.FromNode(child);
                     outputs.Add(output);
                 }
             }

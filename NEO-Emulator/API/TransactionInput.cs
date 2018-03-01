@@ -6,14 +6,21 @@ namespace Neo.Emulator.API
 {
     public class TransactionInput : IInteropInterface
     {
-        public int prevIndex;
-        public byte[] prevHash;
+        public readonly int prevIndex;
+        public readonly byte[] prevHash;
 
-        internal void Load(DataNode root)
+        public TransactionInput(int prevIndex, byte[] prevHash)
+        {
+            this.prevIndex = prevIndex;
+            this.prevHash = prevHash;
+        }
+
+        internal static TransactionInput FromNode(DataNode root)
         {
             var hex = root.GetString("hash");
-            this.prevHash = hex.HexToByte();
-            this.prevIndex = root.GetInt32("index");
+            var prevHash = hex.HexToByte();
+            var prevIndex = root.GetInt32("index");
+            return new TransactionInput(prevIndex, prevHash);
         }
 
         public DataNode Save()
