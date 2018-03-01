@@ -841,7 +841,7 @@ namespace Neo.Debugger.Forms
         {
             if (_debugger.CurrentLine > 0)
             {
-                TextArea.Lines[_debugger.CurrentLine].MarkerDelete(STEP_BG);
+                TextArea.Lines[TextArea.CurrentLine].MarkerDelete(STEP_BG);
                 return true;
             }
 
